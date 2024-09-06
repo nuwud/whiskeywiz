@@ -62,21 +62,27 @@ Write-Host "Setting up Firebase and SSR..."
 ng add @angular/fire
 ng add @nguniversal/express-engine --skip-confirmation
 
-# Add SSR scripts to package.json
-$packageJson = Get-Content -Path "$projectRoot\package.json" -Raw | ConvertFrom-Json
+# Step 5: Add SSR scripts to package.json
+Write-Host "Updating package.json with SSR scripts..."
+$packageJsonPath = "$projectRoot\package.json"
+$packageJson = Get-Content $packageJsonPath -Raw | ConvertFrom-Json
+
 $packageJson.scripts["build:ssr"] = "ng build && ng run whiskey-wiz:server"
 $packageJson.scripts["serve:ssr"] = "node dist/whiskey-wiz/server/main.js"
 $packageJson.scripts["dev:ssr"] = "ng run whiskey-wiz:serve-ssr"
 $packageJson.scripts["prerender"] = "ng run whiskey-wiz:prerender"
-$packageJson | ConvertTo-Json -Compress | Set-Content "$projectRoot\package.json"
 
-# Step 5: Commit the new project to Git and push to GitHub
+# Save the updated package.json
+$packageJson | ConvertTo-Json -Compress | Set-Content $packageJsonPath
+
+# Step 6: Commit changes and push to GitHub
 Write-Host "Committing changes and creating new branch..."
-git pull origin fresh-start-20240906 --rebase
+git pull --rebase
 git add .
 git commit -m "Initial commit with Angular SSR and Firebase"
-git push -u origin fresh-start-20240906
+git branch -M fresh-start-20240906
+git push -u origin fresh-start-20240906 --force
 
-# Step 6: Serve the Angular app with SSR
+# Step 7: Serve the Angular app
 Write-Host "Serving the new Angular app..."
 npm run dev:ssr
