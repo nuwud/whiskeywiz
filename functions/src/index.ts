@@ -18,12 +18,8 @@ import * as logger from "firebase-functions/logger";
 //   response.send("Hello from Firebase!");
 // });
 
-
-
-
 // A basic HTTP function that logs a message and responds with "Hello, World!"
 export const helloWorld = onRequest((req, res) => {
-    logger.info("Received a request on the /helloWorld endpoint");
-    
-    res.send("Hello, World! Your Firebase Function is working.");
+  logger.info("Received a request on the /helloWorld endpoint");
+  res.send("Hello, World! Your Firebase Function is working.");
 });
