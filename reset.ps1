@@ -2,14 +2,13 @@
 $projectRoot = "C:\Users\Nuwud\whiskey-wiz"
 $scriptFile = "reset.ps1"
 
-# Step 1: Remove old files if they exist, but exclude this script
+# Step 1: Remove old files except reset.ps1
 Write-Host "Cleaning up old files, but keeping $scriptFile..."
 Get-ChildItem -Path $projectRoot -Recurse | Where-Object { $_.Name -ne $scriptFile } | Remove-Item -Recurse -Force
 
 # Step 2: Ensure necessary folders and files exist
 Write-Host "Creating necessary folders and files..."
 
-# Create src and public directories
 $srcDir = "$projectRoot\src"
 $publicDir = "$projectRoot\public"
 $environmentsDir = "$srcDir\environments"
@@ -50,7 +49,7 @@ export const environment = {
 };
 "@ | Out-File "$environmentsDir\environment.prod.ts" -Force
 
-# Step 3: Initialize Angular project and Firebase setup
+# Step 3: Initialize Angular project
 Write-Host "Initializing new Angular project..."
 cd $projectRoot
 npx -p @angular/cli ng new whiskey-wiz --style=scss --routing --skip-git --directory ./ --skip-install
@@ -67,10 +66,13 @@ Write-Host "Updating package.json with SSR scripts..."
 $packageJsonPath = "$projectRoot\package.json"
 $packageJson = Get-Content $packageJsonPath -Raw | ConvertFrom-Json
 
-$packageJson.scripts["build:ssr"] = "ng build && ng run whiskey-wiz:server"
-$packageJson.scripts["serve:ssr"] = "node dist/whiskey-wiz/server/main.js"
-$packageJson.scripts["dev:ssr"] = "ng run whiskey-wiz:serve-ssr"
-$packageJson.scripts["prerender"] = "ng run whiskey-wiz:prerender"
+# Add SSR scripts manually
+$packageJson.scripts += @{
+    "build:ssr" = "ng build && ng run whiskey-wiz:server"
+    "serve:ssr" = "node dist/whiskey-wiz/server/main.js"
+    "dev:ssr"   = "ng run whiskey-wiz:serve-ssr"
+    "prerender" = "ng run whiskey-wiz:prerender"
+}
 
 # Save the updated package.json
 $packageJson | ConvertTo-Json -Compress | Set-Content $packageJsonPath
