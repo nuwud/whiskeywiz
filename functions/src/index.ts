@@ -17,3 +17,13 @@ import * as logger from "firebase-functions/logger";
 //   logger.info("Hello logs!", {structuredData: true});
 //   response.send("Hello from Firebase!");
 // });
+
+
+
+
+// A basic HTTP function that logs a message and responds with "Hello, World!"
+export const helloWorld = onRequest((req, res) => {
+    logger.info("Received a request on the /helloWorld endpoint");
+    
+    res.send("Hello, World! Your Firebase Function is working.");
+});
