@@ -6,13 +6,14 @@ import { AppComponent } from './app.component';
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from './firebase-config'; // Import your config
 import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [AppComponent],
   imports: [ AngularFireModule.initializeApp(environment.firebase),
-    AngularFirestoreModule,BrowserModule],
+    AngularFireAuthModule,AngularFirestoreModule,BrowserModule],
   providers: [],
   bootstrap: [AppComponent]
 })
