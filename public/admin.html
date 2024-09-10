@@ -1,22 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whiskey Challenge Admin</title>
+
+    <!-- Firebase CDN Scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js"></script>
+
+    <!-- Your Firebase Config -->
+    <script src="./firebaseConfig.js"></script>
     <link rel="stylesheet" href="admin.css"> <!-- Optional, add your styles here -->
-    <script src="./firebaseConfig.js"></script>
-    <link rel="stylesheet" href="./admin.css">
-    <script src="./firebaseConfig.js"></script>
 </head>
 
 <body>
@@ -38,118 +34,122 @@
 
     <div id="quarters-list"></div>
 
-    <!-- Firebase Initialization -->
-    <script src="firebaseConfig.js"></script> <!-- Your Firebase config -->
     <script>
-        const db = firebase.firestore();
-        const quarterForm = document.getElementById('quarter-form');
-        const samplesContainer = document.getElementById('samples-container');
-        const quarterNameInput = document.getElementById('quarter-name');
-        const quartersList = document.getElementById('quarters-list');
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
 
-        // Function to create sample answer input fields
-        function createSampleAnswerInputs(sampleIndex) {
-            const sampleDiv = document.createElement('div');
-            sampleDiv.classList.add('sample-answer');
+            const db = firebase.firestore();
+            const quarterForm = document.getElementById('quarter-form');
+            const samplesContainer = document.getElementById('samples-container');
+            const quarterNameInput = document.getElementById('quarter-name');
+            const quartersList = document.getElementById('quarters-list');
 
-            const mashbillLabel = document.createElement('label');
-            mashbillLabel.innerText = `Sample ${sampleIndex + 1} - Mashbill: `;
-            const mashbillInput = document.createElement('input');
-            mashbillInput.type = 'text';
+            // Function to create sample answer input fields
+            function createSampleAnswerInputs(sampleIndex) {
+                const sampleDiv = document.createElement('div');
+                sampleDiv.classList.add('sample-answer');
 
-            const proofLabel = document.createElement('label');
-            proofLabel.innerText = 'Proof: ';
-            const proofInput = document.createElement('input');
-            proofInput.type = 'number';
+                const mashbillLabel = document.createElement('label');
+                mashbillLabel.innerText = `Sample ${sampleIndex + 1} - Mashbill: `;
+                const mashbillInput = document.createElement('input');
+                mashbillInput.type = 'text';
 
-            const ageLabel = document.createElement('label');
-            ageLabel.innerText = 'Age: ';
-            const ageInput = document.createElement('input');
-            ageInput.type = 'number';
+                const proofLabel = document.createElement('label');
+                proofLabel.innerText = 'Proof: ';
+                const proofInput = document.createElement('input');
+                proofInput.type = 'number';
 
-            // Append elements stacked
-            sampleDiv.appendChild(mashbillLabel);
-            sampleDiv.appendChild(mashbillInput);
-            sampleDiv.appendChild(document.createElement('br'));
+                const ageLabel = document.createElement('label');
+                ageLabel.innerText = 'Age: ';
+                const ageInput = document.createElement('input');
+                ageInput.type = 'number';
 
-            sampleDiv.appendChild(proofLabel);
-            sampleDiv.appendChild(proofInput);
-            sampleDiv.appendChild(document.createElement('br'));
+                // Append elements stacked
+                sampleDiv.appendChild(mashbillLabel);
+                sampleDiv.appendChild(mashbillInput);
+                sampleDiv.appendChild(document.createElement('br'));
 
-            sampleDiv.appendChild(ageLabel);
-            sampleDiv.appendChild(ageInput);
-            sampleDiv.appendChild(document.createElement('br'));
+                sampleDiv.appendChild(proofLabel);
+                sampleDiv.appendChild(proofInput);
+                sampleDiv.appendChild(document.createElement('br'));
 
-            return sampleDiv;
-        }
+                sampleDiv.appendChild(ageLabel);
+                sampleDiv.appendChild(ageInput);
+                sampleDiv.appendChild(document.createElement('br'));
 
-        // Add sample input fields for answers
-        for (let i = 0; i < 4; i++) {
-            samplesContainer.appendChild(createSampleAnswerInputs(i));
-        }
+                return sampleDiv;
+            }
 
-        // Submit form to save quarter
-        quarterForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const quarterName = quarterNameInput.value.trim();
-            const samples = [];
+            // Add sample input fields for answers
+            for (let i = 0; i < 4; i++) {
+                samplesContainer.appendChild(createSampleAnswerInputs(i));
+            }
 
-            // Gather sample answers
-            document.querySelectorAll('.sample-answer').forEach((sampleDiv, index) => {
-                samples.push({
-                    mashbill: sampleDiv.querySelector('input[type="text"]').value,
-                    proof: sampleDiv.querySelector('input[type="number"]').value,
-                    age: sampleDiv.querySelector('input[type="number"]').value
-                });
-            });
+            // Submit form to save quarter
+            quarterForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const quarterName = quarterNameInput.value.trim();
+                const samples = [];
 
-            // Save quarter and sample answers to Firestore
-            db.collection('quarters').doc(quarterName).set({
-                name: quarterName,
-                samples: samples
-            }).then(() => {
-                alert('Quarter saved successfully!');
-                quarterForm.reset();
-            }).catch(error => {
-                console.error('Error saving quarter:', error);
-            });
-        });
-
-        // Fetch and display quarters
-        function fetchQuarters() {
-            db.collection('quarters').get().then(snapshot => {
-                quartersList.innerHTML = '';
-                snapshot.forEach(doc => {
-                    const quarterData = doc.data();
-                    const quarterDiv = document.createElement('div');
-                    quarterDiv.innerHTML = `<strong>${quarterData.name}</strong>
-                                            <button onclick="editQuarter('${doc.id}')">Edit</button>`;
-                    quartersList.appendChild(quarterDiv);
-                });
-            });
-        }
-
-        // Edit an existing quarter
-        function editQuarter(quarterId) {
-            db.collection('quarters').doc(quarterId).get().then(doc => {
-                if (doc.exists) {
-                    const quarterData = doc.data();
-                    quarterNameInput.value = quarterData.name;
-
-                    // Populate samples with existing data
-                    quarterData.samples.forEach((sample, index) => {
-                        const sampleDiv = document.querySelectorAll('.sample-answer')[index];
-                        sampleDiv.querySelector('input[type="text"]').value = sample.mashbill;
-                        sampleDiv.querySelector('input[type="number"]').value = sample.proof;
-                        sampleDiv.querySelector('input[type="number"]').value = sample.age;
+                // Gather sample answers
+                document.querySelectorAll('.sample-answer').forEach((sampleDiv, index) => {
+                    samples.push({
+                        mashbill: sampleDiv.querySelector('input[type="text"]').value,
+                        proof: sampleDiv.querySelector('input[type="number"]').value,
+                        age: sampleDiv.querySelector('input[type="number"]').value
                     });
-                }
-            });
-        }
+                });
 
-        // Initialize quarters list
-        fetchQuarters();
+                // Save quarter and sample answers to Firestore
+                db.collection('quarters').doc(quarterName).set({
+                    name: quarterName,
+                    samples: samples
+                }).then(() => {
+                    alert('Quarter saved successfully!');
+                    quarterForm.reset();
+                    fetchQuarters(); // Refresh quarters list
+                }).catch(error => {
+                    console.error('Error saving quarter:', error);
+                });
+            });
+
+            // Fetch and display quarters
+            function fetchQuarters() {
+                db.collection('quarters').get().then(snapshot => {
+                    quartersList.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const quarterData = doc.data();
+                        const quarterDiv = document.createElement('div');
+                        quarterDiv.innerHTML = `<strong>${quarterData.name}</strong>
+                                                <button onclick="editQuarter('${doc.id}')">Edit</button>`;
+                        quartersList.appendChild(quarterDiv);
+                    });
+                });
+            }
+
+            // Edit an existing quarter
+            window.editQuarter = function(quarterId) {
+                db.collection('quarters').doc(quarterId).get().then(doc => {
+                    if (doc.exists) {
+                        const quarterData = doc.data();
+                        quarterNameInput.value = quarterData.name;
+
+                        // Populate samples with existing data
+                        quarterData.samples.forEach((sample, index) => {
+                            const sampleDiv = document.querySelectorAll('.sample-answer')[index];
+                            sampleDiv.querySelector('input[type="text"]').value = sample.mashbill;
+                            sampleDiv.querySelector('input[type="number"]').value = sample.proof;
+                            sampleDiv.querySelector('input[type="number"]').value = sample.age;
+                        });
+                    }
+                });
+            };
+
+            // Initialize quarters list
+            fetchQuarters();
+        });
     </script>
 </body>
-
 </html>

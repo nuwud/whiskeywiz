@@ -2,21 +2,19 @@
 <html lang="en">
 
 <head>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whiskey Challenge - Player</title>
+
+    <!-- Firebase CDN Scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js"></script>
+
+    <!-- Your Firebase Config -->
+    <script src="./firebaseConfig.js"></script>
+
     <link rel="stylesheet" href="styles.css"> <!-- Optional, add your styles here -->
-    <script src="./firebaseConfig.js"></script>
-    <link rel="stylesheet" href="./styles.css">
-    <script src="./firebaseConfig.js"></script>
 </head>
 
 <body>
@@ -25,95 +23,95 @@
         <!-- Quarters and samples will be dynamically inserted here -->
     </div>
 
-    <!-- Firebase Initialization -->
-    <script src="firebaseConfig.js"></script>
     <script>
-        const quartersContainer = document.getElementById('quarters-container');
-
-        // Function to create a sample input
-        function createSampleInput(sampleIndex) {
-            const sampleDiv = document.createElement('div');
-            sampleDiv.classList.add('sample');
-
-            // Mashbill selector
-            const mashbillLabel = document.createElement('label');
-            mashbillLabel.innerText = `Sample ${sampleIndex + 1} - Select Mashbill: `;
-            const mashbillSelect = document.createElement('select');
-            ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Blend', 'Specialty'].forEach(cat => {
-                const option = document.createElement('option');
-                option.value = cat;
-                option.innerText = cat;
-                mashbillSelect.appendChild(option);
-            });
-
-            // Proof slider
-            const proofLabel = document.createElement('label');
-            proofLabel.innerText = 'Guess Proof: ';
-            const proofSlider = document.createElement('input');
-            proofSlider.type = 'range';
-            proofSlider.min = '80';
-            proofSlider.max = '130';
-            const proofValue = document.createElement('span');
-            proofSlider.addEventListener('input', () => proofValue.innerText = proofSlider.value);
-
-            // Age slider
-            const ageLabel = document.createElement('label');
-            ageLabel.innerText = 'Guess Age: ';
-            const ageSlider = document.createElement('input');
-            ageSlider.type = 'range';
-            ageSlider.min = '1';
-            ageSlider.max = '10';
-            const ageValue = document.createElement('span');
-            ageSlider.addEventListener('input', () => ageValue.innerText = ageSlider.value);
-
-            // Append elements to sampleDiv
-            sampleDiv.appendChild(mashbillLabel);
-            sampleDiv.appendChild(mashbillSelect);
-            sampleDiv.appendChild(document.createElement('br'));
-
-            sampleDiv.appendChild(proofLabel);
-            sampleDiv.appendChild(proofSlider);
-            sampleDiv.appendChild(proofValue);
-            sampleDiv.appendChild(document.createElement('br'));
-
-            sampleDiv.appendChild(ageLabel);
-            sampleDiv.appendChild(ageSlider);
-            sampleDiv.appendChild(ageValue);
-
-            return sampleDiv;
-        }
-
-        // Function to create a quarter section
-        function createQuarterSection(quarterData, quarterId) {
-            const quarterDiv = document.createElement('div');
-            quarterDiv.classList.add('quarter');
-            quarterDiv.id = `quarter-${quarterId}`;
-
-            const quarterHeader = document.createElement('h2');
-            quarterHeader.innerText = `Quarter: ${quarterData.name}`;
-            quarterDiv.appendChild(quarterHeader);
-
-            // Create 4 sample inputs
-            for (let i = 0; i < 4; i++) {
-                quarterDiv.appendChild(createSampleInput(i));
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check if Firebase has been initialized properly
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
             }
 
-            quartersContainer.appendChild(quarterDiv);
-        }
+            const quartersContainer = document.getElementById('quarters-container');
 
-        // Fetch all quarters from Firestore
-        const db = firebase.firestore();
-        db.collection('quarters').get().then(snapshot => {
-            snapshot.forEach(doc => {
-                const quarterData = doc.data();
-                createQuarterSection(quarterData, doc.id);
-            });
-        }).catch(error => console.error('Error fetching quarters:', error));
+            // Function to create a sample input
+            function createSampleInput(sampleIndex) {
+                const sampleDiv = document.createElement('div');
+                sampleDiv.classList.add('sample');
 
-        // Function to submit and display score
-        function submitAndDisplayScore() {
-            // Logic for submitting guesses and showing the score on the same page asynchronously.
-        }
+                // Mashbill selector
+                const mashbillLabel = document.createElement('label');
+                mashbillLabel.innerText = `Sample ${sampleIndex + 1} - Select Mashbill: `;
+                const mashbillSelect = document.createElement('select');
+                ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Blend', 'Specialty'].forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.innerText = cat;
+                    mashbillSelect.appendChild(option);
+                });
+
+                // Proof slider
+                const proofLabel = document.createElement('label');
+                proofLabel.innerText = 'Guess Proof: ';
+                const proofSlider = document.createElement('input');
+                proofSlider.type = 'range';
+                proofSlider.min = '80';
+                proofSlider.max = '130';
+                const proofValue = document.createElement('span');
+                proofSlider.addEventListener('input', () => proofValue.innerText = proofSlider.value);
+
+                // Age slider
+                const ageLabel = document.createElement('label');
+                ageLabel.innerText = 'Guess Age: ';
+                const ageSlider = document.createElement('input');
+                ageSlider.type = 'range';
+                ageSlider.min = '1';
+                ageSlider.max = '10';
+                const ageValue = document.createElement('span');
+                ageSlider.addEventListener('input', () => ageValue.innerText = ageSlider.value);
+
+                // Append elements to sampleDiv
+                sampleDiv.appendChild(mashbillLabel);
+                sampleDiv.appendChild(mashbillSelect);
+                sampleDiv.appendChild(document.createElement('br'));
+
+                sampleDiv.appendChild(proofLabel);
+                sampleDiv.appendChild(proofSlider);
+                sampleDiv.appendChild(proofValue);
+                sampleDiv.appendChild(document.createElement('br'));
+
+                sampleDiv.appendChild(ageLabel);
+                sampleDiv.appendChild(ageSlider);
+                sampleDiv.appendChild(ageValue);
+
+                return sampleDiv;
+            }
+
+            // Function to create a quarter section
+            function createQuarterSection(quarterData, quarterId) {
+                const quarterDiv = document.createElement('div');
+                quarterDiv.classList.add('quarter');
+                quarterDiv.id = `quarter-${quarterId}`;
+
+                const quarterHeader = document.createElement('h2');
+                quarterHeader.innerText = `Quarter: ${quarterData.name}`;
+                quarterDiv.appendChild(quarterHeader);
+
+                // Create 4 sample inputs
+                for (let i = 0; i < 4; i++) {
+                    quarterDiv.appendChild(createSampleInput(i));
+                }
+
+                quartersContainer.appendChild(quarterDiv);
+            }
+
+            // Fetch all quarters from Firestore
+            const db = firebase.firestore();
+            db.collection('quarters').get().then(snapshot => {
+                snapshot.forEach(doc => {
+                    const quarterData = doc.data();
+                    createQuarterSection(quarterData, doc.id);
+                });
+            }).catch(error => console.error('Error fetching quarters:', error));
+        });
     </script>
 </body>
 
