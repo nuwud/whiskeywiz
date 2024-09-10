@@ -1,6 +1,16 @@
 {
   "rules": {
-    ".read": false,
-    ".write": false
+    "users": {
+      "$user_id": {
+        ".read": "auth != null && auth.uid === $user_id",   
+        ".write": "auth != null && auth.uid === $user_id"   
+    },
+    "games": {
+      "$game_id": {
+        ".read": true,  
+        ".write": "auth != null"  
+      }
+    }
   }
+}
 }

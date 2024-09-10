@@ -1,13 +1,12 @@
 {
   "database": {
-    "rules": "y"
+    "rules": "database.rules.json"
   },
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
-  "functions": [
-    {
+  "functions": {
       "source": "functions",
       "codebase": "default",
       "ignore": [
@@ -17,8 +16,7 @@
         "firebase-debug.*.log",
         "*.local"
       ]
-    }
-  ],
+    },
   "hosting": {
     "public": "public",
     "ignore": [
