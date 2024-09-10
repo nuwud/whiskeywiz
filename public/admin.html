@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whiskey Challenge Admin</title>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js"></script>
+    <link rel="stylesheet" href="admin.css"> <!-- Optional, add your styles here -->
+</head>
+<body>
+    <h1>Admin - Whiskey Challenge</h1>
+
+    <h2>Manage Quarters</h2>
+
+    <form id="quarter-form">
+        <label for="quarter-name">Quarter Name:</label>
+        <input type="text" id="quarter-name" required>
+
+        <button type="submit">Create/Update Quarter</button>
+    </form>
+
+    <div id="quarters-list"></div>
+
+    <!-- Firebase Initialization -->
+    <script src="firebaseConfig.js"></script> <!-- Import your Firebase configuration -->
+    <script>
+        const quarterForm = document.getElementById('quarter-form');
+        const quarterNameInput = document.getElementById('quarter-name');
+        const quartersList = document.getElementById('quarters-list');
+
+        // Fetch all quarters from Firestore
+        const db = firebase.firestore();
+        function fetchQuarters() {
+            db.collection('quarters').get().then((snapshot) => {
+                quartersList.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const quarterData = doc.data();
+                    const div = document.createElement('div');
+                    div.innerHTML = `
+                        <strong>${quarterData.name}</strong>
+                        <button onclick="deleteQuarter('${doc.id}')">Delete</button>
+                    `;
+                    quartersList.appendChild(div);
+                });
+            });
+        }
+
+        // Submit Quarter (Create or Update)
+        quarterForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const quarterName = quarterNameInput.value.trim();
+            if (quarterName) {
+                db.collection('quarters').doc('current-quarter').set({ name: quarterName });
+                alert('Quarter created/updated successfully!');
+                quarterNameInput.value = '';
+                fetchQuarters(); // Refresh the quarters list
+            }
+        });
+
+        // Delete a Quarter
+        function deleteQuarter(id) {
+            db.collection('quarters').doc(id).delete().then(() => {
+                alert('Quarter deleted successfully!');
+                fetchQuarters(); // Refresh the quarters list
+            }).catch((error) => {
+                console.error('Error deleting quarter:', error);
+            });
+        }
+
+        // Initialize Quarters List
+        fetchQuarters();
+    </script>
+</body>
+</html>
