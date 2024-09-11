@@ -40,13 +40,6 @@
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
             }
-            const analytics = getAnalytics(app);
-            const db = getFirestore(app);
-            const auth = getAuth(app);
-            const storage = getStorage(app);
-            const database = getDatabase(app);
-            const functions = getFunctions(app);
-
             const quarterForm = document.getElementById('quarter-form');
             const samplesContainer = document.getElementById('samples-container');
             const quarterNameInput = document.getElementById('quarter-name');
@@ -155,6 +148,8 @@
 
             // Initialize quarters list
             fetchQuarters();
+
+            console.log('Firebase initialized:', app);
         });
     </script>
         <link rel="stylesheet" href="admin.css">
