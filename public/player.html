@@ -28,6 +28,10 @@
         };
 
         // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+
+        document.addEventListener('DOMContentLoaded', function() {
+        // Ensure Firebase is initialized before using its services
         const analytics = getAnalytics(app);
         const db = getFirestore(app);
         const auth = getAuth(app);
@@ -35,91 +39,87 @@
         const database = getDatabase(app);
         const functions = getFunctions(app);
 
-        document.addEventListener('DOMContentLoaded', function() {
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-            const quartersContainer = document.getElementById('quarters-container');
+        const quartersContainer = document.getElementById('quarters-container');
 
-            // Function to create a sample input
-            function createSampleInput(sampleIndex) {
-                const sampleDiv = document.createElement('div');
-                sampleDiv.classList.add('sample');
+        // Function to create a sample input
+        function createSampleInput(sampleIndex) {
+            const sampleDiv = document.createElement('div');
+            sampleDiv.classList.add('sample');
 
-                // Mashbill selector
-                const mashbillLabel = document.createElement('label');
-                mashbillLabel.innerText = `Sample ${sampleIndex + 1} - Select Mashbill: `;
-                const mashbillSelect = document.createElement('select');
-                ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Blend', 'Specialty'].forEach(cat => {
-                    const option = document.createElement('option');
-                    option.value = cat;
-                    option.innerText = cat;
-                    mashbillSelect.appendChild(option);
-                });
+            // Mashbill selector
+            const mashbillLabel = document.createElement('label');
+            mashbillLabel.innerText = `Sample ${sampleIndex + 1} - Select Mashbill: `;
+            const mashbillSelect = document.createElement('select');
+            ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Blend', 'Specialty'].forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.innerText = cat;
+                mashbillSelect.appendChild(option);
+            });
 
-                // Proof slider
-                const proofLabel = document.createElement('label');
-                proofLabel.innerText = 'Guess Proof: ';
-                const proofSlider = document.createElement('input');
-                proofSlider.type = 'range';
-                proofSlider.min = '80';
-                proofSlider.max = '130';
-                const proofValue = document.createElement('span');
-                proofSlider.addEventListener('input', () => proofValue.innerText = proofSlider.value);
+            // Proof slider
+            const proofLabel = document.createElement('label');
+            proofLabel.innerText = 'Guess Proof: ';
+            const proofSlider = document.createElement('input');
+            proofSlider.type = 'range';
+            proofSlider.min = '80';
+            proofSlider.max = '130';
+            const proofValue = document.createElement('span');
+            proofSlider.addEventListener('input', () => proofValue.innerText = proofSlider.value);
 
-                // Age slider
-                const ageLabel = document.createElement('label');
-                ageLabel.innerText = 'Guess Age: ';
-                const ageSlider = document.createElement('input');
-                ageSlider.type = 'range';
-                ageSlider.min = '1';
-                ageSlider.max = '10';
-                const ageValue = document.createElement('span');
-                ageSlider.addEventListener('input', () => ageValue.innerText = ageSlider.value);
+            // Age slider
+            const ageLabel = document.createElement('label');
+            ageLabel.innerText = 'Guess Age: ';
+            const ageSlider = document.createElement('input');
+            ageSlider.type = 'range';
+            ageSlider.min = '1';
+            ageSlider.max = '10';
+            const ageValue = document.createElement('span');
+            ageSlider.addEventListener('input', () => ageValue.innerText = ageSlider.value);
 
-                // Append elements to sampleDiv
-                sampleDiv.appendChild(mashbillLabel);
-                sampleDiv.appendChild(mashbillSelect);
-                sampleDiv.appendChild(document.createElement('br'));
+            // Append elements to sampleDiv
+            sampleDiv.appendChild(mashbillLabel);
+            sampleDiv.appendChild(mashbillSelect);
+            sampleDiv.appendChild(document.createElement('br'));
 
-                sampleDiv.appendChild(proofLabel);
-                sampleDiv.appendChild(proofSlider);
-                sampleDiv.appendChild(proofValue);
-                sampleDiv.appendChild(document.createElement('br'));
+            sampleDiv.appendChild(proofLabel);
+            sampleDiv.appendChild(proofSlider);
+            sampleDiv.appendChild(proofValue);
+            sampleDiv.appendChild(document.createElement('br'));
 
-                sampleDiv.appendChild(ageLabel);
-                sampleDiv.appendChild(ageSlider);
-                sampleDiv.appendChild(ageValue);
+            sampleDiv.appendChild(ageLabel);
+            sampleDiv.appendChild(ageSlider);
+            sampleDiv.appendChild(ageValue);
 
-                return sampleDiv;
-            }
+            return sampleDiv;
+        }
 
-            // Function to create a quarter section
-            function createQuarterSection(quarterData, quarterId) {
-                const quarterDiv = document.createElement('div');
-                quarterDiv.classList.add('quarter');
-                quarterDiv.id = `quarter-${quarterId}`;
+        // Function to create a quarter section
+        function createQuarterSection(quarterData, quarterId) {
+            const quarterDiv = document.createElement('div');
+            quarterDiv.classList.add('quarter');
+            quarterDiv.id = `quarter-${quarterId}`;
 
-                const quarterHeader = document.createElement('h2');
-                quarterHeader.innerText = `Quarter: ${quarterData.name}`;
-                quarterDiv.appendChild(quarterHeader);
+            const quarterHeader = document.createElement('h2');
+            quarterHeader.innerText = `Quarter: ${quarterData.name}`;
+            quarterDiv.appendChild(quarterHeader);
 
-                // Create 4 sample inputs
-                for (let i = 0; i < 4; i++) {
-                    quarterDiv.appendChild(createSampleInput(i));
-                }
-
-                quartersContainer.appendChild(quarterDiv);
+            // Create 4 sample inputs
+            for (let i = 0; i < 4; i++) {
+                quarterDiv.appendChild(createSampleInput(i));
             }
 
-            // Fetch all quarters from Firestore
-            db.collection('quarters').get().then(snapshot => {
-                snapshot.forEach(doc => {
-                    const quarterData = doc.data();
-                    createQuarterSection(quarterData, doc.id);
-                });
-            }).catch(error => console.error('Error fetching quarters:', error));
-        });
+            quartersContainer.appendChild(quarterDiv);
+        }
+
+        // Fetch all quarters from Firestore
+        db.collection('quarters').get().then(snapshot => {
+            snapshot.forEach(doc => {
+                const quarterData = doc.data();
+                createQuarterSection(quarterData, doc.id);
+            });
+        }).catch(error => console.error('Error fetching quarters:', error));
+    });
     </script>
 
         <link rel="stylesheet" href="styles.css">
