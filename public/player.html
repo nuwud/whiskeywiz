@@ -113,7 +113,7 @@
             }
 
             // Fetch all quarters from Firestore
-            db.collection('quarters').get().then(snapshot => {
+            collection('quarters').get().then(snapshot => {
                 snapshot.forEach(doc => {
                     const quarterData = doc.data();
                     createQuarterSection(quarterData, doc.id);
