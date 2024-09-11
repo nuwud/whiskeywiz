@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,7 +35,7 @@
     <div id="quarters-list"></div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
             }
@@ -124,14 +123,14 @@
                         const quarterData = doc.data();
                         const quarterDiv = document.createElement('div');
                         quarterDiv.innerHTML = `<strong>${quarterData.name}</strong>
-                            <button onclick="editQuarter('${doc.id}')">Edit</button>`;
+                                                <button onclick="editQuarter('${doc.id}')">Edit</button>`;
                         quartersList.appendChild(quarterDiv);
                     });
                 });
             }
 
             // Edit an existing quarter
-            window.editQuarter = function (quarterId) {
+            window.editQuarter = function(quarterId) {
                 db.collection('quarters').doc(quarterId).get().then(doc => {
                     if (doc.exists) {
                         const quarterData = doc.data();
