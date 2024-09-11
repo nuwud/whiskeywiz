@@ -129,7 +129,7 @@
 
             // Edit an existing quarter
             window.editQuarter = function(quarterId) {
-                database.collection('quarters').doc(quarterId).get().then(doc => {
+                db.collection('quarters').doc(quarterId).get().then(doc => {
                     if (doc.exists) {
                         const quarterData = doc.data();
                         quarterNameInput.value = quarterData.name;
