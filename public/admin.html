@@ -4,39 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whiskey Challenge Admin</title>
-
     <!-- Firebase CDN Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-functions.js"></script>
-    <link rel="stylesheet" href="admin.css">
-</head>
+    <script type="module">
+        // Import the necessary Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+        import { getStorage } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js";
+        import { getDatabase } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+        import { getFunctions } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-functions.js";
 
-<body>
-    <h1>Admin - Whiskey Challenge</h1>
-    <h2>Create or Edit Quarters</h2>
-
-    <form id="quarter-form">
-        <label for="quarter-name">Quarter Name:</label>
-        <input type="text" id="quarter-name" required>
-
-        <h3>Set Answers for 4 Samples:</h3>
-
-        <div id="samples-container">
-            <!-- Sample answer inputs will be dynamically added here -->
-        </div>
-
-        <button type="submit">Save Quarter</button>
-    </form>
-
-    <div id="quarters-list"></div>
-
-    <script>
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        // Your Firebase configuration object
         const firebaseConfig = {
             apiKey: "AIzaSyCqZMaGpJGf5veYgTXmytg1bLerva-of0U",
             authDomain: "whiskeywiz2.firebaseapp.com",
@@ -48,6 +27,16 @@
             measurementId: "G-SK0TJJEPF5"
         };
 
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
+        const database = getDatabase(app);
+        const functions = getFunctions(app);
+
+        
         document.addEventListener('DOMContentLoaded', function() {
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
@@ -169,6 +158,31 @@
             fetchQuarters();
         });
     </script>
+        <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+    <h1>Admin - Whiskey Challenge</h1>
+    <h2>Create or Edit Quarters</h2>
+
+    <form id="quarter-form">
+        <label for="quarter-name">Quarter Name:</label>
+        <input type="text" id="quarter-name" required>
+
+        <h3>Set Answers for 4 Samples:</h3>
+
+        <div id="samples-container">
+            <!-- Sample answer inputs will be dynamically added here -->
+        </div>
+
+        <button type="submit">Save Quarter</button>
+    </form>
+
+    <div id="quarters-list"></div>
+
+
+
+
 </body>
 
 </html>
