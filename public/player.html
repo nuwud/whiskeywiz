@@ -12,7 +12,7 @@
         import { getFirestore } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
         import { getStorage } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js";
-        import { getDatabase } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+        import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
         import { getFunctions } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-functions.js";
         
         // Your Firebase configuration object
@@ -113,12 +113,24 @@
             }
 
             // Fetch all quarters from Firestore
-            database.collection('quarters').get().then(snapshot => {
+            db.collection('quarters').get().then(snapshot => {
                 snapshot.forEach(doc => {
                     const quarterData = doc.data();
                     createQuarterSection(quarterData, doc.id);
                 });
             }).catch(error => console.error('Error fetching quarters:', error));
+
+            // Example of fetching data from Realtime Database
+            const dbRef = ref(database);
+            get(child(dbRef, `some/path`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    console.log(snapshot.val());
+                } else {
+                    console.log("No data available");
+                }
+            }).catch((error) => {
+                console.error(error);
+            });
         });
     </script>
 
