@@ -39,8 +39,14 @@
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
             }
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+            const db = getFirestore(app);
+            const auth = getAuth(app);
+            const storage = getStorage(app);
+            const database = getDatabase(app);
+            const functions = getFunctions(app);
 
-            const db = firebase.firestore();
             const quarterForm = document.getElementById('quarter-form');
             const samplesContainer = document.getElementById('samples-container');
             const quarterNameInput = document.getElementById('quarter-name');
