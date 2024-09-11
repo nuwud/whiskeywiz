@@ -36,10 +36,7 @@
         const database = getDatabase(app);
         const functions = getFunctions(app);
 
-        
-
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if Firebase has been initialized
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
             }
