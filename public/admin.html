@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whiskey Challenge Admin</title>
 
+    <!-- Firebase CDN Scripts with correct module imports -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
         import { getStorage, ref, uploadString, deleteObject } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js";
 
-        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCqZMaGpJGf5veYgTXmytg1bLerva-of0U",
             authDomain: "whiskeywiz2.firebaseapp.com",
@@ -27,13 +27,83 @@
         const storage = getStorage(app);
 
         document.addEventListener('DOMContentLoaded', async function () {
-            const quartersContainer = document.getElementById('quarters-container');
+            const quarterForm = document.getElementById('quarter-form');
+            const samplesContainer = document.getElementById('samples-container');
+            const quarterNameInput = document.getElementById('quarter-name');
+            const quartersList = document.getElementById('quarters-list');
             const generateButton = document.getElementById('generate-button');
             const deleteButton = document.getElementById('delete-button');
-            const quartersList = document.getElementById('quarters-list');
 
-            // Load quarters into dropdown
+            // Function to create sample answer input fields
+            function createSampleAnswerInputs(sampleIndex) {
+                const sampleDiv = document.createElement('div');
+                sampleDiv.classList.add('sample-answer');
+
+                const mashbillLabel = document.createElement('label');
+                mashbillLabel.innerText = `Sample ${sampleIndex + 1} - Mashbill: `;
+                const mashbillInput = document.createElement('input');
+                mashbillInput.type = 'text';
+
+                const proofLabel = document.createElement('label');
+                proofLabel.innerText = 'Proof: ';
+                const proofInput = document.createElement('input');
+                proofInput.type = 'number';
+
+                const ageLabel = document.createElement('label');
+                ageLabel.innerText = 'Age: ';
+                const ageInput = document.createElement('input');
+                ageInput.type = 'number';
+
+                // Append elements stacked
+                sampleDiv.appendChild(mashbillLabel);
+                sampleDiv.appendChild(mashbillInput);
+                sampleDiv.appendChild(document.createElement('br'));
+
+                sampleDiv.appendChild(proofLabel);
+                sampleDiv.appendChild(proofInput);
+                sampleDiv.appendChild(document.createElement('br'));
+
+                sampleDiv.appendChild(ageLabel);
+                sampleDiv.appendChild(ageInput);
+                sampleDiv.appendChild(document.createElement('br'));
+
+                return sampleDiv;
+            }
+
+            // Add sample input fields for answers
+            for (let i = 0; i < 4; i++) {
+                samplesContainer.appendChild(createSampleAnswerInputs(i));
+            }
+
+            // Submit form to save quarter
+            quarterForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const quarterName = quarterNameInput.value.trim();
+                const samples = [];
+
+                // Gather sample answers
+                document.querySelectorAll('.sample-answer').forEach((sampleDiv) => {
+                    samples.push({
+                        mashbill: sampleDiv.querySelector('input[type="text"]').value,
+                        proof: sampleDiv.querySelector('input[type="number"]').value,
+                        age: sampleDiv.querySelector('input[type="number"]').value
+                    });
+                });
+
+                // Save quarter and sample answers to Firestore
+                await setDoc(doc(db, 'quarters', quarterName), {
+                    name: quarterName,
+                    samples: samples
+                });
+
+                alert('Quarter saved successfully!');
+                quarterForm.reset();
+                loadQuarterOptions();
+            });
+
+            // Load quarters into dropdown for HTML generation
             async function loadQuarterOptions() {
+                quartersList.innerHTML = ''; // Clear existing options
                 const quartersSnapshot = await getDocs(collection(db, 'quarters'));
                 quartersSnapshot.forEach(doc => {
                     const quarterData = doc.data();
@@ -120,20 +190,47 @@
     </script>
 
     <style>
-        /* Style for better layout */
-        .controls { margin-top: 10px; }
+        /* Basic styles */
+        .sample-answer {
+            margin-bottom: 10px;
+        }
+        .controls {
+            margin-top: 10px;
+        }
     </style>
 </head>
 
 <body>
     <h1>Admin - Whiskey Challenge</h1>
 
-    <label for="quarters-list">Select Quarter:</label>
-    <select id="quarters-list">
-        <!-- Quarters will be dynamically loaded here -->
-    </select>
+    <!-- Quarterly Creation Tool -->
+    <form id="quarter-form">
+        <label for="quarter-name">Quarter Name:</label>
+        <select id="quarter-name" required>
+            <option value="">Select Quarter</option>
+            <option value="January-2024">January 2024</option>
+            <option value="March-2024">March 2024</option>
+            <option value="June-2024">June 2024</option>
+            <option value="September-2024">September 2024</option>
+            <option value="December-2024">December 2024</option>
+            <!-- Add more years dynamically here -->
+        </select>
 
+        <h3>Set Answers for 4 Samples:</h3>
+        <div id="samples-container">
+            <!-- Sample answer inputs will be dynamically added here -->
+        </div>
+
+        <button type="submit">Save Quarter</button>
+    </form>
+
+    <!-- Player HTML Generation Tool -->
     <div class="controls">
+        <h3>Generate Player HTML</h3>
+        <label for="quarters-list">Select Quarter:</label>
+        <select id="quarters-list">
+            <!-- Quarters will be dynamically loaded here -->
+        </select>
         <button id="generate-button">Generate Player HTML</button>
         <button id="delete-button">Delete Player HTML</button>
     </div>
