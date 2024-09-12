@@ -90,13 +90,7 @@
         <div class="form-group">
             <label for="quarter-name">Select Quarter (Month and Year):</label>
             <select id="quarter-name" required>
-                <!-- Dynamically generate the years and quarters -->
-                <option value="January 2024">January 2024</option>
-                <option value="March 2024">March 2024</option>
-                <option value="June 2024">June 2024</option>
-                <option value="September 2024">September 2024</option>
-                <option value="December 2024">December 2024</option>
-                <!-- Add more options going back and forward in years -->
+                <!-- Dynamically generated quarter options -->
             </select>
         </div>
 
@@ -186,6 +180,7 @@
         </div>
 
         <button type="submit">Save Quarter</button>
+        <button id="export-player-html" type="button">Export Player HTML</button>
     </form>
 
     <div id="quarters-list">
@@ -199,14 +194,21 @@
     <script src="https://cdn.jsdelivr.net/npm/handlebars/dist/handlebars.min.js"></script>
     <script>
         const db = firebase.firestore();
-        
-        // Event listeners for range sliders to update displayed value
-        document.querySelectorAll('input[type="range"]').forEach(rangeInput => {
-            rangeInput.addEventListener('input', function() {
-                const valueSpan = this.nextElementSibling;
-                valueSpan.innerText = this.value;
+
+        // Dynamically generate quarters (2 years back to 3 years ahead)
+        const quarterSelect = document.getElementById('quarter-name');
+        const currentYear = new Date().getFullYear();
+        const currentMonth = new Date().getMonth();
+        const quarterNames = ["January", "March", "June", "September", "December"];
+
+        for (let year = currentYear - 2; year <= currentYear + 3; year++) {
+            quarterNames.forEach(month => {
+                const option = document.createElement('option');
+                option.value = `${month} ${year}`;
+                option.innerText = `${month} ${year}`;
+                quarterSelect.appendChild(option);
             });
-        });
+        }
 
         // Save quarter function
         document.getElementById('quarter-form').addEventListener('submit', function(e) {
@@ -226,7 +228,7 @@
             // Save to Firestore
             db.collection('quarters').doc(quarterName).set({
                 name: quarterName,
-                samples
+                samples: samples
             }).then(() => {
                 alert('Quarter saved successfully!');
                 fetchQuarters(); // Refresh quarter list
@@ -245,7 +247,8 @@
                     const quarterDiv = document.createElement('div');
                     quarterDiv.classList.add('quarter-item');
                     quarterDiv.innerHTML = `<strong>${data.name}</strong>
-                                            <button onclick="editQuarter('${doc.id}')">Edit</button>`;
+                                            <button onclick="editQuarter('${doc.id}')">Edit</button>
+                                            <button onclick="exportPlayerHTML('${data.name}')">Export Player HTML</button>`;
                     quartersList.appendChild(quarterDiv);
                 });
             }).catch(error => {
@@ -266,6 +269,53 @@
                     });
                 }
             });
+        }
+
+        // Function to export player HTML
+        function exportPlayerHTML(quarterName) {
+            const samples = [];
+            for (let i = 1; i <= 4; i++) {
+                const mashbill = document.getElementById(`mashbill-${i}`).value;
+                const proof = document.getElementById(`proof-${i}`).value;
+                const age = document.getElementById(`age-${i}`).value;
+                samples.push({ mashbill, proof, age });
+            }
+
+            const template = Handlebars.compile(`
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>{{name}} - Whiskey Challenge</title>
+                    <link rel="stylesheet" href="styles.css">
+                </head>
+                <body>
+                    <h1>{{name}} - Whiskey Challenge</h1>
+                    <div class="samples">
+                        {{#each samples}}
+                        <div class="sample">
+                            <h2>Sample {{@index}}</h2>
+                            <p>Mashbill: {{mashbill}}</p>
+                            <p>Proof: {{proof}}</p>
+                            <p>Age: {{age}}</p>
+                        </div>
+                        {{/each}}
+                    </div>
+                </body>
+                </html>
+            `);
+
+            const playerHTML = template({
+                name: quarterName,
+                samples: samples
+            });
+
+            const blob = new Blob([playerHTML], { type: "text/html" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `${quarterName}.html`;
+            link.click();
         }
 
         // Initialize quarters list
