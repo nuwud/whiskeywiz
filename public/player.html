@@ -5,15 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whiskey Challenge - Player</title>
 
+    <!-- Firebase CDN Scripts with correct module imports -->
     <script type="module">
-        // Import the necessary Firebase modules
+        // Import the necessary Firebase modules from the CDN
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
         import { getStorage } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js";
         import { getFunctions } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-functions.js";
-        
+
         // Your Firebase configuration object
         const firebaseConfig = {
             apiKey: "AIzaSyCqZMaGpJGf5veYgTXmytg1bLerva-of0U",
@@ -28,15 +29,10 @@
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app); // Initialize Firestore
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Ensure Firebase is initialized before using its services
-            const analytics = getAnalytics(app);
-            const db = getFirestore(app);
-            const auth = getAuth(app);
-            const storage = getStorage(app);
-            const functions = getFunctions(app);
-
             const quartersContainer = document.getElementById('quarters-container');
 
             // Function to create a sample input
@@ -111,7 +107,10 @@
             }
 
             // Fetch all quarters from Firestore
-            db.collection('quarters').get().then(snapshot => {
+            async function fetchQuarters() {
+                const quartersCollection = collection(db, 'quarters');
+                const snapshot = await getDocs(quartersCollection);
+                
                 if (snapshot.empty) {
                     console.log('No quarters found.');
                 } else {
@@ -120,7 +119,10 @@
                         createQuarterSection(quarterData, doc.id);
                     });
                 }
-            }).catch(error => console.error('Error fetching quarters:', error));
+            }
+
+            // Call the fetchQuarters function when the page loads
+            fetchQuarters().catch(error => console.error('Error fetching quarters:', error));
         });
     </script>
 
