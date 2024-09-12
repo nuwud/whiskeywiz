@@ -1,20 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whiskey Challenge - Player</title>
 
     <script type="module">
-        // Import the necessary Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-        import { getStorage } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js";
-        import { getFunctions } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-functions.js";
 
-        // Your Firebase configuration object
         const firebaseConfig = {
             apiKey: "AIzaSyCqZMaGpJGf5veYgTXmytg1bLerva-of0U",
             authDomain: "whiskeywiz2.firebaseapp.com",
@@ -26,23 +21,16 @@
             measurementId: "G-SK0TJJEPF5"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const db = getFirestore(app);
-        const auth = getAuth(app);
-        const storage = getStorage(app);
-        const functions = getFunctions(app);
 
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', async function () {
             const quartersContainer = document.getElementById('quarters-container');
 
-            // Function to create a sample input
             function createSampleInput(sampleIndex) {
                 const sampleDiv = document.createElement('div');
                 sampleDiv.classList.add('sample');
 
-                // Mashbill selector
                 const mashbillLabel = document.createElement('label');
                 mashbillLabel.innerText = `Sample ${sampleIndex + 1} - Select Mashbill: `;
                 const mashbillSelect = document.createElement('select');
@@ -53,7 +41,6 @@
                     mashbillSelect.appendChild(option);
                 });
 
-                // Proof slider
                 const proofLabel = document.createElement('label');
                 proofLabel.innerText = 'Guess Proof: ';
                 const proofSlider = document.createElement('input');
@@ -67,7 +54,6 @@
                     proofValue.innerText = proofSlider.value;
                 });
 
-                // Age slider
                 const ageLabel = document.createElement('label');
                 ageLabel.innerText = 'Guess Age: ';
                 const ageSlider = document.createElement('input');
@@ -81,16 +67,11 @@
                     ageValue.innerText = ageSlider.value;
                 });
 
-                // Append elements to sampleDiv
                 sampleDiv.appendChild(mashbillLabel);
                 sampleDiv.appendChild(mashbillSelect);
-                sampleDiv.appendChild(document.createElement('br'));
-
                 sampleDiv.appendChild(proofLabel);
                 sampleDiv.appendChild(proofSlider);
                 sampleDiv.appendChild(proofValue);
-                sampleDiv.appendChild(document.createElement('br'));
-
                 sampleDiv.appendChild(ageLabel);
                 sampleDiv.appendChild(ageSlider);
                 sampleDiv.appendChild(ageValue);
@@ -98,7 +79,6 @@
                 return sampleDiv;
             }
 
-            // Function to create a quarter section
             function createQuarterSection(quarterData, quarterId) {
                 const quarterDiv = document.createElement('div');
                 quarterDiv.classList.add('quarter');
@@ -108,15 +88,16 @@
                 quarterHeader.innerText = `Quarter: ${quarterData.name}`;
                 quarterDiv.appendChild(quarterHeader);
 
-                // Create 4 sample inputs
                 for (let i = 0; i < 4; i++) {
-                    quarterDiv.appendChild(createSampleInput(i));
+                    const column = document.createElement('div');
+                    column.classList.add('sample-column');
+                    column.appendChild(createSampleInput(i));
+                    quarterDiv.appendChild(column);
                 }
 
                 quartersContainer.appendChild(quarterDiv);
             }
 
-            // Fetch all quarters from Firestore
             const quartersSnapshot = await getDocs(collection(db, 'quarters'));
             if (quartersSnapshot.empty) {
                 console.log('No quarters found.');
@@ -130,14 +111,22 @@
     </script>
 
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .sample-column {
+            display: inline-block;
+            margin-right: 20px;
+        }
+        .sample {
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container">
         <h1>Whiskey Challenge</h1>
-        <div id="quarters-container">
-            <!-- Quarters and samples will be dynamically inserted here -->
-        </div>
+        <div id="quarters-container"></div>
     </div>
 </body>
+
 </html>
