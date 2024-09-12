@@ -101,6 +101,10 @@
             margin-top: 20px;
         }
     </style>
+
+    <!-- Use Firebase non-modular (compat) SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
 </head>
 
 <body>
@@ -205,102 +209,120 @@
             </div>
         </div>
 
-        <!-- Added space between the columns and the button -->
         <div class="spacing"></div>
 
-        <button type="submit">Save Quarter</button>
-        <button id="export-player-html" type="button">Export Player HTML</button>
+        <!-- Button to save the quarter -->
+        <button id="save-quarter-btn" type="submit">Save Quarter</button>
     </form>
 
-    <div id="quarters-list">
-        <h3>Available Quarters</h3>
-        <!-- Quarter list generated here -->
-    </div>
+    <!-- Section to display available quarters -->
+    <h3>Available Quarters</h3>
+    <div id="quarters-list"></div>
 
-    <!-- Firebase and Handlebars integration -->
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/handlebars/dist/handlebars.min.js"></script>
     <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqZMaGpJGf5veYgTXmytg1bLerva-of0U",
+            authDomain: "whiskeywiz2.firebaseapp.com",
+            databaseURL: "https://whiskeywiz2-default-rtdb.firebaseio.com",
+            projectId: "whiskeywiz2",
+            storageBucket: "whiskeywiz2.appspot.com",
+            messagingSenderId: "555320797929",
+            appId: "1:555320797929:web:0d4b062d7f2ab330fc1e78",
+            measurementId: "G-SK0TJJEPF5"
+        };
+
+        firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Dynamically generate quarters (2 years back to 3 years ahead)
-        const quarterSelect = document.getElementById('quarter-name');
+        // Populate the Select Quarter dropdown with months and years (2 years back to 3 years ahead)
+        const quarterNameSelect = document.getElementById('quarter-name');
         const currentYear = new Date().getFullYear();
-        const quarterNames = ["January", "March", "June", "September", "December"];
+        const currentMonth = new Date().getMonth();
+        const months = ['January', 'April', 'July', 'October'];
 
         for (let year = currentYear - 2; year <= currentYear + 3; year++) {
-            quarterNames.forEach(month => {
+            months.forEach((month, index) => {
                 const option = document.createElement('option');
                 option.value = `${month} ${year}`;
-                option.innerText = `${month} ${year}`;
-                quarterSelect.appendChild(option);
+                option.textContent = `${month} ${year}`;
+                quarterNameSelect.appendChild(option);
             });
         }
 
-        // Save quarter function
-        document.getElementById('quarter-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const quarterName = document.getElementById('quarter-name').value;
-            const samples = [];
-
-            // Collect all sample data
-            for (let i = 1; i <= 4; i++) {
-                const mashbill = document.getElementById(`mashbill-${i}`).value;
-                const proof = document.getElementById(`proof-${i}`).value;
-                const age = document.getElementById(`age-${i}`).value;
-
-                samples.push({ mashbill, proof, age });
-            }
-
-            // Save to Firestore
-            db.collection('quarters').doc(quarterName).set({
-                name: quarterName,
-                samples: samples
-            }).then(() => {
-                alert('Quarter saved successfully!');
-                fetchQuarters(); // Refresh quarter list
-            }).catch(error => {
-                console.error('Error saving quarter:', error);
-            });
-        });
-
-        // Fetch and display quarters
+        // Function to display available quarters from Firestore
         function fetchQuarters() {
             db.collection('quarters').get().then(snapshot => {
                 const quartersList = document.getElementById('quarters-list');
-                quartersList.innerHTML = '';
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const quarterDiv = document.createElement('div');
-                    quarterDiv.classList.add('quarter-item');
-                    quarterDiv.innerHTML = `<strong>${data.name}</strong>
-                                            <button onclick="editQuarter('${doc.id}')">Edit</button>
-                                            <button onclick="exportPlayerHTML('${data.name}')">Export Player HTML</button>`;
-                    quartersList.appendChild(quarterDiv);
-                });
+                quartersList.innerHTML = ''; // Clear previous entries
+                if (!snapshot.empty) {
+                    snapshot.forEach(doc => {
+                        const quarter = doc.data();
+                        const div = document.createElement('div');
+                        div.classList.add('quarter-item');
+                        div.innerHTML = `
+                            <strong>${quarter.name}</strong>
+                            <button onclick="editQuarter('${doc.id}')">Edit</button>
+                        `;
+                        quartersList.appendChild(div);
+                    });
+                } else {
+                    quartersList.innerHTML = '<p>No available quarters found.</p>';
+                }
             }).catch(error => {
                 console.error('Error fetching quarters:', error);
             });
         }
 
-        // Edit quarter function
-        function editQuarter(quarterId) {
+        // Fetch quarters on page load
+        fetchQuarters();
+
+        // Event listener to handle saving a quarter
+        const quarterForm = document.getElementById('quarter-form');
+        quarterForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const quarterName = quarterNameSelect.value;
+            const samples = [];
+
+            // Gather the sample inputs
+            for (let i = 1; i <= 4; i++) {
+                samples.push({
+                    mashbill: document.getElementById(`mashbill-${i}`).value,
+                    proof: document.getElementById(`proof-${i}`).value,
+                    age: document.getElementById(`age-${i}`).value
+                });
+            }
+
+            // Save the quarter to Firestore
+            db.collection('quarters').doc(quarterName).set({
+                name: quarterName,
+                samples: samples
+            }).then(() => {
+                alert('Quarter saved successfully!');
+                fetchQuarters(); // Refresh the available quarters list
+            }).catch(error => {
+                console.error('Error saving quarter:', error);
+            });
+        });
+
+        // Function to edit an existing quarter
+        window.editQuarter = function(quarterId) {
             db.collection('quarters').doc(quarterId).get().then(doc => {
                 if (doc.exists) {
-                    const data = doc.data();
-                    document.getElementById('quarter-name').value = data.name;
-                    data.samples.forEach((sample, index) => {
+                    const quarterData = doc.data();
+                    quarterNameSelect.value = quarterData.name;
+
+                    // Populate the sample inputs with the existing data
+                    quarterData.samples.forEach((sample, index) => {
                         document.getElementById(`mashbill-${index + 1}`).value = sample.mashbill;
                         document.getElementById(`proof-${index + 1}`).value = sample.proof;
                         document.getElementById(`age-${index + 1}`).value = sample.age;
                     });
                 }
+            }).catch(error => {
+                console.error('Error fetching quarter:', error);
             });
-        }
-
-        // Initialize quarters list
-        fetchQuarters();
+        };
     </script>
 </body>
 
