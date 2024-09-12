@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whiskey Challenge Admin</title>
-    <!-- Firebase CDN Scripts -->
-    <script type="module">
-        // Import the necessary Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-        import { getStorage } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js";
-        import { getFunctions } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-functions.js";
 
+    <!-- Firebase CDN Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-functions.js"></script>
+
+    <script>
         // Your Firebase configuration object
         const firebaseConfig = {
             apiKey: "AIzaSyCqZMaGpJGf5veYgTXmytg1bLerva-of0U",
@@ -27,15 +27,15 @@
         };
 
         // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
+        firebase.initializeApp(firebaseConfig);
 
         document.addEventListener('DOMContentLoaded', function() {
             // Ensure Firebase is initialized before using its services
-            const analytics = getAnalytics(app);
-            const db = getFirestore(app);
-            const auth = getAuth(app);
-            const storage = getStorage(app);
-            const functions = getFunctions(app);
+            const analytics = firebase.analytics();
+            const db = firebase.firestore();
+            const auth = firebase.auth();
+            const storage = firebase.storage();
+            const functions = firebase.functions();
 
             const quarterForm = document.getElementById('quarter-form');
             const samplesContainer = document.getElementById('samples-container');
@@ -156,7 +156,7 @@
             // Initialize quarters list
             fetchQuarters();
 
-            console.log('Firebase initialized:', app);
+            console.log('Firebase initialized:', firebase.app());
         });
     </script>
     <link rel="stylesheet" href="admin.css">
