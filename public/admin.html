@@ -12,7 +12,7 @@
         import { getFirestore } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
         import { getStorage } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js";
-        import { getDatabase } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+        import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
         import { getFunctions } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-functions.js";
 
         // Your Firebase configuration object
@@ -117,13 +117,19 @@
             function fetchQuarters() {
                 db.collection('quarters').get().then(snapshot => {
                     quartersList.innerHTML = '';
-                    snapshot.forEach(doc => {
-                        const quarterData = doc.data();
-                        const quarterDiv = document.createElement('div');
-                        quarterDiv.innerHTML = `<strong>${quarterData.name}</strong>
-                                                <button onclick="editQuarter('${doc.id}')">Edit</button>`;
-                        quartersList.appendChild(quarterDiv);
-                    });
+                    if (snapshot.empty) {
+                        console.log('No quarters found.');
+                    } else {
+                        snapshot.forEach(doc => {
+                            const quarterData = doc.data();
+                            const quarterDiv = document.createElement('div');
+                            quarterDiv.innerHTML = `<strong>${quarterData.name}</strong>
+                                                    <button onclick="editQuarter('${doc.id}')">Edit</button>`;
+                            quartersList.appendChild(quarterDiv);
+                        });
+                    }
+                }).catch(error => {
+                    console.error('Error fetching quarters:', error);
                 });
             }
 
@@ -141,7 +147,11 @@
                             sampleDiv.querySelector('input[type="number"]').value = sample.proof;
                             sampleDiv.querySelector('input[type="number"]').value = sample.age;
                         });
+                    } else {
+                        console.log('No such document!');
                     }
+                }).catch(error => {
+                    console.error('Error fetching document:', error);
                 });
             };
 

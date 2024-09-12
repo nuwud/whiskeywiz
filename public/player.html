@@ -114,23 +114,15 @@
 
             // Fetch all quarters from Firestore
             db.collection('quarters').get().then(snapshot => {
-                snapshot.forEach(doc => {
-                    const quarterData = doc.data();
-                    createQuarterSection(quarterData, doc.id);
-                });
-            }).catch(error => console.error('Error fetching quarters:', error));
-
-            // Example of fetching data from Realtime Database
-            const dbRef = ref(database);
-            get(child(dbRef, `some/path`)).then((snapshot) => {
-                if (snapshot.exists()) {
-                    console.log(snapshot.val());
+                if (snapshot.empty) {
+                    console.log('No quarters found.');
                 } else {
-                    console.log("No data available");
+                    snapshot.forEach(doc => {
+                        const quarterData = doc.data();
+                        createQuarterSection(quarterData, doc.id);
+                    });
                 }
-            }).catch((error) => {
-                console.error(error);
-            });
+            }).catch(error => console.error('Error fetching quarters:', error));
         });
     </script>
 
@@ -142,7 +134,5 @@
     <div id="quarters-container">
         <!-- Quarters and samples will be dynamically inserted here -->
     </div>
-
 </body>
-
 </html>
