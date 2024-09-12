@@ -1,0 +1,64 @@
+<script id="player-template" type="text/x-handlebars-template">
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{quarterName}} - Whiskey Challenge</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <h1>{{quarterName}} - Whiskey Challenge</h1>
+        <div id="game-container">
+            {{#each samples}}
+            <div class="sample">
+                <label>Select Mashbill for Sample {{@index}}:</label>
+                <select>
+                    <option value="Bourbon">Bourbon</option>
+                    <option value="Rye">Rye</option>
+                    <option value="Wheat">Wheat</option>
+                    <option value="Single Malt">Single Malt</option>
+                    <option value="Blend">Blend</option>
+                    <option value="Specialty">Specialty</option>
+                </select>
+
+                <label>Guess Proof:</label>
+                <input type="range" min="80" max="130" value="{{proof}}">
+                <span>{{proof}}</span>
+
+                <label>Guess Age:</label>
+                <input type="range" min="1" max="10" value="{{age}}">
+                <span>{{age}}</span>
+            </div>
+            {{/each}}
+
+            <button id="submit-btn">Submit Guesses</button>
+
+            <!-- Area to display the score -->
+            <div id="score-display">
+                <!-- The score will be shown here after submission -->
+            </div>
+        </div>
+
+        <script>
+            // Function to handle submission and score calculation
+            document.getElementById('submit-btn').addEventListener('click', function() {
+                const samples = document.querySelectorAll('.sample');
+                let totalScore = 0;
+
+                samples.forEach((sample, index) => {
+                    const proofGuess = sample.querySelector('input[type="range"]').value;
+                    const ageGuess = sample.querySelector('input[type="range"]').value;
+
+                    // Simple scoring logic (you can customize based on your actual game rules)
+                    totalScore += (Math.abs(proofGuess - 100) + Math.abs(ageGuess - 5)); // Example scoring rule
+                });
+
+                const scoreDisplay = document.getElementById('score-display');
+                scoreDisplay.innerText = `Your total score is: ${totalScore}`;
+            });
+        </script>
+
+    </body>
+    </html>
+</script>
