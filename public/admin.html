@@ -51,8 +51,14 @@
 
                 const mashbillLabel = document.createElement('label');
                 mashbillLabel.innerText = `Sample ${sampleIndex + 1} - Mashbill: `;
-                const mashbillInput = document.createElement('input');
-                mashbillInput.type = 'text';
+                const mashbillSelect = document.createElement('select');
+                const categories = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Blend', 'Specialty'];
+                categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.innerText = cat;
+                    mashbillSelect.appendChild(option);
+                });
 
                 const proofLabel = document.createElement('label');
                 proofLabel.innerText = 'Proof: ';
@@ -61,6 +67,9 @@
                 proofInput.min = '80';
                 proofInput.max = '130';
                 proofInput.value = '100';
+                const proofValue = document.createElement('span');
+                proofValue.innerText = proofInput.value;
+                proofInput.addEventListener('input', () => proofValue.innerText = proofInput.value);
 
                 const ageLabel = document.createElement('label');
                 ageLabel.innerText = 'Age: ';
@@ -69,14 +78,19 @@
                 ageInput.min = '1';
                 ageInput.max = '10';
                 ageInput.value = '5';
+                const ageValue = document.createElement('span');
+                ageValue.innerText = ageInput.value;
+                ageInput.addEventListener('input', () => ageValue.innerText = ageInput.value);
 
-                // Append elements stacked
+                // Append elements stacked vertically inside each div
                 sampleDiv.appendChild(mashbillLabel);
-                sampleDiv.appendChild(mashbillInput);
+                sampleDiv.appendChild(mashbillSelect);
                 sampleDiv.appendChild(proofLabel);
                 sampleDiv.appendChild(proofInput);
+                sampleDiv.appendChild(proofValue);
                 sampleDiv.appendChild(ageLabel);
                 sampleDiv.appendChild(ageInput);
+                sampleDiv.appendChild(ageValue);
 
                 return sampleDiv;
             }
@@ -98,7 +112,7 @@
                 // Gather sample answers
                 document.querySelectorAll('.sample-answer').forEach((sampleDiv) => {
                     samples.push({
-                        mashbill: sampleDiv.querySelector('input[type="text"]').value,
+                        mashbill: sampleDiv.querySelector('select').value,
                         proof: sampleDiv.querySelector('input[type="range"]').value,
                         age: sampleDiv.querySelector('input[type="range"]').value
                     });
@@ -137,7 +151,10 @@
             display: inline-block;
             margin-right: 20px;
         }
+
         .sample-answer {
+            display: flex;
+            flex-direction: column;
             margin-bottom: 15px;
         }
     </style>
