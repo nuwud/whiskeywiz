@@ -5,15 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whiskey Challenge Admin</title>
 
-    <!-- Firebase CDN Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-functions.js"></script>
+    <!-- Firebase CDN Scripts with correct module imports -->
+    <script type="module">
+        // Import the necessary Firebase modules from the CDN
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+        import { getStorage } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js";
+        import { getFunctions } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-functions.js";
 
-    <script>
         // Your Firebase configuration object
         const firebaseConfig = {
             apiKey: "AIzaSyCqZMaGpJGf5veYgTXmytg1bLerva-of0U",
@@ -27,16 +28,12 @@
         };
 
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
 
+        // DOM elements
         document.addEventListener('DOMContentLoaded', function() {
-            // Ensure Firebase is initialized before using its services
-            const analytics = firebase.analytics();
-            const db = firebase.firestore();
-            const auth = firebase.auth();
-            const storage = firebase.storage();
-            const functions = firebase.functions();
-
             const quarterForm = document.getElementById('quarter-form');
             const samplesContainer = document.getElementById('samples-container');
             const quarterNameInput = document.getElementById('quarter-name');
@@ -84,7 +81,7 @@
             }
 
             // Submit form to save quarter
-            quarterForm.addEventListener('submit', (e) => {
+            quarterForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const quarterName = quarterNameInput.value.trim();
                 const samples = [];
@@ -98,27 +95,29 @@
                     });
                 });
 
-                // Save quarter and sample answers to Firestore
-                db.collection('quarters').doc(quarterName).set({
-                    name: quarterName,
-                    samples: samples
-                }).then(() => {
+                try {
+                    // Save quarter and sample answers to Firestore
+                    await setDoc(doc(db, 'quarters', quarterName), {
+                        name: quarterName,
+                        samples: samples
+                    });
                     alert('Quarter saved successfully!');
                     quarterForm.reset();
                     fetchQuarters(); // Refresh quarters list
-                }).catch(error => {
+                } catch (error) {
                     console.error('Error saving quarter:', error);
-                });
+                }
             });
 
             // Fetch and display quarters
-            function fetchQuarters() {
-                db.collection('quarters').get().then(snapshot => {
-                    quartersList.innerHTML = '';
-                    if (snapshot.empty) {
+            async function fetchQuarters() {
+                quartersList.innerHTML = ''; // Clear the list first
+                try {
+                    const querySnapshot = await getDocs(collection(db, 'quarters'));
+                    if (querySnapshot.empty) {
                         console.log('No quarters found.');
                     } else {
-                        snapshot.forEach(doc => {
+                        querySnapshot.forEach((doc) => {
                             const quarterData = doc.data();
                             const quarterDiv = document.createElement('div');
                             quarterDiv.innerHTML = `<strong>${quarterData.name}</strong>
@@ -126,16 +125,18 @@
                             quartersList.appendChild(quarterDiv);
                         });
                     }
-                }).catch(error => {
+                } catch (error) {
                     console.error('Error fetching quarters:', error);
-                });
+                }
             }
 
             // Edit an existing quarter
-            window.editQuarter = function(quarterId) {
-                db.collection('quarters').doc(quarterId).get().then(doc => {
-                    if (doc.exists) {
-                        const quarterData = doc.data();
+            window.editQuarter = async function(quarterId) {
+                try {
+                    const docRef = doc(db, 'quarters', quarterId);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        const quarterData = docSnap.data();
                         quarterNameInput.value = quarterData.name;
 
                         // Populate samples with existing data
@@ -148,15 +149,15 @@
                     } else {
                         console.log('No such document!');
                     }
-                }).catch(error => {
+                } catch (error) {
                     console.error('Error fetching document:', error);
-                });
+                }
             };
 
             // Initialize quarters list
             fetchQuarters();
 
-            console.log('Firebase initialized:', firebase.app());
+            console.log('Firebase initialized:', app);
         });
     </script>
     <link rel="stylesheet" href="admin.css">
