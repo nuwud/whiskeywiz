@@ -96,6 +96,10 @@
         .quarter-item button:hover {
             background-color: #0056b3;
         }
+
+        .spacing {
+            margin-top: 20px;
+        }
     </style>
 </head>
 
@@ -201,6 +205,9 @@
             </div>
         </div>
 
+        <!-- Added space between the columns and the button -->
+        <div class="spacing"></div>
+
         <button type="submit">Save Quarter</button>
         <button id="export-player-html" type="button">Export Player HTML</button>
     </form>
@@ -292,57 +299,9 @@
             });
         }
 
-        // Function to export player HTML
-        function exportPlayerHTML(quarterName) {
-            const samples = [];
-            for (let i = 1; i <= 4; i++) {
-                const mashbill = document.getElementById(`mashbill-${i}`).value;
-                const proof = document.getElementById(`proof-${i}`).value;
-                const age = document.getElementById(`age-${i}`).value;
-                samples.push({ mashbill, proof, age });
-            }
-
-            const template = Handlebars.compile(`
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>{{name}} - Whiskey Challenge</title>
-                    <link rel="stylesheet" href="styles.css">
-                </head>
-                <body>
-                    <h1>{{name}} - Whiskey Challenge</h1>
-                    <div class="samples">
-                        {{#each samples}}
-                        <div class="sample">
-                            <h2>Sample {{@index}}</h2>
-                            <p>Mashbill: {{mashbill}}</p>
-                            <p>Proof: {{proof}}</p>
-                            <p>Age: {{age}}</p>
-                        </div>
-                        {{/each}}
-                    </div>
-                </body>
-                </html>
-            `);
-
-            const playerHTML = template({
-                name: quarterName,
-                samples: samples
-            });
-
-            const blob = new Blob([playerHTML], { type: "text/html" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `${quarterName}.html`;
-            link.click();
-        }
-
         // Initialize quarters list
         fetchQuarters();
     </script>
 </body>
-
 
 </html>
