@@ -144,7 +144,6 @@
                 <span id="age-value-1">5</span>
             </div>
 
-            <!-- Repeat for each of the four samples -->
             <!-- Sample 2 -->
             <div class="sample">
                 <label for="mashbill-2">Mashbill:</label>
@@ -166,6 +165,7 @@
                 <span id="age-value-2">5</span>
             </div>
 
+            <!-- Repeat for samples 3 and 4 -->
             <!-- Sample 3 -->
             <div class="sample">
                 <label for="mashbill-3">Mashbill:</label>
@@ -213,6 +213,9 @@
 
         <!-- Button to save the quarter -->
         <button id="save-quarter-btn" type="submit">Save Quarter</button>
+
+        <!-- Button to generate the player HTML file -->
+        <button id="generate-player-btn" type="button">Generate Player HTML</button>
     </form>
 
     <!-- Section to display available quarters -->
@@ -235,14 +238,13 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Populate the Select Quarter dropdown with months and years (2 years back to 3 years ahead)
+        // Populate the Select Quarter dropdown
         const quarterNameSelect = document.getElementById('quarter-name');
         const currentYear = new Date().getFullYear();
-        const currentMonth = new Date().getMonth();
         const months = ['January', 'April', 'July', 'October'];
 
         for (let year = currentYear - 2; year <= currentYear + 3; year++) {
-            months.forEach((month, index) => {
+            months.forEach((month) => {
                 const option = document.createElement('option');
                 option.value = `${month} ${year}`;
                 option.textContent = `${month} ${year}`;
@@ -250,7 +252,7 @@
             });
         }
 
-        // Function to display available quarters from Firestore
+        // Fetch quarters and display them
         function fetchQuarters() {
             db.collection('quarters').get().then(snapshot => {
                 const quartersList = document.getElementById('quarters-list');
@@ -274,17 +276,14 @@
             });
         }
 
-        // Fetch quarters on page load
-        fetchQuarters();
+        fetchQuarters(); // Fetch quarters on page load
 
-        // Event listener to handle saving a quarter
-        const quarterForm = document.getElementById('quarter-form');
-        quarterForm.addEventListener('submit', (e) => {
+        // Save a quarter to Firestore
+        document.getElementById('quarter-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const quarterName = quarterNameSelect.value;
             const samples = [];
 
-            // Gather the sample inputs
             for (let i = 1; i <= 4; i++) {
                 samples.push({
                     mashbill: document.getElementById(`mashbill-${i}`).value,
@@ -293,26 +292,25 @@
                 });
             }
 
-            // Save the quarter to Firestore
             db.collection('quarters').doc(quarterName).set({
                 name: quarterName,
                 samples: samples
             }).then(() => {
                 alert('Quarter saved successfully!');
-                fetchQuarters(); // Refresh the available quarters list
+                fetchQuarters(); // Refresh the quarters list
             }).catch(error => {
                 console.error('Error saving quarter:', error);
             });
         });
 
-        // Function to edit an existing quarter
+        // Edit an existing quarter
         window.editQuarter = function(quarterId) {
             db.collection('quarters').doc(quarterId).get().then(doc => {
                 if (doc.exists) {
                     const quarterData = doc.data();
                     quarterNameSelect.value = quarterData.name;
 
-                    // Populate the sample inputs with the existing data
+                    // Populate the sample inputs with existing data
                     quarterData.samples.forEach((sample, index) => {
                         document.getElementById(`mashbill-${index + 1}`).value = sample.mashbill;
                         document.getElementById(`proof-${index + 1}`).value = sample.proof;
@@ -323,6 +321,65 @@
                 console.error('Error fetching quarter:', error);
             });
         };
+
+        // Generate the player HTML file for the selected quarter
+        document.getElementById('generate-player-btn').addEventListener('click', () => {
+            const quarterName = quarterNameSelect.value;
+            db.collection('quarters').doc(quarterName).get().then(doc => {
+                if (doc.exists) {
+                    const quarterData = doc.data();
+                    const playerHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whiskey Challenge - ${quarterName}</title>
+    <style>
+        /* Add your styles for player page here */
+    </style>
+</head>
+<body>
+    <h1>Whiskey Challenge - ${quarterName}</h1>
+    <form id="player-form">
+        ${quarterData.samples.map((sample, index) => `
+            <div>
+                <h3>Sample ${index + 1}</h3>
+                <label for="mashbill-${index + 1}">Mashbill:</label>
+                <select id="mashbill-${index + 1}">
+                    <option value="Bourbon" ${sample.mashbill === 'Bourbon' ? 'selected' : ''}>Bourbon</option>
+                    <option value="Rye" ${sample.mashbill === 'Rye' ? 'selected' : ''}>Rye</option>
+                    <option value="Wheat" ${sample.mashbill === 'Wheat' ? 'selected' : ''}>Wheat</option>
+                    <option value="Single Malt" ${sample.mashbill === 'Single Malt' ? 'selected' : ''}>Single Malt</option>
+                    <option value="Blend" ${sample.mashbill === 'Blend' ? 'selected' : ''}>Blend</option>
+                    <option value="Specialty" ${sample.mashbill === 'Specialty' ? 'selected' : ''}>Specialty</option>
+                </select>
+
+                <label for="proof-${index + 1}">Proof:</label>
+                <input type="range" id="proof-${index + 1}" min="80" max="130" value="${sample.proof}">
+                <span id="proof-value-${index + 1}">${sample.proof}</span>
+
+                <label for="age-${index + 1}">Age:</label>
+                <input type="range" id="age-${index + 1}" min="1" max="10" value="${sample.age}">
+                <span id="age-value-${index + 1}">${sample.age}</span>
+            </div>
+        `).join('')}
+        <button type="submit">Submit Guesses</button>
+    </form>
+</body>
+</html>
+                    `;
+
+                    const blob = new Blob([playerHtml], { type: 'text/html' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `whiskey-challenge-${quarterName.replace(/\s+/g, '-').toLowerCase()}.html`;
+                    link.click();
+                }
+            }).catch(error => {
+                console.error('Error generating player HTML:', error);
+            });
+        });
     </script>
 </body>
 
