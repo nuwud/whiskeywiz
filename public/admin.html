@@ -10,7 +10,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
-        import { getStorage, ref, uploadString, deleteObject } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCqZMaGpJGf5veYgTXmytg1bLerva-of0U",
@@ -24,7 +23,6 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const storage = getStorage(app);
 
         document.addEventListener('DOMContentLoaded', async function () {
             const quarterForm = document.getElementById('quarter-form');
@@ -32,7 +30,6 @@
             const quarterNameInput = document.getElementById('quarter-name');
             const quartersList = document.getElementById('quarters-list');
             const generateButton = document.getElementById('generate-button');
-            const deleteButton = document.getElementById('delete-button');
 
             // Function to create sample answer input fields
             function createSampleAnswerInputs(sampleIndex) {
@@ -114,7 +111,7 @@
                 });
             }
 
-            // Generate HTML for the selected quarter
+            // Generate HTML for the selected quarter and trigger download
             generateButton.addEventListener('click', async () => {
                 const selectedQuarterId = quartersList.value;
                 if (!selectedQuarterId) {
@@ -126,8 +123,7 @@
                 if (quarterDoc.exists()) {
                     const quarterData = quarterDoc.data();
                     const generatedHtml = createPlayerHTML(quarterData);
-                    await uploadGeneratedHTML(selectedQuarterId, generatedHtml);
-                    alert('Player HTML generated and uploaded.');
+                    downloadHTML(generatedHtml, `${selectedQuarterId}.html`);
                 } else {
                     alert('Quarter data not found.');
                 }
@@ -146,9 +142,9 @@
                     </head>
                     <body>
                         <h1>Whiskey Challenge - ${quarterData.name}</h1>
-                        <div id="game-content">
+                        <div id="game-content" style="display: flex;">
                             ${quarterData.samples.map((sample, index) => `
-                                <div class="sample">
+                                <div class="sample" style="flex: 1; padding: 10px; border: 1px solid #ccc;">
                                     <h3>Sample ${index + 1}</h3>
                                     <p>Mashbill: ${sample.mashbill}</p>
                                     <p>Proof: ${sample.proof}</p>
@@ -160,29 +156,14 @@
                 `;
             }
 
-            // Upload the generated HTML to Firebase Storage
-            async function uploadGeneratedHTML(quarterId, htmlContent) {
-                const htmlRef = ref(storage, `${quarterId}.html`);
-                await uploadString(htmlRef, htmlContent, 'raw', { contentType: 'text/html' });
+            // Trigger the download of the generated HTML file
+            function downloadHTML(htmlContent, fileName) {
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = fileName;
+                link.click();
             }
-
-            // Delete the generated HTML file from Firebase Storage
-            deleteButton.addEventListener('click', async () => {
-                const selectedQuarterId = quartersList.value;
-                if (!selectedQuarterId) {
-                    alert('Please select a quarter to delete.');
-                    return;
-                }
-
-                const htmlRef = ref(storage, `${selectedQuarterId}.html`);
-                try {
-                    await deleteObject(htmlRef);
-                    alert('Player HTML deleted.');
-                } catch (error) {
-                    console.error('Error deleting file:', error);
-                    alert('Failed to delete the player HTML.');
-                }
-            });
 
             // Load quarters on page load
             loadQuarterOptions();
@@ -194,8 +175,21 @@
         .sample-answer {
             margin-bottom: 10px;
         }
+
+        /* Style for 4 column layout */
+        #samples-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .sample-answer {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
         .controls {
-            margin-top: 10px;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -216,7 +210,7 @@
             <!-- Add more years dynamically here -->
         </select>
 
-        <h3>Set Answers for 4 Samples:</h3>
+        <h3>Set Answers for 4 Samples (Side by Side):</h3>
         <div id="samples-container">
             <!-- Sample answer inputs will be dynamically added here -->
         </div>
@@ -232,7 +226,6 @@
             <!-- Quarters will be dynamically loaded here -->
         </select>
         <button id="generate-button">Generate Player HTML</button>
-        <button id="delete-button">Delete Player HTML</button>
     </div>
 </body>
 
