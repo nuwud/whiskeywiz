@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,21 +11,27 @@
             padding: 20px;
             background-color: #f4f4f4;
         }
-        h1, h2 {
+
+        h1,
+        h2 {
             text-align: center;
         }
+
         form {
             margin-bottom: 20px;
         }
+
         .form-group {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
+
         .samples-container {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
+            gap: 15px;
             margin-top: 20px;
         }
+
         .sample {
             flex: 1;
             background-color: #fff;
@@ -33,19 +40,23 @@
             border-radius: 5px;
             text-align: center;
         }
+
         .sample label {
             display: block;
             margin-bottom: 5px;
         }
+
         .sample input[type="range"],
         .sample select {
             width: 100%;
             margin-bottom: 10px;
         }
+
         .sample span {
             display: block;
             margin-bottom: 10px;
         }
+
         button {
             display: block;
             width: 100%;
@@ -55,13 +66,17 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            margin-bottom: 10px;
         }
+
         button:hover {
             background-color: #218838;
         }
+
         #quarters-list {
             margin-top: 20px;
         }
+
         .quarter-item {
             background-color: #fff;
             padding: 10px;
@@ -69,6 +84,7 @@
             border-radius: 5px;
             margin-bottom: 10px;
         }
+
         .quarter-item button {
             background-color: #007bff;
             border: none;
@@ -76,11 +92,13 @@
             padding: 5px 10px;
             cursor: pointer;
         }
+
         .quarter-item button:hover {
             background-color: #0056b3;
         }
     </style>
 </head>
+
 <body>
     <h1>Admin - Whiskey Challenge</h1>
     <h2>Create or Edit Quarters</h2>
@@ -97,6 +115,7 @@
         <h3>Set Answers for 4 Samples:</h3>
 
         <div class="samples-container">
+            <!-- Sample 1 -->
             <div class="sample">
                 <label for="mashbill-1">Mashbill:</label>
                 <select id="mashbill-1">
@@ -109,15 +128,16 @@
                 </select>
 
                 <label for="proof-1">Proof:</label>
-                <input type="range" id="proof-1" min="80" max="130">
+                <input type="range" id="proof-1" min="80" max="130" value="100">
                 <span id="proof-value-1">100</span>
 
                 <label for="age-1">Age:</label>
-                <input type="range" id="age-1" min="1" max="10">
+                <input type="range" id="age-1" min="1" max="10" value="5">
                 <span id="age-value-1">5</span>
             </div>
 
             <!-- Repeat for each of the four samples -->
+            <!-- Sample 2 -->
             <div class="sample">
                 <label for="mashbill-2">Mashbill:</label>
                 <select id="mashbill-2">
@@ -130,14 +150,15 @@
                 </select>
 
                 <label for="proof-2">Proof:</label>
-                <input type="range" id="proof-2" min="80" max="130">
+                <input type="range" id="proof-2" min="80" max="130" value="100">
                 <span id="proof-value-2">100</span>
 
                 <label for="age-2">Age:</label>
-                <input type="range" id="age-2" min="1" max="10">
+                <input type="range" id="age-2" min="1" max="10" value="5">
                 <span id="age-value-2">5</span>
             </div>
 
+            <!-- Sample 3 -->
             <div class="sample">
                 <label for="mashbill-3">Mashbill:</label>
                 <select id="mashbill-3">
@@ -150,14 +171,15 @@
                 </select>
 
                 <label for="proof-3">Proof:</label>
-                <input type="range" id="proof-3" min="80" max="130">
+                <input type="range" id="proof-3" min="80" max="130" value="100">
                 <span id="proof-value-3">100</span>
 
                 <label for="age-3">Age:</label>
-                <input type="range" id="age-3" min="1" max="10">
+                <input type="range" id="age-3" min="1" max="10" value="5">
                 <span id="age-value-3">5</span>
             </div>
 
+            <!-- Sample 4 -->
             <div class="sample">
                 <label for="mashbill-4">Mashbill:</label>
                 <select id="mashbill-4">
@@ -170,11 +192,11 @@
                 </select>
 
                 <label for="proof-4">Proof:</label>
-                <input type="range" id="proof-4" min="80" max="130">
+                <input type="range" id="proof-4" min="80" max="130" value="100">
                 <span id="proof-value-4">100</span>
 
                 <label for="age-4">Age:</label>
-                <input type="range" id="age-4" min="1" max="10">
+                <input type="range" id="age-4" min="1" max="10" value="5">
                 <span id="age-value-4">5</span>
             </div>
         </div>
@@ -198,7 +220,6 @@
         // Dynamically generate quarters (2 years back to 3 years ahead)
         const quarterSelect = document.getElementById('quarter-name');
         const currentYear = new Date().getFullYear();
-        const currentMonth = new Date().getMonth();
         const quarterNames = ["January", "March", "June", "September", "December"];
 
         for (let year = currentYear - 2; year <= currentYear + 3; year++) {
@@ -211,7 +232,7 @@
         }
 
         // Save quarter function
-        document.getElementById('quarter-form').addEventListener('submit', function(e) {
+        document.getElementById('quarter-form').addEventListener('submit', function (e) {
             e.preventDefault();
             const quarterName = document.getElementById('quarter-name').value;
             const samples = [];
@@ -322,4 +343,5 @@
         fetchQuarters();
     </script>
 </body>
+
 </html>
