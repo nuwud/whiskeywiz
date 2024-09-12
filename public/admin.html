@@ -1,210 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whiskey Challenge Admin</title>
-    
-    <!-- Firebase and Handlebars CDN Scripts -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-        import { getStorage } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js";
-        import { getFunctions } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-functions.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCqZMaGpJGf5veYgTXmytg1bLerva-of0U",
-            authDomain: "whiskeywiz2.firebaseapp.com",
-            databaseURL: "https://whiskeywiz2-default-rtdb.firebaseio.com",
-            projectId: "whiskeywiz2",
-            storageBucket: "whiskeywiz2.appspot.com",
-            messagingSenderId: "555320797929",
-            appId: "1:555320797929:web:0d4b062d7f2ab330fc1e78",
-            measurementId: "G-SK0TJJEPF5"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-    </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.min.js"></script>
-
-    <link rel="stylesheet" href="admin.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        .samples-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .sample {
+            flex: 1;
+            background-color: #fff;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .sample label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .sample input[type="range"],
+        .sample select {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .sample span {
+            display: block;
+            margin-bottom: 10px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #quarters-list {
+            margin-top: 20px;
+        }
+        .quarter-item {
+            background-color: #fff;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .quarter-item button {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .quarter-item button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
-
 <body>
     <h1>Admin - Whiskey Challenge</h1>
     <h2>Create or Edit Quarters</h2>
 
+    <!-- Form to create a new quarter -->
     <form id="quarter-form">
-        <!-- Select month/year for quarter -->
-        <label for="quarter-name">Select Quarter:</label>
-        <select id="quarter-name">
-            <option value="Q1-2024">January 2024</option>
-            <option value="Q2-2024">April 2024</option>
-            <option value="Q3-2024">July 2024</option>
-            <option value="Q4-2024">October 2024</option>
-        </select>
+        <div class="form-group">
+            <label for="quarter-name">Select Quarter (Month and Year):</label>
+            <select id="quarter-name" required>
+                <!-- Dynamically generate the years and quarters -->
+                <option value="January 2024">January 2024</option>
+                <option value="March 2024">March 2024</option>
+                <option value="June 2024">June 2024</option>
+                <option value="September 2024">September 2024</option>
+                <option value="December 2024">December 2024</option>
+                <!-- Add more options going back and forward in years -->
+            </select>
+        </div>
 
         <h3>Set Answers for 4 Samples:</h3>
 
-        <div id="samples-container">
-            <!-- Sample answer inputs will be dynamically added here -->
+        <div class="samples-container">
+            <div class="sample">
+                <label for="mashbill-1">Mashbill:</label>
+                <select id="mashbill-1">
+                    <option value="Bourbon">Bourbon</option>
+                    <option value="Rye">Rye</option>
+                    <option value="Wheat">Wheat</option>
+                    <option value="Single Malt">Single Malt</option>
+                    <option value="Blend">Blend</option>
+                    <option value="Specialty">Specialty</option>
+                </select>
+
+                <label for="proof-1">Proof:</label>
+                <input type="range" id="proof-1" min="80" max="130">
+                <span id="proof-value-1">100</span>
+
+                <label for="age-1">Age:</label>
+                <input type="range" id="age-1" min="1" max="10">
+                <span id="age-value-1">5</span>
+            </div>
+
+            <!-- Repeat for each of the four samples -->
+            <div class="sample">
+                <label for="mashbill-2">Mashbill:</label>
+                <select id="mashbill-2">
+                    <option value="Bourbon">Bourbon</option>
+                    <option value="Rye">Rye</option>
+                    <option value="Wheat">Wheat</option>
+                    <option value="Single Malt">Single Malt</option>
+                    <option value="Blend">Blend</option>
+                    <option value="Specialty">Specialty</option>
+                </select>
+
+                <label for="proof-2">Proof:</label>
+                <input type="range" id="proof-2" min="80" max="130">
+                <span id="proof-value-2">100</span>
+
+                <label for="age-2">Age:</label>
+                <input type="range" id="age-2" min="1" max="10">
+                <span id="age-value-2">5</span>
+            </div>
+
+            <div class="sample">
+                <label for="mashbill-3">Mashbill:</label>
+                <select id="mashbill-3">
+                    <option value="Bourbon">Bourbon</option>
+                    <option value="Rye">Rye</option>
+                    <option value="Wheat">Wheat</option>
+                    <option value="Single Malt">Single Malt</option>
+                    <option value="Blend">Blend</option>
+                    <option value="Specialty">Specialty</option>
+                </select>
+
+                <label for="proof-3">Proof:</label>
+                <input type="range" id="proof-3" min="80" max="130">
+                <span id="proof-value-3">100</span>
+
+                <label for="age-3">Age:</label>
+                <input type="range" id="age-3" min="1" max="10">
+                <span id="age-value-3">5</span>
+            </div>
+
+            <div class="sample">
+                <label for="mashbill-4">Mashbill:</label>
+                <select id="mashbill-4">
+                    <option value="Bourbon">Bourbon</option>
+                    <option value="Rye">Rye</option>
+                    <option value="Wheat">Wheat</option>
+                    <option value="Single Malt">Single Malt</option>
+                    <option value="Blend">Blend</option>
+                    <option value="Specialty">Specialty</option>
+                </select>
+
+                <label for="proof-4">Proof:</label>
+                <input type="range" id="proof-4" min="80" max="130">
+                <span id="proof-value-4">100</span>
+
+                <label for="age-4">Age:</label>
+                <input type="range" id="age-4" min="1" max="10">
+                <span id="age-value-4">5</span>
+            </div>
         </div>
 
         <button type="submit">Save Quarter</button>
     </form>
 
-    <div id="quarters-list"></div>
+    <div id="quarters-list">
+        <h3>Available Quarters</h3>
+        <!-- Quarter list generated here -->
+    </div>
 
-    <!-- Handlebars Template for generating Player HTML -->
-    <script id="player-template" type="text/x-handlebars-template">
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>{{quarterName}} - Whiskey Challenge</title>
-            <link rel="stylesheet" href="styles.css">
-        </head>
-        <body>
-            <h1>{{quarterName}} - Whiskey Challenge</h1>
-            <div id="game-container">
-                {{#each samples}}
-                <div class="sample">
-                    <label>Select Mashbill for Sample {{@index}}:</label>
-                    <select>
-                        <option value="Bourbon">Bourbon</option>
-                        <option value="Rye">Rye</option>
-                        <option value="Wheat">Wheat</option>
-                        <option value="Single Malt">Single Malt</option>
-                        <option value="Blend">Blend</option>
-                        <option value="Specialty">Specialty</option>
-                    </select>
-
-                    <label>Guess Proof:</label>
-                    <input type="range" min="80" max="130" value="{{proof}}">
-                    <span>{{proof}}</span>
-
-                    <label>Guess Age:</label>
-                    <input type="range" min="1" max="10" value="{{age}}">
-                    <span>{{age}}</span>
-                </div>
-                {{/each}}
-            </div>
-        </body>
-        </html>
-    </script>
-
+    <!-- Firebase and Handlebars integration -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/handlebars/dist/handlebars.min.js"></script>
     <script>
-        const quarterForm = document.getElementById('quarter-form');
-        const samplesContainer = document.getElementById('samples-container');
-        const quartersList = document.getElementById('quarters-list');
-        const quarterNameInput = document.getElementById('quarter-name');
-        const playerTemplateSource = document.getElementById('player-template').innerHTML;
-        const playerTemplate = Handlebars.compile(playerTemplateSource);
-
-        function createSampleAnswerInputs(sampleIndex) {
-            const sampleDiv = document.createElement('div');
-            sampleDiv.classList.add('sample-answer');
-
-            const mashbillLabel = document.createElement('label');
-            mashbillLabel.innerText = `Sample ${sampleIndex + 1} - Mashbill: `;
-            const mashbillInput = document.createElement('input');
-            mashbillInput.type = 'text';
-
-            const proofLabel = document.createElement('label');
-            proofLabel.innerText = 'Proof: ';
-            const proofInput = document.createElement('input');
-            proofInput.type = 'number';
-
-            const ageLabel = document.createElement('label');
-            ageLabel.innerText = 'Age: ';
-            const ageInput = document.createElement('input');
-            ageInput.type = 'number';
-
-            sampleDiv.appendChild(mashbillLabel);
-            sampleDiv.appendChild(mashbillInput);
-            sampleDiv.appendChild(document.createElement('br'));
-
-            sampleDiv.appendChild(proofLabel);
-            sampleDiv.appendChild(proofInput);
-            sampleDiv.appendChild(document.createElement('br'));
-
-            sampleDiv.appendChild(ageLabel);
-            sampleDiv.appendChild(ageInput);
-            sampleDiv.appendChild(document.createElement('br'));
-
-            return sampleDiv;
-        }
-
-        for (let i = 0; i < 4; i++) {
-            samplesContainer.appendChild(createSampleAnswerInputs(i));
-        }
-
-        quarterForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const quarterName = quarterNameInput.value.trim();
-            const samples = [];
-
-            document.querySelectorAll('.sample-answer').forEach((sampleDiv) => {
-                samples.push({
-                    mashbill: sampleDiv.querySelector('input[type="text"]').value,
-                    proof: sampleDiv.querySelector('input[type="number"]').value,
-                    age: sampleDiv.querySelector('input[type="number"]').value
-                });
+        const db = firebase.firestore();
+        
+        // Event listeners for range sliders to update displayed value
+        document.querySelectorAll('input[type="range"]').forEach(rangeInput => {
+            rangeInput.addEventListener('input', function() {
+                const valueSpan = this.nextElementSibling;
+                valueSpan.innerText = this.value;
             });
-
-            await setDoc(doc(db, 'quarters', quarterName), {
-                name: quarterName,
-                samples: samples
-            });
-
-            alert('Quarter saved successfully!');
-            quarterForm.reset();
-            fetchQuarters(); // Refresh quarters list
-
-            const playerHTML = playerTemplate({ quarterName: quarterName, samples: samples });
-            const blob = new Blob([playerHTML], { type: 'text/html' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `${quarterName}.html`;
-            link.click();
         });
 
-        async function fetchQuarters() {
-            const snapshot = await getDocs(collection(db, 'quarters'));
-            quartersList.innerHTML = '';
-            snapshot.forEach((doc) => {
-                const quarterData = doc.data();
-                const quarterDiv = document.createElement('div');
-                quarterDiv.innerHTML = `<strong>${quarterData.name}</strong>
-                                        <button onclick="editQuarter('${doc.id}')">Edit</button>`;
-                quartersList.appendChild(quarterDiv);
+        // Save quarter function
+        document.getElementById('quarter-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const quarterName = document.getElementById('quarter-name').value;
+            const samples = [];
+
+            // Collect all sample data
+            for (let i = 1; i <= 4; i++) {
+                const mashbill = document.getElementById(`mashbill-${i}`).value;
+                const proof = document.getElementById(`proof-${i}`).value;
+                const age = document.getElementById(`age-${i}`).value;
+
+                samples.push({ mashbill, proof, age });
+            }
+
+            // Save to Firestore
+            db.collection('quarters').doc(quarterName).set({
+                name: quarterName,
+                samples
+            }).then(() => {
+                alert('Quarter saved successfully!');
+                fetchQuarters(); // Refresh quarter list
+            }).catch(error => {
+                console.error('Error saving quarter:', error);
+            });
+        });
+
+        // Fetch and display quarters
+        function fetchQuarters() {
+            db.collection('quarters').get().then(snapshot => {
+                const quartersList = document.getElementById('quarters-list');
+                quartersList.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const quarterDiv = document.createElement('div');
+                    quarterDiv.classList.add('quarter-item');
+                    quarterDiv.innerHTML = `<strong>${data.name}</strong>
+                                            <button onclick="editQuarter('${doc.id}')">Edit</button>`;
+                    quartersList.appendChild(quarterDiv);
+                });
+            }).catch(error => {
+                console.error('Error fetching quarters:', error);
             });
         }
 
-        window.editQuarter = async function(quarterId) {
-            const docSnap = await getDoc(doc(db, 'quarters', quarterId));
-            if (docSnap.exists()) {
-                const quarterData = docSnap.data();
-                quarterNameInput.value = quarterData.name;
+        // Edit quarter function
+        function editQuarter(quarterId) {
+            db.collection('quarters').doc(quarterId).get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('quarter-name').value = data.name;
+                    data.samples.forEach((sample, index) => {
+                        document.getElementById(`mashbill-${index + 1}`).value = sample.mashbill;
+                        document.getElementById(`proof-${index + 1}`).value = sample.proof;
+                        document.getElementById(`age-${index + 1}`).value = sample.age;
+                    });
+                }
+            });
+        }
 
-                quarterData.samples.forEach((sample, index) => {
-                    const sampleDiv = document.querySelectorAll('.sample-answer')[index];
-                    sampleDiv.querySelector('input[type="text"]').value = sample.mashbill;
-                    sampleDiv.querySelector('input[type="number"]').value = sample.proof;
-                    sampleDiv.querySelector('input[type="number"]').value = sample.age;
-                });
-            }
-        };
-
+        // Initialize quarters list
         fetchQuarters();
     </script>
-
 </body>
-
 </html>
