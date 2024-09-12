@@ -21,7 +21,9 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install dependencies
+      # Navigate to the 'functions' directory and run npm ci
+      - name: Install dependencies in functions
+        working-directory: ./functions
         run: |
           if [ ! -f package-lock.json ]; then
             npm install
