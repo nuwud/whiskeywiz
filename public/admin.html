@@ -7,10 +7,10 @@
     <title>Whiskey Challenge Admin</title>
 
     <script type="module">
-        // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getFirestore, collection, doc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
-        
+        import { getFirestore, collection, getDocs, doc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+        import { getStorage, ref, uploadString, deleteObject } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js";
+
         // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCqZMaGpJGf5veYgTXmytg1bLerva-of0U",
@@ -22,159 +22,121 @@
             measurementId: "G-SK0TJJEPF5"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const quarterForm = document.getElementById('quarter-form');
-            const samplesContainer = document.getElementById('samples-container');
-            const quarterSelect = document.getElementById('quarter-select');
+        document.addEventListener('DOMContentLoaded', async function () {
+            const quartersContainer = document.getElementById('quarters-container');
+            const generateButton = document.getElementById('generate-button');
+            const deleteButton = document.getElementById('delete-button');
             const quartersList = document.getElementById('quarters-list');
 
-            // Populate quarter options for past and future years
-            const months = ['January', 'March', 'June', 'September', 'December'];
-            const currentYear = new Date().getFullYear();
-            for (let year = currentYear - 2; year <= currentYear + 10; year++) {
-                months.forEach(month => {
-                    const option = document.createElement('option');
-                    option.value = `${month} ${year}`;
-                    option.innerText = `${month} ${year}`;
-                    quarterSelect.appendChild(option);
-                });
-            }
-
-            // Function to create sample answer input fields
-            function createSampleAnswerInputs(sampleIndex) {
-                const sampleDiv = document.createElement('div');
-                sampleDiv.classList.add('sample-answer');
-
-                const mashbillLabel = document.createElement('label');
-                mashbillLabel.innerText = `Sample ${sampleIndex + 1} - Mashbill: `;
-                const mashbillSelect = document.createElement('select');
-                const categories = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Blend', 'Specialty'];
-                categories.forEach(cat => {
-                    const option = document.createElement('option');
-                    option.value = cat;
-                    option.innerText = cat;
-                    mashbillSelect.appendChild(option);
-                });
-
-                const proofLabel = document.createElement('label');
-                proofLabel.innerText = 'Proof: ';
-                const proofInput = document.createElement('input');
-                proofInput.type = 'range';
-                proofInput.min = '80';
-                proofInput.max = '130';
-                proofInput.value = '100';
-                const proofValue = document.createElement('span');
-                proofValue.innerText = proofInput.value;
-                proofInput.addEventListener('input', () => proofValue.innerText = proofInput.value);
-
-                const ageLabel = document.createElement('label');
-                ageLabel.innerText = 'Age: ';
-                const ageInput = document.createElement('input');
-                ageInput.type = 'range';
-                ageInput.min = '1';
-                ageInput.max = '10';
-                ageInput.value = '5';
-                const ageValue = document.createElement('span');
-                ageValue.innerText = ageInput.value;
-                ageInput.addEventListener('input', () => ageValue.innerText = ageInput.value);
-
-                // Append elements stacked vertically inside each div
-                sampleDiv.appendChild(mashbillLabel);
-                sampleDiv.appendChild(mashbillSelect);
-                sampleDiv.appendChild(proofLabel);
-                sampleDiv.appendChild(proofInput);
-                sampleDiv.appendChild(proofValue);
-                sampleDiv.appendChild(ageLabel);
-                sampleDiv.appendChild(ageInput);
-                sampleDiv.appendChild(ageValue);
-
-                return sampleDiv;
-            }
-
-            // Add sample input fields for answers, stack them next to each other
-            for (let i = 0; i < 4; i++) {
-                const column = document.createElement('div');
-                column.classList.add('sample-column');
-                column.appendChild(createSampleAnswerInputs(i));
-                samplesContainer.appendChild(column);
-            }
-
-            // Submit form to save quarter
-            quarterForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const quarterName = quarterSelect.value.trim();
-                const samples = [];
-
-                // Gather sample answers
-                document.querySelectorAll('.sample-answer').forEach((sampleDiv) => {
-                    samples.push({
-                        mashbill: sampleDiv.querySelector('select').value,
-                        proof: sampleDiv.querySelector('input[type="range"]').value,
-                        age: sampleDiv.querySelector('input[type="range"]').value
-                    });
-                });
-
-                // Save quarter and sample answers to Firestore
-                await setDoc(doc(db, 'quarters', quarterName), {
-                    name: quarterName,
-                    samples: samples
-                });
-
-                alert('Quarter saved successfully!');
-                quarterForm.reset();
-                fetchQuarters();
-            });
-
-            // Fetch and display quarters
-            async function fetchQuarters() {
+            // Load quarters into dropdown
+            async function loadQuarterOptions() {
                 const quartersSnapshot = await getDocs(collection(db, 'quarters'));
-                quartersList.innerHTML = '';
                 quartersSnapshot.forEach(doc => {
                     const quarterData = doc.data();
-                    const quarterDiv = document.createElement('div');
-                    quarterDiv.innerHTML = `<strong>${quarterData.name}</strong>`;
-                    quartersList.appendChild(quarterDiv);
+                    const option = document.createElement('option');
+                    option.value = doc.id; // Quarter ID
+                    option.innerText = quarterData.name;
+                    quartersList.appendChild(option);
                 });
             }
 
-            fetchQuarters();
+            // Generate HTML for the selected quarter
+            generateButton.addEventListener('click', async () => {
+                const selectedQuarterId = quartersList.value;
+                if (!selectedQuarterId) {
+                    alert('Please select a quarter.');
+                    return;
+                }
+
+                const quarterDoc = await getDoc(doc(db, 'quarters', selectedQuarterId));
+                if (quarterDoc.exists()) {
+                    const quarterData = quarterDoc.data();
+                    const generatedHtml = createPlayerHTML(quarterData);
+                    await uploadGeneratedHTML(selectedQuarterId, generatedHtml);
+                    alert('Player HTML generated and uploaded.');
+                } else {
+                    alert('Quarter data not found.');
+                }
+            });
+
+            // Function to create the HTML content for the player page
+            function createPlayerHTML(quarterData) {
+                return `
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>${quarterData.name} - Whiskey Challenge</title>
+                        <link rel="stylesheet" href="styles.css">
+                    </head>
+                    <body>
+                        <h1>Whiskey Challenge - ${quarterData.name}</h1>
+                        <div id="game-content">
+                            ${quarterData.samples.map((sample, index) => `
+                                <div class="sample">
+                                    <h3>Sample ${index + 1}</h3>
+                                    <p>Mashbill: ${sample.mashbill}</p>
+                                    <p>Proof: ${sample.proof}</p>
+                                    <p>Age: ${sample.age}</p>
+                                </div>`).join('')}
+                        </div>
+                    </body>
+                    </html>
+                `;
+            }
+
+            // Upload the generated HTML to Firebase Storage
+            async function uploadGeneratedHTML(quarterId, htmlContent) {
+                const htmlRef = ref(storage, `${quarterId}.html`);
+                await uploadString(htmlRef, htmlContent, 'raw', { contentType: 'text/html' });
+            }
+
+            // Delete the generated HTML file from Firebase Storage
+            deleteButton.addEventListener('click', async () => {
+                const selectedQuarterId = quartersList.value;
+                if (!selectedQuarterId) {
+                    alert('Please select a quarter to delete.');
+                    return;
+                }
+
+                const htmlRef = ref(storage, `${selectedQuarterId}.html`);
+                try {
+                    await deleteObject(htmlRef);
+                    alert('Player HTML deleted.');
+                } catch (error) {
+                    console.error('Error deleting file:', error);
+                    alert('Failed to delete the player HTML.');
+                }
+            });
+
+            // Load quarters on page load
+            loadQuarterOptions();
         });
     </script>
 
-    <link rel="stylesheet" href="admin.css">
     <style>
-        .sample-column {
-            display: inline-block;
-            margin-right: 20px;
-        }
-
-        .sample-answer {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 15px;
-        }
+        /* Style for better layout */
+        .controls { margin-top: 10px; }
     </style>
 </head>
 
 <body>
     <h1>Admin - Whiskey Challenge</h1>
-    <h2>Create or Edit Quarters</h2>
 
-    <form id="quarter-form">
-        <label for="quarter-select">Select Quarter:</label>
-        <select id="quarter-select" required></select>
+    <label for="quarters-list">Select Quarter:</label>
+    <select id="quarters-list">
+        <!-- Quarters will be dynamically loaded here -->
+    </select>
 
-        <h3>Set Answers for 4 Samples:</h3>
-        <div id="samples-container" style="display: flex; justify-content: space-between;"></div>
-
-        <button type="submit">Save Quarter</button>
-    </form>
-
-    <div id="quarters-list"></div>
+    <div class="controls">
+        <button id="generate-button">Generate Player HTML</button>
+        <button id="delete-button">Delete Player HTML</button>
+    </div>
 </body>
 
 </html>
