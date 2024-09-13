@@ -1,12 +1,14 @@
 <script id="player-template" type="text/x-handlebars-template">
     <!DOCTYPE html>
     <html lang="en">
+
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{{quarterName}} - Whiskey Challenge</title>
         <link rel="stylesheet" href="styles.css">
     </head>
+
     <body>
         <h1>{{quarterName}} - Whiskey Challenge</h1>
         <div id="game-container">
@@ -23,42 +25,66 @@
                 </select>
 
                 <label>Guess Proof:</label>
-                <input type="range" min="80" max="130" value="{{proof}}">
-                <span>{{proof}}</span>
+                <input type="range" min="80" max="130" value="{{proof}}" id="proof-{{@index}}">
+                <span id="proof-value-{{@index}}">{{proof}}</span>
 
                 <label>Guess Age:</label>
-                <input type="range" min="1" max="10" value="{{age}}">
-                <span>{{age}}</span>
+                <input type="range" min="1" max="10" value="{{age}}" id="age-{{@index}}">
+                <span id="age-value-{{@index}}">{{age}}</span>
             </div>
             {{/each}}
 
             <button id="submit-btn">Submit Guesses</button>
 
             <!-- Area to display the score -->
-            <div id="score-display">
-                <!-- The score will be shown here after submission -->
-            </div>
+            <div id="score-display"></div>
+
+            <!-- Share score button -->
+            <button id="share-btn" style="display:none;">Share Your Score</button>
         </div>
 
         <script>
-            // Function to handle submission and score calculation
-            document.getElementById('submit-btn').addEventListener('click', function() {
+            document.getElementById('submit-btn').addEventListener('click', function () {
                 const samples = document.querySelectorAll('.sample');
                 let totalScore = 0;
 
                 samples.forEach((sample, index) => {
-                    const proofGuess = sample.querySelector('input[type="range"]').value;
-                    const ageGuess = sample.querySelector('input[type="range"]').value;
+                    const proofGuess = document.getElementById('proof-' + index).value;
+                    const ageGuess = document.getElementById('age-' + index).value;
 
-                    // Simple scoring logic (you can customize based on your actual game rules)
-                    totalScore += (Math.abs(proofGuess - 100) + Math.abs(ageGuess - 5)); // Example scoring rule
+                    // Example scoring rule: lower differences give higher scores
+                    const proofScore = Math.max(0, 50 - Math.abs(proofGuess - 100));
+                    const ageScore = Math.max(0, 50 - Math.abs(ageGuess - 5));
+
+                    totalScore += proofScore + ageScore;
                 });
 
                 const scoreDisplay = document.getElementById('score-display');
                 scoreDisplay.innerText = `Your total score is: ${totalScore}`;
+
+                // Show the "Share Your Score" button
+                const shareBtn = document.getElementById('share-btn');
+                shareBtn.style.display = 'block';
+
+                // Setup sharing functionality
+                shareBtn.addEventListener('click', function () {
+                    const shareText = `I scored ${totalScore} points in the Whiskey Challenge for {{quarterName}}! Can you beat my score?`;
+                    if (navigator.share) {
+                        navigator.share({
+                            title: 'Whiskey Challenge Score',
+                            text: shareText,
+                            url: window.location.href
+                        }).then(() => {
+                            console.log('Thanks for sharing!');
+                        }).catch(console.error);
+                    } else {
+                        // Fallback for browsers that don't support Web Share API
+                        alert('Sharing is not supported in this browser. Please copy and share manually.');
+                    }
+                });
             });
         </script>
-
     </body>
+
     </html>
 </script>
