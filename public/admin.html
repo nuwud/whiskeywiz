@@ -103,8 +103,8 @@
     </style>
 
     <!-- Use Firebase non-modular (compat) SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/13.18.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/13.18.0/firebase-firestore-compat.js"></script>
 </head>
 
 <body>
@@ -222,6 +222,17 @@
     <h3>Available Quarters</h3>
     <div id="quarters-list"></div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('input[type="range"]').forEach(slider => {
+                const valueDisplay = slider.nextElementSibling;
+                slider.addEventListener('input', () => {
+                    valueDisplay.innerText = slider.value;
+                });
+            });
+        });
+    </script>
+    
     <script>
         // Initialize Firebase
         const firebaseConfig = {

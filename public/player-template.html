@@ -23,8 +23,8 @@
     </style>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.18.0/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/13.18.0/firebase-firestore.js";
 
         // Your Firebase configuration (you can replace these dynamically)
         const firebaseConfig = {
@@ -44,6 +44,14 @@
 
         document.addEventListener('DOMContentLoaded', async function () {
             const quarterId = "{{quarterId}}"; // Dynamic ID
+
+            document.querySelectorAll('input[type="range"]').forEach(slider => {
+                const valueDisplay = slider.nextElementSibling;
+                slider.addEventListener('input', () => {
+                    valueDisplay.innerText = slider.value;
+                });
+            });
+
             const resultContainer = document.getElementById('result-container');
             const submitButton = document.getElementById('submit-button');
 
