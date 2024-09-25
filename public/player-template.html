@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Whiskey Challenge - {{quarterName}}</title>
-
+    <title>Whiskey Challenge - Player</title>
     <style>
         /* Add your styles for player page here */
         body {
@@ -21,21 +20,18 @@
             margin-top: 20px;
         }
     </style>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.18.0/firebase-app.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/13.18.0/firebase-firestore.js";
 
         // Your Firebase configuration (you can replace these dynamically)
         const firebaseConfig = {
-            apiKey: "AIzaSyCqZMaGpJGf5veYgTXmytg1bLerva-of0U",
-            authDomain: "whiskeywiz2.firebaseapp.com",
-            databaseURL: "https://whiskeywiz2-default-rtdb.firebaseio.com",
-            projectId: "whiskeywiz2",
-            storageBucket: "whiskeywiz2.appspot.com",
-            messagingSenderId: "555320797929",
-            appId: "1:555320797929:web:0d4b062d7f2ab330fc1e78",
-            measurementId: "G-SK0TJJEPF5"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
         // Initialize Firebase
@@ -43,7 +39,14 @@
         const db = getFirestore(app);
 
         document.addEventListener('DOMContentLoaded', async function () {
-            const quarterId = "{{quarterId}}"; // Dynamic ID
+            // Get the quarter ID from URL parameters
+            const params = new URLSearchParams(window.location.search);
+            const quarterId = params.get('quarterId');
+            
+            if (!quarterId) {
+                alert("No quarter specified!");
+                return;
+            }
 
             document.querySelectorAll('input[type="range"]').forEach(slider => {
                 const valueDisplay = slider.nextElementSibling;
@@ -63,8 +66,18 @@
                     return docSnap.data();
                 } else {
                     console.error('No such quarter!');
+                    alert('No data available for this quarter.');
                 }
             };
+
+            const quarterData = await fetchQuarterData();
+
+            // Populate the form with quarter data
+            quarterData.samples.forEach((sample, index) => {
+                document.getElementById(`mashbill-${index + 1}`).value = sample.mashbill;
+                document.getElementById(`proof-${index + 1}`).value = sample.proof;
+                document.getElementById(`age-${index + 1}`).value = sample.age;
+            });
 
             // Calculate score
             const calculateScore = (quarterData) => {
@@ -92,13 +105,12 @@
             // Submit button click handler
             submitButton.addEventListener('click', async (event) => {
                 event.preventDefault();
-                const quarterData = await fetchQuarterData();
                 const score = calculateScore(quarterData);
 
                 resultContainer.innerText = `Your score is: ${score}`;
                 resultContainer.style.display = 'block';
 
-                // Share the score
+                // Option to share score
                 const shareButton = document.createElement('button');
                 shareButton.innerText = 'Share your score!';
                 shareButton.addEventListener('click', () => {
@@ -115,30 +127,27 @@
     </script>
 </head>
 <body>
-    <h1>Whiskey Challenge - {{quarterName}}</h1>
+    <h1>Whiskey Challenge - Player</h1>
     <form id="player-form">
-        {{#each samples}}
-            <div>
-                <h3>Sample {{@index}}</h3>
-                <label for="mashbill-{{@index}}">Mashbill:</label>
-                <select id="mashbill-{{@index}}">
-                    <option value="Bourbon">Bourbon</option>
-                    <option value="Rye">Rye</option>
-                    <option value="Wheat">Wheat</option>
-                    <option value="Single Malt">Single Malt</option>
-                    <option value="Blend">Blend</option>
-                    <option value="Specialty">Specialty</option>
-                </select>
-
-                <label for="proof-{{@index}}">Proof:</label>
-                <input type="range" id="proof-{{@index}}" min="80" max="130" value="{{this.proof}}">
-                <span id="proof-value-{{@index}}">{{this.proof}}</span>
-
-                <label for="age-{{@index}}">Age:</label>
-                <input type="range" id="age-{{@index}}" min="1" max="10" value="{{this.age}}">
-                <span id="age-value-{{@index}}">{{this.age}}</span>
-            </div>
-        {{/each}}
+        <div id="sample-1">
+            <h3>Sample 1</h3>
+            <label for="mashbill-1">Mashbill:</label>
+            <select id="mashbill-1">
+                <option value="Bourbon">Bourbon</option>
+                <option value="Rye">Rye</option>
+                <option value="Wheat">Wheat</option>
+                <option value="Single Malt">Single Malt</option>
+                <option value="Blend">Blend</option>
+                <option value="Specialty">Specialty</option>
+            </select>
+            <label for="proof-1">Proof:</label>
+            <input type="range" id="proof-1" min="80" max="130" value="100">
+            <span id="proof-value-1">100</span>
+            <label for="age-1">Age:</label>
+            <input type="range" id="age-1" min="1" max="10" value="5">
+            <span id="age-value-1">5</span>
+        </div>
+        <!-- Repeat for samples 2-4 -->
         <button id="submit-button" type="submit">Submit Guesses</button>
     </form>
     <div id="result-container"></div>
