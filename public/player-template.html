@@ -26,14 +26,12 @@
 
         // Your Firebase configuration (you can replace these dynamically)
         const firebaseConfig = {
-            apiKey: "AIzaSyCqZMaGpJGf5veYgTXmytg1bLerva-of0U",
-            authDomain: "whiskeywiz2.firebaseapp.com",
-            databaseURL: "https://whiskeywiz2-default-rtdb.firebaseio.com",
-            projectId: "whiskeywiz2",
-            storageBucket: "whiskeywiz2.appspot.com",
-            messagingSenderId: "555320797929",
-            appId: "1:555320797929:web:0d4b062d7f2ab330fc1e78",
-            measurementId: "G-SK0TJJEPF5"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
         // Initialize Firebase
@@ -149,7 +147,64 @@
             <input type="range" id="age-1" min="1" max="10" value="5">
             <span id="age-value-1">5</span>
         </div>
-        <!-- Repeat for samples 2-4 -->
+
+        <div id="sample-2">
+            <h3>Sample 2</h3>
+            <label for="mashbill-2">Mashbill:</label>
+            <select id="mashbill-2">
+                <option value="Bourbon">Bourbon</option>
+                <option value="Rye">Rye</option>
+                <option value="Wheat">Wheat</option>
+                <option value="Single Malt">Single Malt</option>
+                <option value="Blend">Blend</option>
+                <option value="Specialty">Specialty</option>
+            </select>
+            <label for="proof-2">Proof:</label>
+            <input type="range" id="proof-2" min="80" max="130" value="100">
+            <span id="proof-value-2">100</span>
+            <label for="age-2">Age:</label>
+            <input type="range" id="age-2" min="1" max="10" value="5">
+            <span id="age-value-2">5</span>
+        </div>
+
+        <div id="sample-3">
+            <h3>Sample 3</h3>
+            <label for="mashbill-3">Mashbill:</label>
+            <select id="mashbill-3">
+                <option value="Bourbon">Bourbon</option>
+                <option value="Rye">Rye</option>
+                <option value="Wheat">Wheat</option>
+                <option value="Single Malt">Single Malt</option>
+                <option value="Blend">Blend</option>
+                <option value="Specialty">Specialty</option>
+            </select>
+            <label for="proof-3">Proof:</label>
+            <input type="range" id="proof-3" min="80" max="130" value="100">
+            <span id="proof-value-3">100</span>
+            <label for="age-3">Age:</label>
+            <input type="range" id="age-3" min="1" max="10" value="5">
+            <span id="age-value-3">5</span>
+        </div>
+
+        <div id="sample-4">
+            <h3>Sample 4</h3>
+            <label for="mashbill-4">Mashbill:</label>
+            <select id="mashbill-4">
+                <option value="Bourbon">Bourbon</option>
+                <option value="Rye">Rye</option>
+                <option value="Wheat">Wheat</option>
+                <option value="Single Malt">Single Malt</option>
+                <option value="Blend">Blend</option>
+                <option value="Specialty">Specialty</option>
+            </select>
+            <label for="proof-4">Proof:</label>
+            <input type="range" id="proof-4" min="80" max="130" value="100">
+            <span id="proof-value-4">100</span>
+            <label for="age-4">Age:</label>
+            <input type="range" id="age-4" min="1" max="10" value="5">
+            <span id="age-value-4">5</span>
+        </div>
+
         <button id="submit-button" type="submit">Submit Guesses</button>
     </form>
     <div id="result-container"></div>
