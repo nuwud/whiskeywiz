@@ -254,8 +254,16 @@
             }
         });
 
-        // Initial load
-        document.addEventListener('DOMContentLoaded', () => {
+        // Function to update slider value display dynamically
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('input[type="range"]').forEach(slider => {
+                const valueDisplay = slider.nextElementSibling;
+                slider.addEventListener('input', () => {
+                    valueDisplay.innerText = slider.value;
+                });
+            });
+
+            // Other existing functions like populating the dropdowns, fetching data...
             populateQuarterDropdown();  // Load the quarters into the dropdown
             fetchAvailableQuarters();   // Fetch and display available quarters
         });
