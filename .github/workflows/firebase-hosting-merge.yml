@@ -22,4 +22,4 @@ jobs:
           FIREBASE_CLI_EXPERIMENTS: webframeworks
     defaults:
       run:
-        working-directory: hosting
+        working-directory: public
