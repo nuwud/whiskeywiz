@@ -1,365 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Whiskey Challenge Admin</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
+<!-- C:\Users\Nuwud\whiskey-wiz\src\app\admin\admin.component.html -->
 
-        h1,
-        h2 {
-            text-align: center;
-        }
+<h2>Whiskey Challenge Admin</h2>
 
-        form {
-            margin-bottom: 20px;
-        }
+<h3>Quarters</h3>
+<ul>
+  <li *ngFor="let quarter of quarters">
+    {{ quarter.id }} ({{ quarter.startDate | date:'MMM yyyy' }} - {{ quarter.endDate | date:'MMM yyyy' }})
+    <button (click)="selectQuarter(quarter)">Edit</button>
+    <span *ngIf="quarter.active">[Active]</span>
+  </li>
+</ul>
+<button (click)="createNextQuarter()">Create Next Quarter</button>
 
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .samples-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .sample {
-            color: darkgoldenrod;
-        }
-    </style>
-</head>
-
-<body>
-    <h1>Admin - Whiskey Challenge</h1>
-    <h2>Create or Edit Quarters</h2>
-
-    <form id="quarter-form">
-        <label for="quarter-name">Quarter Name:</label>
-        <input type="month" id="quarter-name" required>
-        <h3>Set Answers for 4 Samples:</h3>
-
-        <div class="samples-container" id="samples-container">
-            <!-- Add your input elements here -->
-        </div>
-
-        <button type="submit">Save Quarter</button>
-    </form>
-
-    <h2>Quarters List</h2>
-    <div id="quarters-list"></div>
-
-    <button id="download-player-page">Download Player Page</button>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
-
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCqZMaGpJGf5veYgTXmytg1bLerva-of0U",
-            authDomain: "whiskeywiz2.firebaseapp.com",
-            databaseURL: "https://whiskeywiz2-default-rtdb.firebaseio.com",
-            projectId: "whiskeywiz2",
-            storageBucket: "whiskeywiz2.appspot.com",
-            messagingSenderId: "555320797929",
-            appId: "1:555320797929:web:0d4b062d7f2ab330fc1e78",
-            measurementId: "G-SK0TJJEPF5"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const { getDocs, collection, setDoc, doc, deleteDoc, getDoc } = firebase.firestore(); 
-
- 
-        document.addEventListener('DOMContentLoaded', async () => {
-            const quarterForm = document.getElementById('quarter-form');
-            const samplesContainer = document.getElementById('samples-container');
-            const quarterNameInput = document.getElementById('quarter-name');
-            const quartersList = document.getElementById('quarters-list');
-
-            async function fetchQuarters() {
-                quartersList.innerHTML = '';
-                const snapshot = await getDocs(collection(db, 'quarters'));
-                snapshot.forEach((doc) => {
-                    const quarterData = doc.data();
-                    const quarterDiv = document.createElement('div');
-                    quarterDiv.classList.add('quarter-row');
-                    quarterDiv.innerHTML = `<strong>${quarterData.name}</strong> 
-                                            <button onclick="editQuarter('${doc.id}')">Edit</button>
-                                            <button onclick="deleteQuarter('${doc.id}')">Delete</button>`;
-                    quartersList.appendChild(quarterDiv);
-                });
-            }
-
-            function createSampleAnswerInputs(sampleIndex) {
-                const sampleDiv = document.createElement('div');
-                sampleDiv.classList.add('sample-answer');
-
-                const mashbillLabel = document.createElement('label');
-                mashbillLabel.innerText = `Sample ${sampleIndex + 1} - Mashbill: `;
-                const mashbillSelect = document.createElement('select');
-                ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Blend', 'Specialty'].forEach(cat => {
-                    const option = document.createElement('option');
-                    option.value = cat;
-                    option.innerText = cat;
-                    mashbillSelect.appendChild(option);
-                });
-
-                const proofLabel = document.createElement('label');
-                proofLabel.innerText = 'Proof: ';
-                const proofInput = document.createElement('input');
-                proofInput.type = 'number';
-
-                const ageLabel = document.createElement('label');
-                ageLabel.innerText = 'Age: ';
-                const ageInput = document.createElement('input');
-                ageInput.type = 'number';
-
-                sampleDiv.appendChild(mashbillLabel);
-                sampleDiv.appendChild(mashbillSelect);
-                sampleDiv.appendChild(document.createElement('br'));
-
-                sampleDiv.appendChild(proofLabel);
-                sampleDiv.appendChild(proofInput);
-                sampleDiv.appendChild(document.createElement('br'));
-
-                sampleDiv.appendChild(ageLabel);
-                sampleDiv.appendChild(ageInput);
-                sampleDiv.appendChild(document.createElement('br'));
-
-                return sampleDiv;
-            }
-
-            for (let i = 0; i < 4; i++) {
-                samplesContainer.appendChild(createSampleAnswerInputs(i));
-            }
-
-            quarterForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const quarterName = quarterNameInput.value.trim();
-                const samples = [];
-
-                document.querySelectorAll('.sample-answer').forEach((sampleDiv, index) => {
-                    samples.push({
-                        mashbill: sampleDiv.querySelector('select').value,
-                        proof: sampleDiv.querySelector('input[type="number"]').value,
-                        age: sampleDiv.querySelector('input[type="number"]').value
-                    });
-                });
-
-                await setDoc(doc(db, 'quarters', quarterName), {
-                    name: quarterName,
-                    samples: samples
-                });
-                alert('Quarter saved successfully!');
-                fetchQuarters();
-            });
-
-            window.editQuarter = async (quarterId) => {
-                const docRef = doc(db, 'quarters', quarterId);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const quarterData = docSnap.data();
-                    quarterNameInput.value = quarterData.name;
-                    quarterData.samples.forEach((sample, index) => {
-                        const sampleDiv = document.querySelectorAll('.sample-answer')[index];
-                        sampleDiv.querySelector('select').value = sample.mashbill;
-                        sampleDiv.querySelector('input[type="number"]').value = sample.proof;
-                        sampleDiv.querySelector('input[type="number"]').value = sample.age;
-                    });
-                }
-            };
-
-            window.deleteQuarter = async (quarterId) => {
-                await deleteDoc(doc(db, 'quarters', quarterId));
-                alert('Quarter deleted successfully!');
-                fetchQuarters();
-            };
-
-            // Trigger the download of the player page
-            const downloadButton = document.getElementById('download-player-page');
-            downloadButton.addEventListener('click', () => {
-                const playerHtml = generatePlayerHtml();
-                const blob = new Blob([playerHtml], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${quarterNameInput.value}-player.html`;
-                a.click();
-                URL.revokeObjectURL(url);
-            });
-
-            fetchQuarters();
-        });
-
-        function generatePlayerHtml() {
-            return `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Whiskey Challenge - Player</title>
-                <link rel="stylesheet" href="styles.css">
-            </head>
-            <body>
-                <h1>Whiskey Challenge</h1>
-                <div id="game-container"></div>
-                <button type="submit">Submit Guesses</button>
-                <div id="result-container">
-                    <h2>Results</h2>
-                    <div id="results"></div>
-                </div>
-                <script type="module">
-                    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-                    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
-
-                    const firebaseConfig = {
-                        apiKey: "AIzaSyCqZMaGpJGf5veYgTXmytg1bLerva-of0U",
-                        authDomain: "whiskeywiz2.firebaseapp.com",
-                        databaseURL: "https://whiskeywiz2-default-rtdb.firebaseio.com",
-                        projectId: "whiskeywiz2",
-                        storageBucket: "whiskeywiz2.appspot.com",
-                        messagingSenderId: "555320797929",
-                        appId: "1:555320797929:web:0d4b062d7f2ab330fc1e78",
-                        measurementId: "G-SK0TJJEPF5"
-                    };
-
-                    const app = initializeApp(firebaseConfig);
-                    const db = getFirestore(app);
-
-                    document.addEventListener('DOMContentLoaded', async function () {
-                        const quarterSelect = document.getElementById('quarter-select');
-                        const gameContainer = document.getElementById('game-container');
-                        const resultsContainer = document.getElementById('results');
-                        const resultContainer = document.getElementById('result-container');
-
-                        // Fetch all quarters and populate the dropdown
-                        const quartersSnapshot = await getDocs(collection(db, 'quarters'));
-                        quartersSnapshot.forEach((doc) => {
-                            const option = document.createElement('option');
-                            option.value = doc.id;
-                            option.text = doc.data().name;
-                            quarterSelect.appendChild(option);
-                        });
-
-                        quarterSelect.addEventListener('change', async function () {
-                            const quarterId = this.value;
-                            if (quarterId) {
-                                const docRef = doc(db, 'quarters', quarterId);
-                                const docSnap = await getDoc(docRef);
-
-                                if (docSnap.exists()) {
-                                    const quarterData = docSnap.data();
-                                    gameContainer.innerHTML = ''; // Clear previous samples
-
-                                    quarterData.samples.forEach((sample, index) => {
-                                        gameContainer.appendChild(createSampleInput(sample, index));
-                                    });
-
-                                    document.querySelectorAll('input[type="range"]').forEach(slider => {
-                                        const valueDisplay = slider.nextElementSibling;
-                                        slider.addEventListener('input', () => {
-                                            valueDisplay.innerText = slider.value;
-                                        });
-                                    });
-                                } else {
-                                    console.log("No such document!");
-                                }
-                            } else {
-                                gameContainer.innerHTML = ''; // Clear samples if no quarter is selected
-                            }
-                        });
-
-                        document.getElementById('submit-answers').addEventListener('click', () => {
-                            resultsContainer.innerHTML = '';
-                            let totalScore = 0;
-
-                            document.querySelectorAll('.sample').forEach((sampleDiv, index) => {
-                                const mashbill = sampleDiv.querySelector('select').value;
-                                const proof = sampleDiv.querySelector('input[type="range"]').value;
-                                const age = sampleDiv.querySelector('input[type="range"]').value;
-
-                                const actualSample = quarterData.samples[index];
-                                let score = 0;
-
-                                if (mashbill === actualSample.mashbill) score += 10;
-                                score += 10 - Math.abs(proof - actualSample.proof);
-                                score += 10 - Math.abs(age - actualSample.age);
-
-                                totalScore += score;
-
-                                const resultDiv = document.createElement('div');
-                                resultDiv.innerText = \`Sample \${index + 1}: \${score} points\`;
-                                resultsContainer.appendChild(resultDiv);
-                            });
-
-                            const totalScoreDiv = document.createElement('div');
-                            totalScoreDiv.innerText = \`Total Score: \${totalScore} points\`;
-                            resultsContainer.appendChild(totalScoreDiv);
-
-                            resultContainer.style.display = 'block';
-                        });
-
-                        function createSampleInput(sample, sampleIndex) {
-                            const sampleDiv = document.createElement('div');
-                            sampleDiv.classList.add('sample');
-
-                            const mashbillLabel = document.createElement('label');
-                            mashbillLabel.innerText = \`Sample \${sampleIndex + 1} - Select Mashbill: \`;
-                            const mashbillSelect = document.createElement('select');
-                            ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Blend', 'Specialty'].forEach(cat => {
-                                const option = document.createElement('option');
-                                option.value = cat;
-                                option.innerText = cat;
-                                mashbillSelect.appendChild(option);
-                            });
-
-                            const proofLabel = document.createElement('label');
-                            proofLabel.innerText = 'Guess Proof: ';
-                            const proofSlider = document.createElement('input');
-                            proofSlider.type = 'range';
-                            proofSlider.min = '80';
-                            proofSlider.max = '130';
-                            const proofValue = document.createElement('span');
-                            proofSlider.addEventListener('input', () => proofValue.innerText = proofSlider.value);
-
-                            const ageLabel = document.createElement('label');
-                            ageLabel.innerText = 'Guess Age: ';
-                            const ageSlider = document.createElement('input');
-                            ageSlider.type = 'range';
-                            ageSlider.min = '1';
-                            ageSlider.max = '10';
-                            const ageValue = document.createElement('span');
-                            ageSlider.addEventListener('input', () => ageValue.innerText = ageSlider.value);
-
-                            sampleDiv.appendChild(mashbillLabel);
-                            sampleDiv.appendChild(mashbillSelect);
-                            sampleDiv.appendChild(document.createElement('br'));
-                            sampleDiv.appendChild(proofLabel);
-                            sampleDiv.appendChild(proofSlider);
-                            sampleDiv.appendChild(proofValue);
-                            sampleDiv.appendChild(document.createElement('br'));
-                            sampleDiv.appendChild(ageLabel);
-                            sampleDiv.appendChild(ageSlider);
-                            sampleDiv.appendChild(ageValue);
-
-                            return sampleDiv;
-                        }
-                    });
-                <\/script>
-            </body>
-            </html>`;
-        }
-    </script>
-</body>
-
-</html>
+<div *ngIf="selectedQuarter">
+  <h3>Edit Quarter: {{ selectedQuarter.id }}</h3>
+  <label>
+    Active:
+    <input type="checkbox" [(ngModel)]="selectedQuarter.active">
+  </label>
+  
+  <div *ngIf="gameData">
+    <h4>Game Data</h4>
+    <div *ngFor="let sample of [1,2,3,4]">
+      <h5>Sample {{ sample }}</h5>
+      <label>
+        Mashbill:
+        <select [(ngModel)]="gameData['sample'+sample].mashbill">
+          <option value="Bourbon">Bourbon</option>
+          <option value="Rye">Rye</option>
+          <option value="Wheat">Wheat</option>
+          <option value="Single Malt">Single Malt</option>
+          <option value="Blend">Blend</option>
+          <option value="Specialty">Specialty</option>
+        </select>
+      </label>
+      <label>
+        Proof:
+        <input type="number" [(ngModel)]="gameData['sample'+sample].proof" min="80" max="130">
+      </label>
+      <label>
+        Age:
+        <input type="number" [(ngModel)]="gameData['sample'+sample].age" min="1" max="30">
+      </label>
+    </div>
+  </div>
+  
+  <button (click)="updateQuarter()">Save Changes</button>
+</div>

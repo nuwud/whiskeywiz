@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs, doc, getDoc } from 'firebase/firestore';
-import { firebaseConfig } from '../services/firebase-config';
+import { FirebaseService } from '../services/firebase.service';
 
 @Component({
   selector: 'app-player',
@@ -9,52 +7,48 @@ import { firebaseConfig } from '../services/firebase-config';
   styleUrls: ['./player.component.css']
 })
 export class PlayerComponent implements OnInit {
-  private db: any;
   private quarterData: any;
 
-  constructor() {
-    const app = initializeApp(firebaseConfig);
-    this.db = getFirestore(app);
-  }
+  constructor(private firebaseService: FirebaseService) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     const quarterSelect = document.getElementById('quarter-select') as HTMLSelectElement;
     const gameContainer = document.getElementById('game-container') as HTMLDivElement;
     const resultsContainer = document.getElementById('results') as HTMLDivElement;
     const resultContainer = document.getElementById('result-container') as HTMLDivElement;
 
     // Fetch all quarters and populate the dropdown
-    const quartersSnapshot = await getDocs(collection(this.db, 'quarters'));
-    quartersSnapshot.forEach((doc) => {
-      const option = document.createElement('option');
-      option.value = doc.id;
-      option.text = doc.data().name;
-      quarterSelect.appendChild(option);
+    this.firebaseService.getCollection('quarters').subscribe((quarters: any[]) => {
+      quarters.forEach((quarter) => {
+        const option = document.createElement('option');
+        option.value = quarter.id;
+        option.text = quarter.name;
+        quarterSelect.appendChild(option);
+      });
     });
 
-    quarterSelect.addEventListener('change', async () => {
+    quarterSelect.addEventListener('change', () => {
       const quarterId = quarterSelect.value;
       if (quarterId) {
-        const docRef = doc(this.db, 'quarters', quarterId);
-        const docSnap = await getDoc(docRef);
+        this.firebaseService.getDocument('quarters', quarterId).subscribe((docSnap: any) => {
+          if (docSnap && docSnap.exists) { // Use type assertion to tell TypeScript that docSnap is of a specific type
+            this.quarterData = docSnap.data();
+            gameContainer.innerHTML = ''; // Clear previous samples
 
-        if (docSnap.exists()) {
-          this.quarterData = docSnap.data();
-          gameContainer.innerHTML = ''; // Clear previous samples
-
-          this.quarterData.samples.forEach((sample: any, index: number) => {
-            gameContainer.appendChild(this.createSampleInput(sample, index));
-          });
-
-          document.querySelectorAll('input[type="range"]').forEach(slider => {
-            const valueDisplay = slider.nextElementSibling as HTMLSpanElement;
-            slider.addEventListener('input', () => {
-              valueDisplay.innerText = (slider as HTMLInputElement).value;
+            this.quarterData.samples.forEach((sample: any, index: number) => {
+              gameContainer.appendChild(this.createSampleInput(sample, index));
             });
-          });
-        } else {
-          console.log('No such document!');
-        }
+
+            document.querySelectorAll('input[type="range"]').forEach(slider => {
+              const valueDisplay = slider.nextElementSibling as HTMLSpanElement;
+              slider.addEventListener('input', () => {
+                valueDisplay.innerText = (slider as HTMLInputElement).value;
+              });
+            });
+          } else {
+            console.log('No such document!');
+          }
+        });
       } else {
         gameContainer.innerHTML = ''; // Clear samples if no quarter is selected
       }

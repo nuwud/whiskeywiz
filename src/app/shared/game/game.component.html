@@ -1,0 +1,39 @@
+<!-- src/app/shared/game/game.component.html -->
+
+<div *ngIf="quarterData">
+    <h2>Whiskey Challenge: {{ quarterId }}</h2>
+    <div *ngFor="let sampleKey of objectKeys(quarterData)">
+      <h3>{{ sampleKey }}</h3>
+      <div>
+        <label>
+          Mashbill:
+          <select [(ngModel)]="guesses[sampleKey].mashbill">
+            <option value="Bourbon">Bourbon</option>
+            <option value="Rye">Rye</option>
+            <option value="Wheat">Wheat</option>
+            <option value="Single Malt">Single Malt</option>
+            <option value="Blend">Blend</option>
+            <option value="Specialty">Specialty</option>
+          </select>
+        </label>
+      </div>
+      <div>
+        <label>
+          Proof:
+          <input type="range" min="80" max="130" [(ngModel)]="guesses[sampleKey].proof">
+          {{ guesses[sampleKey].proof }}
+        </label>
+      </div>
+      <div>
+        <label>
+          Age:
+          <input type="range" min="1" max="30" [(ngModel)]="guesses[sampleKey].age">
+          {{ guesses[sampleKey].age }}
+        </label>
+      </div>
+    </div>
+    <button (click)="submitGuesses()">Submit Guesses</button>
+    <div *ngIf="score !== null">
+      Your score: {{ score }}
+    </div>
+  </div>
