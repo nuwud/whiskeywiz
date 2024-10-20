@@ -18,6 +18,16 @@
     "typeRoots": [
       "node_modules/@types"
     ],
+    "types": [
+      "estree",
+      "http-proxy",
+      "jasmine",
+      "jasminewd2",
+      "json-schema",
+      "mute-stream",
+      "node",
+      "wrap-ansi"
+    ],
     "lib": [
       "es2018",
       "dom"
