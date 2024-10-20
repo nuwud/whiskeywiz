@@ -5,8 +5,9 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, from } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+
 
 export interface Quarter {
   id?: string;
@@ -50,19 +51,29 @@ export class FirebaseService {
         })
       )
     );
-  }
+  }  
+
+  createQuarter(quarter: Quarter): Observable<void> { 
+    const id = this.generateQuarterId(quarter.startDate);
+    return from(this.quartersCollection.doc(id).set(quarter)).pipe(
+      map(() => { 
+        quarter.id = id;
+        return;  // explicitly return `void`
+      })
+    );
+  }  
 
   getQuarterGameData(quarterId: string): Observable<Quarter | undefined> {
     return this.quartersCollection.doc<Quarter>(quarterId).valueChanges();
   }
 
-  updateQuarter(quarterId: string, data: Partial<Quarter>): Promise<void> {
-    return this.quartersCollection.doc(quarterId).update(data);
+  updateQuarter(quarterId: string, data: Partial<Quarter>): Observable<void> {
+    return from(this.quartersCollection.doc(quarterId).update(data));
   }
 
-  createNewQuarter(quarterData: Quarter): Promise<void> {
+  createNewQuarter(quarterData: Quarter): Observable<void> {
     const quarterId = this.generateQuarterId(quarterData.startDate);
-    return this.quartersCollection.doc(quarterId).set(quarterData);
+    return from(this.quartersCollection.doc(quarterId).set(quarterData));
   }
 
   private generateQuarterId(date: Date): string {
@@ -76,34 +87,36 @@ export class FirebaseService {
     return this.firestore.collection(collectionName).valueChanges({ idField: 'id' });
   }
 
-  addDocument(collectionName: string, data: any): Promise<any> {
-    return this.firestore.collection(collectionName).add(data);
+  addDocument(collectionName: string, data: any): Observable<any> {
+    return from(this.firestore.collection(collectionName).add(data));
   }
 
   getDocument(collectionName: string, docId: string): Observable<any> {
     return this.firestore.collection(collectionName).doc(docId).valueChanges();
   }
 
-  updateDocument(collectionName: string, docId: string, data: any): Promise<void> {
-    return this.firestore.collection(collectionName).doc(docId).update(data);
+  updateDocument(collectionName: string, docId: string, data: any): Observable<void> {
+    return from(this.firestore.collection(collectionName).doc(docId).update(data));
   }
 
-  deleteDocument(collectionName: string, docId: string): Promise<void> {
-    return this.firestore.collection(collectionName).doc(docId).delete();
+  deleteDocument(collectionName: string, docId: string): Observable<void> {
+    return from(this.firestore.collection(collectionName).doc(docId).delete());
   }
 
   // Authentication operations
-  signIn(email: string, password: string): Promise<any> {
-    return this.auth.signInWithEmailAndPassword(email, password);
+  signIn(email: string, password: string): Observable<any> {
+    return from(this.auth.signInWithEmailAndPassword(email, password));
   }
 
-  signOut(): Promise<void> {
-    return this.auth.signOut();
+  signOut(): Observable<void> {
+    return from(this.auth.signOut());
   }
 
   // Storage operations
-  uploadFile(path: string, file: File): Promise<any> {
-    return this.storage.upload(path, file).then(snapshot => snapshot.ref.getDownloadURL());
+  uploadFile(path: string, file: File): Observable<string> {
+    return from(this.storage.upload(path, file)).pipe(
+      switchMap(snapshot => snapshot.ref.getDownloadURL())
+    );
   }
 
   // Realtime Database operations
