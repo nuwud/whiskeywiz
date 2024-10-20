@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AdminComponent } from './admin/admin.component';
 import { PlayerComponent } from './player/player.component';
+import { LoginComponent } from './auth/login/login.component';
 import { AuthGuard } from './guards/auth.guard';
 
 // Import all quarter components
@@ -27,8 +28,10 @@ import { Q0626Component } from './quarters/0626/0626.component';
 import { Q0926Component } from './quarters/0926/0926.component';
 
 const routes: Routes = [
+  { path: 'player', component: PlayerComponent, canActivate: [AuthGuard] },
   { path: 'admin', component: AdminComponent, canActivate: [AuthGuard] },
-  { path: 'player', component: PlayerComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'logout', component: LoginComponent },
   { path: 'quarter/0122', component: Q0122Component },
   { path: 'quarter/0322', component: Q0322Component },
   { path: 'quarter/0622', component: Q0622Component },
@@ -50,7 +53,8 @@ const routes: Routes = [
   { path: 'quarter/0626', component: Q0626Component },
   { path: 'quarter/0926', component: Q0926Component },
   { path: '', redirectTo: '/admin', pathMatch: 'full' },
-  { path: '', redirectTo: '/player', pathMatch: 'full' }
+  { path: '', redirectTo: '/player', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent }
 ];
 
 @NgModule({

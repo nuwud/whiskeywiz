@@ -1,13 +1,9 @@
 <header>
-    <h1>{{ title }}</h1>
-    <nav>
-      <a routerLink="/player">Play Game</a>
-      <a routerLink="/admin">Admin</a>
-    </nav>
-  </header>
-  <main>
-    <router-outlet></router-outlet>
-  </main>
+  <h1>{{ title }}</h1>
+  <nav *ngIf="isLoggedIn">
+    <a routerLink="/logout">Logout</a>
+  </nav>
+</header>
+<main>
   <router-outlet></router-outlet>
-
-constructor(private firebaseService: FirebaseService) {}
+</main>

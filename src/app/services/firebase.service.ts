@@ -54,6 +54,10 @@ export class FirebaseService {
     this.customEventsCollection = this.firestore.collection('customEvents');
   }
 
+  getAuthState(): Observable<any> {
+    return this.auth.authState;
+  }
+
   getQuarterById(id: string): Observable<Quarter | null> {
     return this.quartersCollection.doc<Quarter>(id).snapshotChanges().pipe(
       map(doc => {

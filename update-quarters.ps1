@@ -1,11 +1,19 @@
-﻿import { Component } from '@angular/core';
+$quarterPath = "C:\Users\Nuwud\whiskey-wiz\src\app\quarters"
+$quarterDirs = Get-ChildItem -Path $quarterPath -Directory | Where-Object { $_.Name -match '^\d{4}$' }
+
+foreach ($dir in $quarterDirs) {
+    $componentPath = Join-Path $dir.FullName "$($dir.Name).component.ts"
+    $quarterId = $dir.Name
+
+    $componentContent = @"
+import { Component } from '@angular/core';
 import { BaseQuarterComponent } from '../base-quarter.component';
 import { FirebaseService } from '../../services/firebase.service';
 import { NgForm } from '@angular/forms';
 
 @Component({
-  selector: 'app-quarter-0626',
-  template: `
+  selector: 'app-quarter-$quarterId',
+  template: ``
     <div *ngIf="quarterData">
       <h2>{{ quarterData.name }}</h2>
       <div *ngIf="!gameCompleted">
@@ -36,17 +44,17 @@ import { NgForm } from '@angular/forms';
         <button (click)="submitScore()">Submit Score</button>
       </div>
     </div>
-  `,
-  styles: [`
+  ``,
+  styles: [``
     /* Add any specific styles here */
-  `]
+  ``]
 })
-export class Q0626Component extends BaseQuarterComponent {
+export class Q${quarterId}Component extends BaseQuarterComponent {
   guess = { age: 0, proof: 0, mashbill: '' };
 
   constructor(firebaseService: FirebaseService) {
     super(firebaseService);
-    this.quarterId = '0626';
+    this.quarterId = '$quarterId';
   }
 
   submitGuess(form: NgForm) {
@@ -56,3 +64,10 @@ export class Q0626Component extends BaseQuarterComponent {
     }
   }
 }
+"@
+
+    Set-Content -Path $componentPath -Value $componentContent -Encoding UTF8
+    Write-Host "Updated $componentPath"
+}
+
+Write-Host "All dated quarter components have been updated."
