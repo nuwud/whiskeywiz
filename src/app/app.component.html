@@ -1,3 +1,13 @@
-<router-outlet></router-outlet>
+<header>
+    <h1>{{ title }}</h1>
+    <nav>
+      <a routerLink="/player">Play Game</a>
+      <a routerLink="/admin">Admin</a>
+    </nav>
+  </header>
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+  <router-outlet></router-outlet>
 
 constructor(private firebaseService: FirebaseService) {}
