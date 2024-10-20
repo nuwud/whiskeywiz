@@ -4,10 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { GameComponent } from './shared/game/game.component';
+import { LeaderboardComponent } from './shared/leaderboard/leaderboard.component';
 import { GameService } from './services/game.service';
-import { FirebaseService } from './services/firebase.service';
 import { AdminComponent } from './admin/admin.component';
 import { PlayerComponent } from './player/player.component';
+import { FirebaseService } from './services/firebase.service';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
@@ -45,6 +46,7 @@ import { Q0926Component } from './quarters/0926/0926.component';
     AdminComponent,
     PlayerComponent,
     GameComponent,
+    LeaderboardComponent,
     Q0122Component,
     Q0322Component,
     Q0622Component,

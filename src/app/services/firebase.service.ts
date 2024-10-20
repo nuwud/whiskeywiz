@@ -24,11 +24,19 @@ export interface Quarter {
   };
 }
 
+export interface PlayerScore {
+  playerId: string;
+  playerName: string;
+  score: number;
+  quarterId: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
   private quartersCollection: AngularFirestoreCollection<Quarter>;
+  private scoresCollection: AngularFirestoreCollection<PlayerScore>;
 
   constructor(
     private firestore: AngularFirestore,
@@ -39,6 +47,32 @@ export class FirebaseService {
     private analytics: AngularFireAnalytics
   ) {
     this.quartersCollection = this.firestore.collection<Quarter>('quarters');
+    this.scoresCollection = this.firestore.collection<PlayerScore>('scores');
+  }
+
+  getQuarterById(id: string): Observable<Quarter | null> {
+    return this.quartersCollection.doc<Quarter>(id).snapshotChanges().pipe(
+      map(doc => {
+        if (doc.payload.exists) {
+          const data = doc.payload.data() as Quarter;
+          return { ...data, id: doc.payload.id };
+        } else {
+          return null;
+        }
+      })
+    );
+  }
+
+  submitScore(score: PlayerScore): Observable<void> {
+    return from(this.scoresCollection.add(score)).pipe(
+      map(() => undefined)
+    );
+  }
+
+  getLeaderboard(quarterId: string): Observable<PlayerScore[]> {
+    return this.firestore.collection<PlayerScore>('scores', ref => 
+      ref.where('quarterId', '==', quarterId).orderBy('score', 'desc').limit(10)
+    ).valueChanges();
   }
 
   getQuarters(): Observable<Quarter[]> {
