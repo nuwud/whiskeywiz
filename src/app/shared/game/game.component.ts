@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FirebaseService, Quarter } from '../../services/firebase.service';
+import { FirebaseService, Quarter, PlayerScore } from '../../services/firebase.service';
 
 interface Guess {
   age: number;

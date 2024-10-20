@@ -9,6 +9,17 @@ import { FirebaseService, Quarter } from '../services/firebase.service';
 export class AdminComponent implements OnInit {
   quarters: Quarter[] = [];
   selectedQuarter: Quarter | null = null;
+  newQuarter: Quarter = this.initializeNewQuarter();
+  customEvent: any = {};
+  scoringRules: any = {
+    agePerfectScore: 20,
+    ageBonus: 10,
+    agePenaltyPerYear: 4,
+    proofPerfectScore: 20,
+    proofBonus: 10,
+    proofPenaltyPerPoint: 2,
+    mashbillCorrectScore: 10
+  };
 
   constructor(private firebaseService: FirebaseService) {}
 
@@ -23,24 +34,48 @@ export class AdminComponent implements OnInit {
   }
 
   selectQuarter(quarter: Quarter) {
-    this.selectedQuarter = quarter;
+    this.selectedQuarter = { ...quarter };
   }
 
   updateQuarter() {
-    if (this.selectedQuarter) {
-      this.firebaseService.updateQuarter(this.selectedQuarter.id!, {
-        active: this.selectedQuarter.active,
-        samples: this.selectedQuarter.samples
-      });
+    if (this.selectedQuarter && this.selectedQuarter.id) {
+      this.firebaseService.updateQuarter(this.selectedQuarter.id, this.selectedQuarter).subscribe(
+        () => {
+          console.log('Quarter updated successfully');
+          this.loadQuarters();
+        },
+        error => console.error('Error updating quarter:', error)
+      );
     }
   }
 
-  createNextQuarter() {
+  createNewQuarter() {
+    this.firebaseService.createNewQuarter(this.newQuarter).subscribe(
+      () => {
+        console.log('New quarter created successfully');
+        this.loadQuarters();
+        this.newQuarter = this.initializeNewQuarter();
+      },
+      error => console.error('Error creating new quarter:', error)
+    );
+  }
+
+  createCustomEvent() {
+    // Implement custom event creation logic
+    console.log('Creating custom event:', this.customEvent);
+  }
+
+  updateScoringRules() {
+    // Implement scoring rules update logic
+    console.log('Updating scoring rules:', this.scoringRules);
+  }
+
+  private initializeNewQuarter(): Quarter {
     const now = new Date();
     const startOfNextQuarter = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3 + 3, 1);
     const endOfNextQuarter = new Date(startOfNextQuarter.getFullYear(), startOfNextQuarter.getMonth() + 3, 0);
 
-    const newQuarterData: Quarter = {
+    return {
       name: `Q${Math.floor(startOfNextQuarter.getMonth() / 3) + 1} ${startOfNextQuarter.getFullYear()}`,
       startDate: startOfNextQuarter,
       endDate: endOfNextQuarter,
@@ -52,9 +87,5 @@ export class AdminComponent implements OnInit {
         sample4: { mashbill: "Single Malt", proof: 86, age: 8 }
       }
     };
-
-    this.firebaseService.createNewQuarter(newQuarterData)
-      .then(() => this.loadQuarters())
-      .catch(error => console.error('Error creating new quarter:', error));
   }
 }

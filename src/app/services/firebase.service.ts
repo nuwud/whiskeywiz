@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection, DocumentChangeAction } from '@angular/fire/compat/firestore';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, DocumentChangeAction } from '@angular/fire/compat/firestore';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
@@ -37,6 +37,8 @@ export interface PlayerScore {
 export class FirebaseService {
   private quartersCollection: AngularFirestoreCollection<Quarter>;
   private scoresCollection: AngularFirestoreCollection<PlayerScore>;
+  private scoringRulesDoc: AngularFirestoreDocument<any>;
+  private customEventsCollection: AngularFirestoreCollection<any>;
 
   constructor(
     private firestore: AngularFirestore,
@@ -48,6 +50,8 @@ export class FirebaseService {
   ) {
     this.quartersCollection = this.firestore.collection<Quarter>('quarters');
     this.scoresCollection = this.firestore.collection<PlayerScore>('scores');
+    this.scoringRulesDoc = this.firestore.doc('config/scoringRules');
+    this.customEventsCollection = this.firestore.collection('customEvents');
   }
 
   getQuarterById(id: string): Observable<Quarter | null> {
@@ -114,6 +118,22 @@ export class FirebaseService {
     const year = date.getFullYear().toString().substring(2);
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     return `${month}${year}`;
+  }
+
+  updateScoringRules(rules: any): Observable<void> {
+    return from(this.scoringRulesDoc.set(rules));
+  }
+
+  getScoringRules(): Observable<any> {
+    return this.scoringRulesDoc.valueChanges();
+  }
+
+  createCustomEvent(event: any): Observable<void> {
+    return from(this.customEventsCollection.add(event)).pipe(map(() => undefined));
+  }
+
+  getCustomEvents(): Observable<any[]> {
+    return this.customEventsCollection.valueChanges({ idField: 'id' });
   }
 
   // Generic Firestore operations
