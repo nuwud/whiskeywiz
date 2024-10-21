@@ -1,0 +1,113 @@
+<h2>Admin Panel</h2>
+
+<h3>Quarters</h3>
+<ul>
+  <li *ngFor="let quarter of quarters" (click)="selectQuarter(quarter)">
+    {{ quarter.name }} ({{ quarter.active ? 'Active' : 'Inactive' }})
+  </li>
+</ul>
+
+<h3>Edit Quarter</h3>
+<div *ngIf="selectedQuarter">
+  <h4>{{ selectedQuarter.name }}</h4>
+  <label>
+    Active:
+    <input type="checkbox" [(ngModel)]="selectedQuarter.active">
+  </label>
+
+  <h5>Samples</h5>
+  <div *ngFor="let sample of [1, 2, 3, 4]">
+    <h6>Sample {{ sample }}</h6>
+    <div>
+      <label>
+        Mashbill:
+        <select [(ngModel)]="selectedQuarter.samples['sample' + sample].mashbill">
+          <option value="Bourbon">Bourbon</option>
+          <option value="Rye">Rye</option>
+          <option value="Wheat">Wheat</option>
+          <option value="Single Malt">Single Malt</option>
+          <option value="Blend">Blend</option>
+          <option value="Specialty">Specialty</option>
+        </select>
+      </label>
+    </div>
+    <div>
+      <label>
+        Proof:
+        <input type="number" [(ngModel)]="selectedQuarter.samples['sample' + sample].proof" min="80" max="130">
+      </label>
+    </div>
+    <div>
+      <label>
+        Age:
+        <input type="number" [(ngModel)]="selectedQuarter.samples['sample' + sample].age" min="1" max="30">
+      </label>
+    </div>
+  </div>
+
+  <button (click)="updateQuarter()">Update Quarter</button>
+</div>
+
+<h3>Create New Quarter</h3>
+<div>
+  <label>
+    Name:
+    <input type="text" [(ngModel)]="newQuarter.name">
+  </label>
+  <label>
+    Start Date:
+    <input type="date" [ngModel]="newQuarter.startDate | date:'yyyy-MM-dd'" (ngModelChange)="newQuarter.startDate = $event">
+  </label>
+  <label>
+    End Date:
+    <input type="date" [ngModel]="newQuarter.endDate | date:'yyyy-MM-dd'" (ngModelChange)="newQuarter.endDate = $event">
+  </label>
+  <button (click)="createNewQuarter()">Create Quarter</button>
+</div>
+
+<h3>Custom Event</h3>
+<div>
+  <label>
+    Event Name:
+    <input type="text" [(ngModel)]="customEvent.name">
+  </label>
+  <label>
+    Date:
+    <input type="date" [(ngModel)]="customEvent.date">
+  </label>
+  <!-- Add more fields for custom event as needed -->
+  <button (click)="createCustomEvent()">Create Custom Event</button>
+</div>
+
+<h3>Scoring Rules</h3>
+<div>
+  <label>
+    Perfect Age Score:
+    <input type="number" [(ngModel)]="scoringRules.agePerfectScore">
+  </label>
+  <label>
+    Age Bonus:
+    <input type="number" [(ngModel)]="scoringRules.ageBonus">
+  </label>
+  <label>
+    Age Penalty Per Year:
+    <input type="number" [(ngModel)]="scoringRules.agePenaltyPerYear">
+  </label>
+  <label>
+    Perfect Proof Score:
+    <input type="number" [(ngModel)]="scoringRules.proofPerfectScore">
+  </label>
+  <label>
+    Proof Bonus:
+    <input type="number" [(ngModel)]="scoringRules.proofBonus">
+  </label>
+  <label>
+    Proof Penalty Per Point:
+    <input type="number" [(ngModel)]="scoringRules.proofPenaltyPerPoint">
+  </label>
+  <label>
+    Correct Mashbill Score:
+    <input type="number" [(ngModel)]="scoringRules.mashbillCorrectScore">
+  </label>
+  <button (click)="updateScoringRules()">Update Scoring Rules</button>
+</div>

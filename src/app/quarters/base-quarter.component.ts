@@ -7,9 +7,10 @@ import { Quarter, PlayerScore } from '../shared/models/quarter.model';
 export class BaseQuarterComponent implements OnInit {
   @Input()
     quarterId!: string;
-  quarterData: Quarter | null = null;
-  gameCompleted = false;
-  playerScore: number = 0;
+    quarterData: Quarter | null = null;
+    gameCompleted = false;
+    playerScore: number = 0;
+    guess = { age: 0, proof: 0, mashbill: '' };
 
   constructor(protected firebaseService: FirebaseService) {}
 
@@ -23,7 +24,7 @@ export class BaseQuarterComponent implements OnInit {
     });
   }
 
-  submitGuess(guess: any) {
+  submitGuess(guess: { age: number, proof: number, mashbill: string }) {
     // Implement guess logic and scoring
     // This is where you'd compare the guess to the actual values and calculate the score
     // For now, let's just set a random score

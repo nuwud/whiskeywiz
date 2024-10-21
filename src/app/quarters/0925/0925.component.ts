@@ -42,17 +42,14 @@ import { NgForm } from '@angular/forms';
   `]
 })
 export class Q0925Component extends BaseQuarterComponent {
-  guess = { age: 0, proof: 0, mashbill: '' };
-
   constructor(firebaseService: FirebaseService) {
     super(firebaseService);
     this.quarterId = '0925';
   }
 
-  submitGuess(form: NgForm) {
+  onSubmit(form: NgForm) {
     if (form.valid) {
-      // Call the parent class method to handle the guess
-      super.submitGuess(this.guess);
+      this.submitGuess(this.guess);
     }
   }
 }

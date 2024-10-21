@@ -10,7 +10,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "ES2017",
+    "target": "ES2022",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

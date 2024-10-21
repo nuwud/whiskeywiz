@@ -53,6 +53,42 @@
                                                                                                                  "src/**/*.html"
                                                                                                              ]
                                                                                     }
+                                                                    },
+                                                           "serve":  {
+                                                                         "configurations":  {
+                                                                                                "production":  {
+                                                                                                                   "browserTarget":  "whiskey-wiz:build:production"
+                                                                                                               }
+                                                                                            },
+                                                                         "options":  {
+                                                                                         "browserTarget":  "whiskey-wiz:build"
+                                                                                     },
+                                                                         "builder":  "@angular-devkit/build-angular:dev-server"
+                                                                     },
+                                                           "extract-i18n":  {
+                                                                                "options":  {
+                                                                                                "browserTarget":  "whiskey-wiz:build"
+                                                                                            },
+                                                                                "builder":  "@angular-devkit/build-angular:extract-i18n"
+                                                                            },
+                                                           "test":  {
+                                                                        "options":  {
+                                                                                        "assets":  [
+                                                                                                       "src/favicon.ico",
+                                                                                                       "src/assets"
+                                                                                                   ],
+                                                                                        "polyfills":  "src/polyfills.ts",
+                                                                                        "scripts":  [
+
+                                                                                                    ],
+                                                                                        "styles":  [
+                                                                                                       "src/styles.css"
+                                                                                                   ],
+                                                                                        "tsConfig":  "tsconfig.spec.json",
+                                                                                        "karmaConfig":  "karma.conf.js",
+                                                                                        "main":  "src/test.ts"
+                                                                                    },
+                                                                        "builder":  "@angular-devkit/build-angular:karma"
                                                                     }
                                                        }
                                      }
