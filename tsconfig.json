@@ -1,4 +1,4 @@
-﻿
+
 {
   "compileOnSave": false,
   "compilerOptions": {
@@ -6,7 +6,6 @@
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
-    "downlevelIteration": true,
     "experimentalDecorators": true,
     "module": "commonjs",
     "moduleResolution": "node",
