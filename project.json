@@ -1,0 +1,90 @@
+{
+  "$schema": "node_modules/nx/schemas/project-schema.json",
+  "name": "whiskey-wiz",
+  "projectType": "application",
+  "generators": {},
+  "sourceRoot": "src",
+  "prefix": "app",
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:browser",
+      "options": {
+        "outputPath": "dist/whiskey-wiz",
+        "index": "src/index.html",
+        "main": "src/main.ts",
+        "polyfills": "src/polyfills.ts",
+        "tsConfig": "tsconfig.app.json",
+        "aot": true,
+        "assets": [
+          "src/favicon.ico",
+          "src/assets"
+        ],
+        "styles": [
+          "src/styles.css"
+        ],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "optimization": {
+            "scripts": true,
+            "styles": {
+              "minify": true,
+              "inlineCritical": false
+            }
+          }
+        }
+      },
+      "outputs": [
+        "{options.outputPath}"
+      ]
+    },
+    "lint": {
+      "executor": "@angular-eslint/builder:lint",
+      "options": {
+        "eslintConfig": ".eslintrc.json",
+        "lintFilePatterns": [
+          "src/**/*.ts",
+          "src/**/*.html"
+        ]
+      },
+      "outputs": [
+        "{options.outputFile}"
+      ]
+    },
+    "serve": {
+      "configurations": {
+        "production": {
+          "browserTarget": "whiskey-wiz:build:production"
+        }
+      },
+      "options": {
+        "browserTarget": "whiskey-wiz:build"
+      },
+      "executor": "@angular-devkit/build-angular:dev-server"
+    },
+    "extract-i18n": {
+      "options": {
+        "browserTarget": "whiskey-wiz:build"
+      },
+      "executor": "@angular-devkit/build-angular:extract-i18n"
+    },
+    "test": {
+      "options": {
+        "assets": [
+          "src/favicon.ico",
+          "src/assets"
+        ],
+        "polyfills": "src/polyfills.ts",
+        "scripts": [],
+        "styles": [
+          "src/styles.css"
+        ],
+        "tsConfig": "tsconfig.spec.json",
+        "karmaConfig": "karma.conf.js",
+        "main": "src/test.ts"
+      },
+      "executor": "@angular-devkit/build-angular:karma"
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FirebaseService } from '../../services/firebase.service';
+import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -12,29 +12,25 @@ export class LoginComponent {
   password: string = '';
   error: string = '';
 
-  constructor(private firebaseService: FirebaseService, private router: Router) {}
+  constructor(public authService: AuthService, private router: Router) {}
 
-  login() {
-    this.firebaseService.signIn(this.email, this.password).subscribe(
-      () => {
-        this.router.navigate(['/admin']);
-      },
-      (error) => {
-        this.error = 'Failed to log in. Please check your credentials.';
-        console.error('Login error:', error);
-      }
-    );
+  async login() {
+    try {
+      await this.authService.signIn(this.email, this.password);
+      this.router.navigate(['/admin']);
+    } catch (error) {
+      this.error = 'Failed to log in. Please check your credentials.';
+      console.error('Login error:', error);
+    }
   }
 
-  logout() {
-    this.firebaseService.signOut().subscribe(
-      () => {
-        this.router.navigate(['/']);
-      },
-      (error) => {
-        this.error = 'Failed to log out.';
-        console.error('Logout error:', error);
-      }
-    );
+  async logout() {
+    try {
+      await this.authService.signOut();
+      this.router.navigate(['/']);
+    } catch (error) {
+      this.error = 'Failed to log out.';
+      console.error('Logout error:', error);
+    }
   }
 }

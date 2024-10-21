@@ -15,6 +15,7 @@ import { AppComponent } from './app.component';
 import { BaseQuarterComponent } from './quarters/base-quarter.component';
 import { AdminComponent } from './admin/admin.component';
 import { PlayerComponent } from './player/player.component';
+import { LeaderboardComponent } from './shared/leaderboard/leaderboard.component';
 import { LoginComponent } from './auth/login/login.component';
 import { GameService } from './services/game.service';
 import { FirebaseService } from './services/firebase.service';
@@ -22,7 +23,7 @@ import { Q0122Component } from './quarters/0122/0122.component'; import { Q0322C
 
 @NgModule({
   declarations: [
-    AppComponent, BaseQuarterComponent, AdminComponent, PlayerComponent, LoginComponent,
+    AppComponent, BaseQuarterComponent, AdminComponent, PlayerComponent, LeaderboardComponent, LoginComponent,
     Q0122Component, Q0322Component, Q0323Component, Q0324Component, Q0325Component, Q0326Component, Q0622Component, Q0623Component, Q0624Component, Q0625Component, Q0626Component, Q0922Component, Q0923Component, Q0924Component, Q0925Component, Q0926Component, Q1222Component, Q1223Component, Q1224Component, Q1225Component,
   ],
   imports: [

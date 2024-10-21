@@ -191,4 +191,5 @@ export class FirebaseService {
   logEvent(eventName: string, eventParams: any): void {
     this.analytics.logEvent(eventName, eventParams);
   }
+  
 }

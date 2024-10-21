@@ -1,8 +1,15 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FirebaseService } from '../services/firebase.service';
+import { AuthService } from '../services/auth.service';
 import { Quarter, PlayerScore } from '../shared/models/quarter.model';
 @Component({
-  template: ''
+  template: `
+    <div *ngIf="quarterData">
+      <h2>{{ quarterData.name }}</h2>
+      <!-- ... existing game logic ... -->
+      <app-leaderboard [quarterId]="quarterId"></app-leaderboard>
+    </div>
+  `
 })
 export class BaseQuarterComponent implements OnInit {
   @Input()
@@ -12,7 +19,10 @@ export class BaseQuarterComponent implements OnInit {
     playerScore: number = 0;
     guess = { age: 0, proof: 0, mashbill: '' };
 
-  constructor(protected firebaseService: FirebaseService) {}
+  constructor(
+    protected firebaseService: FirebaseService, 
+    protected authService: AuthService
+  ) {}
 
   ngOnInit() {
     this.loadQuarterData();
@@ -25,23 +35,61 @@ export class BaseQuarterComponent implements OnInit {
   }
 
   submitGuess(guess: { age: number, proof: number, mashbill: string }) {
-    // Implement guess logic and scoring
-    // This is where you'd compare the guess to the actual values and calculate the score
-    // For now, let's just set a random score
-    this.playerScore = Math.floor(Math.random() * 100);
+    if (!this.quarterData) return;
+
+    let score = 0;
+    const actualSample = this.quarterData.samples['sample1']; // Assuming we're using the first sample
+
+    // Age scoring
+    const ageDiff = Math.abs(actualSample.age - guess.age);
+    if (ageDiff === 0) {
+      score += 30; // 20 points + 10 bonus
+    } else {
+      score += Math.max(0, 20 - (ageDiff * 4));
+    }
+
+    // Proof scoring
+    const proofDiff = Math.abs(actualSample.proof - guess.proof);
+    if (proofDiff === 0) {
+      score += 30; // 20 points + 10 bonus
+    } else {
+      score += Math.max(0, 20 - (proofDiff * 2));
+    }
+
+    // Mashbill scoring
+    if (guess.mashbill === actualSample.mashbill) {
+      score += 10;
+    }
+
+    this.playerScore = score;
     this.gameCompleted = true;
   }
 
   submitScore() {
     if (this.quarterData) {
-      const playerScore: PlayerScore = {
-        playerId: 'guest', // You might want to implement user identification later
-        playerName: 'Guest Player',
-        score: this.playerScore,
-        quarterId: this.quarterId
-      };
-      this.firebaseService.submitScore(playerScore).subscribe(() => {
-        console.log('Score submitted successfully');
+      this.authService.getCurrentUserId().subscribe(userId => {
+        if (userId) {
+          const playerScore: PlayerScore = {
+            playerId: userId,
+            playerName: 'Authenticated User',
+            score: this.playerScore,
+            quarterId: this.quarterId
+          };
+          this.firebaseService.submitScore(playerScore).subscribe(() => {
+            console.log('Score submitted successfully');
+          });
+        }
+      }, 
+      error => { // Fallback to guest player
+        const playerScore: PlayerScore = {
+          playerId: 'guest', // You might want to implement user identification later
+          playerName: 'Guest Player',
+          score: this.playerScore,
+          quarterId: this.quarterId
+        };
+        this.firebaseService.submitScore(playerScore).subscribe(() => {
+          console.log('Score submitted successfully');
+        });
       });
     }
   }

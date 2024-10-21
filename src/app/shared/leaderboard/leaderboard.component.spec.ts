@@ -1,23 +1,27 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component, Input, OnInit } from '@angular/core';
+import { FirebaseService, PlayerScore } from '../../services/firebase.service';
 
-import { LeaderboardComponent } from './leaderboard.component';
+@Component({
+  selector: 'app-leaderboard',
+  templateUrl: './leaderboard.component.html',
+  styleUrls: ['./leaderboard.component.css']
+})
+export class LeaderboardComponent implements OnInit {
+  @Input() quarterId: string = '';
+  leaderboard: PlayerScore[] = [];
 
-describe('LeaderboardComponent', () => {
-  let component: LeaderboardComponent;
-  let fixture: ComponentFixture<LeaderboardComponent>;
+  constructor(private firebaseService: FirebaseService) {}
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [LeaderboardComponent]
-    })
-    .compileComponents();
-    
-    fixture = TestBed.createComponent(LeaderboardComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+  ngOnInit() {
+    this.loadLeaderboard();
+  }
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+  loadLeaderboard() {
+    this.firebaseService.getLeaderboard(this.quarterId).subscribe(
+      scores => {
+        this.leaderboard = scores.sort((a, b) => b.score - a.score).slice(0, 10);
+      },
+      error => console.error('Error loading leaderboard:', error)
+    );
+  }
+}
