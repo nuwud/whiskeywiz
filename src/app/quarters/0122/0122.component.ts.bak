@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+﻿import { Component } from '@angular/core';
 import { BaseQuarterComponent } from '../base-quarter.component';
 import { AuthService } from '../../services/auth.service';
 import { FirebaseService } from '../../services/firebase.service';
 import { NgForm } from '@angular/forms';
 
 @Component({
-  selector: 'app-quarter-0625',
+  selector: 'app-quarter-0122',
   template: `
     <div *ngIf="!quarterData">Loading...</div>
     <div *ngIf="quarterData">
@@ -58,13 +58,13 @@ import { NgForm } from '@angular/forms';
     }
   `]
 })
-export class Q0625Component extends BaseQuarterComponent {
+export class Q0122Component extends BaseQuarterComponent {
   constructor(
     firebaseService: FirebaseService,
     authService: AuthService
   ) {
     super(firebaseService, authService);
-    this.quarterId = '0625';
+    this.quarterId = '0122';
   }
 
   onSubmit(form: NgForm) {

@@ -1,3 +1,5 @@
+# Template content with placeholder for quarterId
+$templateContent = @'
 import { Component } from '@angular/core';
 import { BaseQuarterComponent } from '../base-quarter.component';
 import { AuthService } from '../../services/auth.service';
@@ -5,7 +7,7 @@ import { FirebaseService } from '../../services/firebase.service';
 import { NgForm } from '@angular/forms';
 
 @Component({
-  selector: 'app-quarter-0625',
+  selector: 'app-quarter-QUARTERID',
   template: `
     <div *ngIf="!quarterData">Loading...</div>
     <div *ngIf="quarterData">
@@ -58,13 +60,13 @@ import { NgForm } from '@angular/forms';
     }
   `]
 })
-export class Q0625Component extends BaseQuarterComponent {
+export class QCLASSNAME extends BaseQuarterComponent {
   constructor(
     firebaseService: FirebaseService,
     authService: AuthService
   ) {
     super(firebaseService, authService);
-    this.quarterId = '0625';
+    this.quarterId = 'QUARTERID';
   }
 
   onSubmit(form: NgForm) {
@@ -78,3 +80,29 @@ export class Q0625Component extends BaseQuarterComponent {
     }
   }
 }
+'@
+
+# Get all quarter component files
+$quarterFiles = Get-ChildItem -Path "C:\Users\Nuwud\whiskey-wiz\src\app\quarters" -Filter "*.component.ts" -Recurse |
+    Where-Object { $_.Name -match '^\d{4}\.component\.ts$' }
+
+foreach ($file in $quarterFiles) {
+    # Extract the quarter ID from the filename (e.g., "0122" from "0122.component.ts")
+    $quarterId = $file.BaseName.Split('.')[0]
+    
+    # Create class name (e.g., "Q0122Component")
+    $className = "Q${quarterId}Component"
+    
+    # Replace placeholders in template
+    $newContent = $templateContent.Replace('QUARTERID', $quarterId).Replace('QCLASSNAME', $className)
+    
+    # Create backup of original file
+    Copy-Item -Path $file.FullName -Destination "$($file.FullName).bak" -Force
+    
+    # Write new content to file
+    $newContent | Set-Content -Path $file.FullName -Force
+    
+    Write-Host "Updated $($file.Name)"
+}
+
+Write-Host "All quarter components have been updated. Backups were created with .bak extension."
