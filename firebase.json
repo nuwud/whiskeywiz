@@ -22,15 +22,18 @@
     "predeploy": [
       "npm run build"
     ],
-    "source": "hosting",
+    "public": "dist/whiskey-wiz", 
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
-    "frameworksBackend": {
-      "region": "us-west1"
-    }
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   },
   "remoteconfig": {
     "template": "remoteconfig.template.json"
