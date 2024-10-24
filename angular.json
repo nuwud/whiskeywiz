@@ -13,9 +13,7 @@
           "build": {
             "builder": "@angular-devkit/build-angular:application",
             "options": {
-              "outputPath": {
-                "base": "dist/whiskey-wiz"
-              },
+              "outputPath":  "dist/whiskey-wiz/browser",
               "index": "src/index.html",
               "polyfills": [
                 "src/polyfills.ts"
@@ -33,6 +31,7 @@
             },
             "configurations": {
               "production": {
+                
                 "budgets": [
                   {
                     "type": "initial",
@@ -58,12 +57,22 @@
                     "minify": true,
                     "inlineCritical": false
                   }
-                }
-              },
-              "development": {
+                },
+                "extractLicenses": true,
+                "sourceMap": {
+                  "scripts": false,
+                  "styles": false,
+                  "vendor": false
+                },
+                "namedChunks": false              },
+                "development": {
                 "optimization": false,
                 "extractLicenses": false,
-                "sourceMap": true,
+                "sourceMap": {
+                  "scripts": true,
+                  "styles": true,
+                  "vendor": true
+                },
                 "namedChunks": true
               }
             },

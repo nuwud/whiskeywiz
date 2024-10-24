@@ -29,9 +29,15 @@ export class BaseQuarterComponent implements OnInit {
   }
 
   loadQuarterData() {
-    this.firebaseService.getQuarterById(this.quarterId).subscribe(quarter => {
-      this.quarterData = quarter;
-    });
+    this.firebaseService.getQuarterById(this.quarterId).subscribe(
+      quarter => {
+        this.quarterData = quarter;
+      },
+      error => {
+        console.error('Error loading quarter data:', error);
+        // Handle the error appropriately (e.g., show an error message to the user)
+      }
+    );
   }
 
   submitGuess(guess: { age: number, proof: number, mashbill: string }) {
@@ -89,8 +95,19 @@ export class BaseQuarterComponent implements OnInit {
         };
         this.firebaseService.submitScore(playerScore).subscribe(() => {
           console.log('Score submitted successfully');
-        });
+        },
+        error => {
+          console.error('Error submitting score:', error);
+          // Handle the error appropriately (e.g., show an error message to the user)
+        }
+      );
       });
     }
+  }
+
+  resetGame() {
+    this.gameCompleted = false;
+    this.playerScore = 0;
+    this.guess = { age: 0, proof: 0, mashbill: '' };
   }
 }
