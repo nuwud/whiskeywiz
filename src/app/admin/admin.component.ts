@@ -28,7 +28,11 @@ export class AdminComponent implements OnInit {
   constructor(
     private firebaseService: FirebaseService, 
     private quarterPopulation: QuarterPopulationService
-  ) {}
+  ) {
+    this.quarterPopulation.isPopulating$.subscribe(
+      isPopulating => this.isPopulating = isPopulating
+    );
+  }
 
   ngOnInit() {
     this.loadQuarters();

@@ -1,113 +1,131 @@
-<h2>Admin Panel</h2>
+<!-- admin.component.html -->
+<div class="admin-container">
+  <h1>Whiskey Wiz Admin Panel</h1>
 
-<h3>Quarters</h3>
-<ul>
-  <li *ngFor="let quarter of quarters" (click)="selectQuarter(quarter)">
-    {{ quarter.name }} ({{ quarter.active ? 'Active' : 'Inactive' }})
-  </li>
-</ul>
-
-<h3>Edit Quarter</h3>
-<div *ngIf="selectedQuarter">
-  <h4>{{ selectedQuarter.name }}</h4>
-  <label>
-    Active:
-    <input type="checkbox" [(ngModel)]="selectedQuarter.active">
-  </label>
-
-  <h5>Samples</h5>
-  <div *ngFor="let sample of [1, 2, 3, 4]">
-    <h6>Sample {{ sample }}</h6>
-    <div>
-      <label>
-        Mashbill:
-        <select [(ngModel)]="selectedQuarter.samples['sample' + sample].mashbill">
-          <option value="Bourbon">Bourbon</option>
-          <option value="Rye">Rye</option>
-          <option value="Wheat">Wheat</option>
-          <option value="Single Malt">Single Malt</option>
-          <option value="Blend">Blend</option>
-          <option value="Specialty">Specialty</option>
-        </select>
-      </label>
+  <!-- Quarters List Section -->
+  <section class="admin-section">
+    <div class="section-header">
+      <h2>Quarters</h2>
+      <button (click)="populateQuarters()" [disabled]="isPopulating" class="populate-btn">
+        {{ isPopulating ? 'Populating...' : 'Populate Test Quarters' }}
+      </button>
     </div>
-    <div>
-      <label>
-        Proof:
-        <input type="number" [(ngModel)]="selectedQuarter.samples['sample' + sample].proof" min="80" max="130">
-      </label>
+    <div class="quarters-list">
+      <ul>
+        <li *ngFor="let quarter of quarters" (click)="selectQuarter(quarter)"
+            [class.active]="selectedQuarter?.id === quarter.id">
+          {{ quarter.name }} 
+          <span [class.status-active]="quarter.active" [class.status-inactive]="!quarter.active">
+            ({{ quarter.active ? 'Active' : 'Inactive' }})
+          </span>
+        </li>
+      </ul>
     </div>
-    <div>
-      <label>
-        Age:
-        <input type="number" [(ngModel)]="selectedQuarter.samples['sample' + sample].age" min="1" max="30">
-      </label>
+  </section>
+
+  <!-- Edit Quarter Section -->
+  <section class="admin-section" *ngIf="selectedQuarter">
+    <h2>Edit Quarter: {{ selectedQuarter.name }}</h2>
+    <div class="quarter-form">
+      <div class="form-group">
+        <label class="switch">
+          <input type="checkbox" [(ngModel)]="selectedQuarter.active">
+          <span class="slider"></span>
+          Active
+        </label>
+      </div>
+
+      <div class="samples-container">
+        <h3>Samples</h3>
+        <div class="samples-grid">
+          <div class="sample-card" *ngFor="let sample of [1, 2, 3, 4]">
+            <h4>Sample {{ sample }}</h4>
+            <div class="form-group">
+              <label>Mashbill:</label>
+              <select [(ngModel)]="selectedQuarter.samples['sample' + sample].mashbill">
+                <option value="Bourbon">Bourbon</option>
+                <option value="Rye">Rye</option>
+                <option value="Wheat">Wheat</option>
+                <option value="Single Malt">Single Malt</option>
+                <option value="Blend">Blend</option>
+                <option value="Specialty">Specialty</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Proof:</label>
+              <input type="number" [(ngModel)]="selectedQuarter.samples['sample' + sample].proof" 
+                     min="80" max="130">
+            </div>
+            <div class="form-group">
+              <label>Age:</label>
+              <input type="number" [(ngModel)]="selectedQuarter.samples['sample' + sample].age" 
+                     min="1" max="30">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button (click)="updateQuarter()" class="primary-btn">Update Quarter</button>
     </div>
-  </div>
+  </section>
 
-  <button (click)="updateQuarter()">Update Quarter</button>
-</div>
+  <!-- Create New Quarter Section -->
+  <section class="admin-section">
+    <h2>Create New Quarter</h2>
+    <div class="quarter-form">
+      <div class="form-group">
+        <label>Name:</label>
+        <input type="text" [(ngModel)]="newQuarter.name">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Start Date:</label>
+          <input type="date" [ngModel]="newQuarter.startDate | date:'yyyy-MM-dd'" 
+                 (ngModelChange)="newQuarter.startDate = $event">
+        </div>
+        <div class="form-group">
+          <label>End Date:</label>
+          <input type="date" [ngModel]="newQuarter.endDate | date:'yyyy-MM-dd'" 
+                 (ngModelChange)="newQuarter.endDate = $event">
+        </div>
+      </div>
+      <button (click)="createNewQuarter()" class="primary-btn">Create Quarter</button>
+    </div>
+  </section>
 
-<h3>Create New Quarter</h3>
-<div>
-  <label>
-    Name:
-    <input type="text" [(ngModel)]="newQuarter.name">
-  </label>
-  <label>
-    Start Date:
-    <input type="date" [ngModel]="newQuarter.startDate | date:'yyyy-MM-dd'" (ngModelChange)="newQuarter.startDate = $event">
-  </label>
-  <label>
-    End Date:
-    <input type="date" [ngModel]="newQuarter.endDate | date:'yyyy-MM-dd'" (ngModelChange)="newQuarter.endDate = $event">
-  </label>
-  <button (click)="createNewQuarter()">Create Quarter</button>
-</div>
-
-<h3>Custom Event</h3>
-<div>
-  <label>
-    Event Name:
-    <input type="text" [(ngModel)]="customEvent.name">
-  </label>
-  <label>
-    Date:
-    <input type="date" [(ngModel)]="customEvent.date">
-  </label>
-  <!-- Add more fields for custom event as needed -->
-  <button (click)="createCustomEvent()">Create Custom Event</button>
-</div>
-
-<h3>Scoring Rules</h3>
-<div>
-  <label>
-    Perfect Age Score:
-    <input type="number" [(ngModel)]="scoringRules.agePerfectScore">
-  </label>
-  <label>
-    Age Bonus:
-    <input type="number" [(ngModel)]="scoringRules.ageBonus">
-  </label>
-  <label>
-    Age Penalty Per Year:
-    <input type="number" [(ngModel)]="scoringRules.agePenaltyPerYear">
-  </label>
-  <label>
-    Perfect Proof Score:
-    <input type="number" [(ngModel)]="scoringRules.proofPerfectScore">
-  </label>
-  <label>
-    Proof Bonus:
-    <input type="number" [(ngModel)]="scoringRules.proofBonus">
-  </label>
-  <label>
-    Proof Penalty Per Point:
-    <input type="number" [(ngModel)]="scoringRules.proofPenaltyPerPoint">
-  </label>
-  <label>
-    Correct Mashbill Score:
-    <input type="number" [(ngModel)]="scoringRules.mashbillCorrectScore">
-  </label>
-  <button (click)="updateScoringRules()">Update Scoring Rules</button>
+  <!-- Scoring Rules Section -->
+  <section class="admin-section">
+    <h2>Scoring Rules</h2>
+    <div class="scoring-rules-grid">
+      <div class="form-group">
+        <label>Perfect Age Score:</label>
+        <input type="number" [(ngModel)]="scoringRules.agePerfectScore">
+      </div>
+      <div class="form-group">
+        <label>Age Bonus:</label>
+        <input type="number" [(ngModel)]="scoringRules.ageBonus">
+      </div>
+      <div class="form-group">
+        <label>Age Penalty/Year:</label>
+        <input type="number" [(ngModel)]="scoringRules.agePenaltyPerYear">
+      </div>
+      <div class="form-group">
+        <label>Perfect Proof Score:</label>
+        <input type="number" [(ngModel)]="scoringRules.proofPerfectScore">
+      </div>
+      <div class="form-group">
+        <label>Proof Bonus:</label>
+        <input type="number" [(ngModel)]="scoringRules.proofBonus">
+      </div>
+      <div class="form-group">
+        <label>Proof Penalty/Point:</label>
+        <input type="number" [(ngModel)]="scoringRules.proofPenaltyPerPoint">
+      </div>
+      <div class="form-group">
+        <label>Mashbill Score:</label>
+        <input type="number" [(ngModel)]="scoringRules.mashbillCorrectScore">
+      </div>
+    </div>
+    <button (click)="updateScoringRules()" class="primary-btn">Update Scoring Rules</button>
+  </section>
 </div>
