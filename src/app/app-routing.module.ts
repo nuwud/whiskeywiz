@@ -26,10 +26,12 @@ import { Q1225Component } from './quarters/1225/1225.component';
 import { Q0326Component } from './quarters/0326/0326.component';
 import { Q0626Component } from './quarters/0626/0626.component';
 import { Q0926Component } from './quarters/0926/0926.component';
+import { RegisterComponent } from './auth/register/register.component';
 
 const routes: Routes = [
   { path: 'player', component: PlayerComponent, canActivate: [AuthGuard] },
   { path: 'admin', component: AdminComponent, canActivate: [AuthGuard] },
+  { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   { path: 'logout', component: LoginComponent },
   { path: 'quarter/0122', component: Q0122Component },
