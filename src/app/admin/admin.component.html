@@ -25,87 +25,54 @@
     </div>
 
     <!-- Quarter Editor -->
-    <div class="quarter-editor" *ngIf="selectedQuarter">
-      <h2>
-        Editing {{ selectedQuarter.name }}
-        <label class="toggle">
-          <input type="checkbox" [(ngModel)]="selectedQuarter.active">
-          Active
-        </label>
-      </h2>
-
-      <div class="samples-grid">
-        <div class="sample-column" *ngFor="let sampleNum of [1,2,3,4]">
-          <h3>Sample {{ sampleNum }}</h3>
-          
-          <!-- Mashbill Dropdown -->
-          <div class="control-group">
-            <label>Mashbill</label>
-            <select [(ngModel)]="selectedQuarter.samples['sample' + sampleNum].mashbill">
-              <option value="Bourbon">Bourbon</option>
-              <option value="Rye">Rye</option>
-              <option value="Wheat">Wheat</option>
-              <option value="Single Malt">Single Malt</option>
-            </select>
-          </div>
-
-          <!-- Proof Slider -->
-          <div class="control-group">
-            <label>Proof: {{ selectedQuarter.samples['sample' + sampleNum].proof }}</label>
-            <input type="range" 
-                   [(ngModel)]="selectedQuarter.samples['sample' + sampleNum].proof"
-                   min="80" max="130" step="1">
-          </div>
-
-          <!-- Age Slider -->
-          <div class="control-group">
-            <label>Age: {{ selectedQuarter.samples['sample' + sampleNum].age }}</label>
-            <input type="range" 
-                   [(ngModel)]="selectedQuarter.samples['sample' + sampleNum].age"
-                   min="1" max="30" step="1">
-          </div>
-        </div>
-      </div>
-
-      <div class="actions">
-        <button (click)="updateQuarter()" class="save-btn">Save Changes</button>
-      </div>
+    <!-- Replace the scoring rules section in admin.component.html -->
+<div class="scoring-rules" *ngIf="!selectedQuarter">
+  <h2>Scoring Rules</h2>
+  <div class="scoring-rules-grid">
+    <div class="control-group">
+      <label>Perfect Age Score: {{ scoringRules.agePerfectScore }}</label>
+      <input type="range" 
+             [(ngModel)]="scoringRules.agePerfectScore"
+             min="0" max="50" step="5">
     </div>
-
-    <!-- Scoring Rules Section -->
-    <div class="scoring-rules" *ngIf="!selectedQuarter">
-      <h2>Scoring Rules</h2>
-      <div class="scoring-rules-grid">
-        <div class="control-group">
-          <label>Perfect Age Score:</label>
-          <input type="number" [(ngModel)]="scoringRules.agePerfectScore">
-        </div>
-        <div class="control-group">
-          <label>Age Bonus:</label>
-          <input type="number" [(ngModel)]="scoringRules.ageBonus">
-        </div>
-        <div class="control-group">
-          <label>Age Penalty Per Year:</label>
-          <input type="number" [(ngModel)]="scoringRules.agePenaltyPerYear">
-        </div>
-        <div class="control-group">
-          <label>Perfect Proof Score:</label>
-          <input type="number" [(ngModel)]="scoringRules.proofPerfectScore">
-        </div>
-        <div class="control-group">
-          <label>Proof Bonus:</label>
-          <input type="number" [(ngModel)]="scoringRules.proofBonus">
-        </div>
-        <div class="control-group">
-          <label>Proof Penalty Per Point:</label>
-          <input type="number" [(ngModel)]="scoringRules.proofPenaltyPerPoint">
-        </div>
-        <div class="control-group">
-          <label>Correct Mashbill Score:</label>
-          <input type="number" [(ngModel)]="scoringRules.mashbillCorrectScore">
-        </div>
-      </div>
-      <button (click)="updateScoringRules()" class="save-btn">Update Scoring Rules</button>
+    <div class="control-group">
+      <label>Age Bonus: {{ scoringRules.ageBonus }}</label>
+      <input type="range" 
+             [(ngModel)]="scoringRules.ageBonus"
+             min="0" max="25" step="5">
     </div>
+    <div class="control-group">
+      <label>Age Penalty Per Year: {{ scoringRules.agePenaltyPerYear }}</label>
+      <input type="range" 
+             [(ngModel)]="scoringRules.agePenaltyPerYear"
+             min="1" max="10" step="1">
+    </div>
+    <div class="control-group">
+      <label>Perfect Proof Score: {{ scoringRules.proofPerfectScore }}</label>
+      <input type="range" 
+             [(ngModel)]="scoringRules.proofPerfectScore"
+             min="0" max="50" step="5">
+    </div>
+    <div class="control-group">
+      <label>Proof Bonus: {{ scoringRules.proofBonus }}</label>
+      <input type="range" 
+             [(ngModel)]="scoringRules.proofBonus"
+             min="0" max="25" step="5">
+    </div>
+    <div class="control-group">
+      <label>Proof Penalty Per Point: {{ scoringRules.proofPenaltyPerPoint }}</label>
+      <input type="range" 
+             [(ngModel)]="scoringRules.proofPenaltyPerPoint"
+             min="1" max="10" step="1">
+    </div>
+    <div class="control-group">
+      <label>Correct Mashbill Score: {{ scoringRules.mashbillCorrectScore }}</label>
+      <input type="range" 
+             [(ngModel)]="scoringRules.mashbillCorrectScore"
+             min="0" max="25" step="5">
+    </div>
+  </div>
+  <button (click)="updateScoringRules()" class="save-btn">Update Scoring Rules</button>
+</div>
   </div>
 </div>
