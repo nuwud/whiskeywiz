@@ -1,6 +1,6 @@
 import { NgModule, Injector, DoBootstrap, ApplicationRef } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { createCustomElement } from '@angular/elements';
 import { AppRoutingModule } from './app-routing.module';
 import { AngularFireModule } from '@angular/fire/compat';
@@ -25,12 +25,19 @@ import { RegisterComponent } from './auth/register/register.component';
 
 @NgModule({
   declarations: [
-    AppComponent, BaseQuarterComponent, AdminComponent, PlayerComponent, LeaderboardComponent, LoginComponent, RegisterComponent,
+    AppComponent,
+    BaseQuarterComponent,
+    AdminComponent,
+    PlayerComponent, 
+    LeaderboardComponent, 
+    LoginComponent, 
+    RegisterComponent,
     Q0122Component, Q0322Component, Q0323Component, Q0324Component, Q0325Component, Q0326Component, Q0622Component, Q0623Component, Q0624Component, Q0625Component, Q0626Component, Q0922Component, Q0923Component, Q0924Component, Q0925Component, Q0926Component, Q1222Component, Q1223Component, Q1224Component, Q1225Component,
   ],
   imports: [
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,

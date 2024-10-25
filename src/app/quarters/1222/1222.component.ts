@@ -1,3 +1,10 @@
+// 1222.component.ts
+/** 
+ * Whiskey Wiz Quarter Component - Q4 2022 
+ * 
+ * Integration:
+ * <whiskey-wiz-1222></whiskey-wiz-1222> 
+ */
 import { Component } from '@angular/core';
 import { BaseQuarterComponent } from '../base-quarter.component';
 import { AuthService } from '../../services/auth.service';
@@ -78,3 +85,5 @@ export class Q1222Component extends BaseQuarterComponent {
     }
   }
 }
+
+

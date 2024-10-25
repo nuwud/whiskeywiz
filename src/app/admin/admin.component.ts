@@ -61,6 +61,10 @@ export class AdminComponent implements OnInit {
     this.error = null;
   }
 
+  showScoringRules() {
+    this.selectedQuarter = null;
+  }
+
   async updateQuarter() {
     if (!this.selectedQuarter || !this.selectedQuarter.id) {
       this.error = 'No quarter selected for update.';

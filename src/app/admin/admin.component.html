@@ -1,12 +1,70 @@
 <!-- admin.component.html -->
 <div class="admin-container">
+
+  <div class="instructions-panel" *ngIf="!selectedQuarter">
+    <h3>Integration Instructions</h3>
+    
+    <h4>1. Admin Panel Integration</h4>
+    <p>Add this code to your Shopify page where you want the admin panel:</p>
+    <pre><code>
+      &lt;whiskey-wiz-admin&gt;&lt;/whiskey-wiz-admin&gt;
+    </code></pre>
+
+    <h4>2. Quarter Game Integration</h4>
+    <p>Add one of these tags where you want to embed specific quarter games:</p>
+    <div class="code-samples">
+      <details>
+        <summary>2022 Quarters</summary>
+        <pre><code>
+Q1: &lt;whiskey-wiz-0122&gt;&lt;/whiskey-wiz-0122&gt;
+Q2: &lt;whiskey-wiz-0222&gt;&lt;/whiskey-wiz-0222&gt;
+Q3: &lt;whiskey-wiz-0322&gt;&lt;/whiskey-wiz-0322&gt;
+Q4: &lt;whiskey-wiz-0422&gt;&lt;/whiskey-wiz-0422&gt;
+        </code></pre>
+      </details>
+      <details>
+        <summary>2023 Quarters</summary>
+        <pre><code>
+Q1: &lt;whiskey-wiz-0123&gt;&lt;/whiskey-wiz-0123&gt;
+Q2: &lt;whiskey-wiz-0223&gt;&lt;/whiskey-wiz-0223&gt;
+Q3: &lt;whiskey-wiz-0323&gt;&lt;/whiskey-wiz-0323&gt;
+Q4: &lt;whiskey-wiz-0423&gt;&lt;/whiskey-wiz-0423&gt;
+        </code></pre>
+      </details>
+      <details>
+        <summary>2024 Quarters</summary>
+        <pre><code>
+Q1: &lt;whiskey-wiz-0124&gt;&lt;/whiskey-wiz-0124&gt;
+Q2: &lt;whiskey-wiz-0224&gt;&lt;/whiskey-wiz-0224&gt;
+Q3: &lt;whiskey-wiz-0324&gt;&lt;/whiskey-wiz-0324&gt;
+Q4: &lt;whiskey-wiz-0424&gt;&lt;/whiskey-wiz-0424&gt;
+        </code></pre>
+      </details>
+    </div>
+
+    <h4>3. Required Scripts</h4>
+    <p>Add these scripts to your Shopify theme.liquid file:</p>
+    <pre><code>
+&lt;!-- Whiskey Wiz Dependencies --&gt;
+&lt;script src="https://your-firebase-hosting-url/whiskey-wiz.js"&gt;&lt;/script&gt;
+    </code></pre>
+
+    <h4>4. Important Notes</h4>
+    <ul>
+      <li>The admin panel should only be embedded on admin-specific pages</li>
+      <li>Each quarter component can be embedded independently</li>
+      <li>Components will automatically handle authentication</li>
+      <li>Changes made in admin panel affect all embedded instances</li>
+    </ul>
+  </div>
+
   <h1>Whiskey Wiz Admin</h1>
 
   <div class="action-bar">
     <button (click)="populateQuarters()" [disabled]="isPopulating" class="populate-btn">
       {{ isPopulating ? 'Populating...' : 'Populate All Quarters' }}
     </button>
-    <button (click)="selectedQuarter = null" class="nav-btn" *ngIf="selectedQuarter">
+    <button (click)="showScoringRules()" class="nav-btn" *ngIf="selectedQuarter">
       Return to Scoring Rules
     </button>
   </div>
