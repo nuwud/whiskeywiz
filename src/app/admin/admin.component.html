@@ -78,4 +78,9 @@
   <button (click)="updateScoringRules()" class="save-btn">Update Scoring Rules</button>
 </div>
   </div>
+  <!-- Add this somewhere in your admin.component.html for debugging -->
+<div style="margin-top: 20px; padding: 10px; background: #f5f5f5;">
+  <h3>Debug Info:</h3>
+  <pre>{{ scoringRules | json }}</pre>
+</div>
 </div>
