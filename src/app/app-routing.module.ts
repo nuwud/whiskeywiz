@@ -54,7 +54,6 @@ const routes: Routes = [
   { path: 'quarter/0926', component: Q0926Component },
   { path: '', redirectTo: '/admin', pathMatch: 'full' },
   { path: '', redirectTo: '/player', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent }
 ];
 
 @NgModule({

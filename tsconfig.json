@@ -27,8 +27,7 @@
       "jasminewd2",
       "json-schema",
       "mute-stream",
-      "node",
-      "wrap-ansi"
+      "node"
     ],
     "lib": [
       "ES2020",
