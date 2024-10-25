@@ -6,6 +6,9 @@
     <button (click)="populateQuarters()" [disabled]="isPopulating" class="populate-btn">
       {{ isPopulating ? 'Populating...' : 'Populate All Quarters' }}
     </button>
+    <button (click)="selectedQuarter = null" class="nav-btn" *ngIf="selectedQuarter">
+      Return to Scoring Rules
+    </button>
   </div>
 
   <div class="admin-layout">
