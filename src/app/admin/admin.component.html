@@ -1,8 +1,7 @@
-// admin.component.html
+<!-- admin.component.html -->
 <div class="admin-container">
   <h1>Whiskey Wiz Admin</h1>
 
-  <!-- Populate button at the top -->
   <div class="action-bar">
     <button (click)="populateQuarters()" [disabled]="isPopulating" class="populate-btn">
       {{ isPopulating ? 'Populating...' : 'Populate All Quarters' }}
@@ -71,6 +70,42 @@
       <div class="actions">
         <button (click)="updateQuarter()" class="save-btn">Save Changes</button>
       </div>
+    </div>
+
+    <!-- Scoring Rules Section -->
+    <div class="scoring-rules" *ngIf="!selectedQuarter">
+      <h2>Scoring Rules</h2>
+      <div class="scoring-rules-grid">
+        <div class="control-group">
+          <label>Perfect Age Score:</label>
+          <input type="number" [(ngModel)]="scoringRules.agePerfectScore">
+        </div>
+        <div class="control-group">
+          <label>Age Bonus:</label>
+          <input type="number" [(ngModel)]="scoringRules.ageBonus">
+        </div>
+        <div class="control-group">
+          <label>Age Penalty Per Year:</label>
+          <input type="number" [(ngModel)]="scoringRules.agePenaltyPerYear">
+        </div>
+        <div class="control-group">
+          <label>Perfect Proof Score:</label>
+          <input type="number" [(ngModel)]="scoringRules.proofPerfectScore">
+        </div>
+        <div class="control-group">
+          <label>Proof Bonus:</label>
+          <input type="number" [(ngModel)]="scoringRules.proofBonus">
+        </div>
+        <div class="control-group">
+          <label>Proof Penalty Per Point:</label>
+          <input type="number" [(ngModel)]="scoringRules.proofPenaltyPerPoint">
+        </div>
+        <div class="control-group">
+          <label>Correct Mashbill Score:</label>
+          <input type="number" [(ngModel)]="scoringRules.mashbillCorrectScore">
+        </div>
+      </div>
+      <button (click)="updateScoringRules()" class="save-btn">Update Scoring Rules</button>
     </div>
   </div>
 </div>
