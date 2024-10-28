@@ -3,12 +3,21 @@ import { FirebaseService } from './services/firebase.service';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  template: `
+    <header>
+      <h1>{{ title }}</h1>
+      <nav *ngIf="isLoggedIn">
+        <a href="/logout">Logout</a>
+      </nav>
+    </header>
+    <main>
+      <div id="content"></div>
+    </main>
+  `
 })
 export class AppComponent {
   title = 'Whiskey Wiz';
-  isLoggedIn = false;
+  isLoggedIn = false; // Set this based on your auth service
 
   constructor(private firebaseService: FirebaseService) {
     this.firebaseService.getAuthState().subscribe(user => {
