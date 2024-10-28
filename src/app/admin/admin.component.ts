@@ -26,16 +26,41 @@ export class AdminComponent implements OnInit {
   };
 
   constructor(
-    private firebaseService: FirebaseService, 
-    private quarterPopulation: QuarterPopulationService
-  ) {
-    this.quarterPopulation.isPopulating$.subscribe(
-      isPopulating => this.isPopulating = isPopulating
-    );
-  }
+    private firebaseService: FirebaseService
+  ) {}
 
   ngOnInit() {
     this.loadQuarters();
+    this.loadScoringRules();
+  }
+
+  copyToClipboard(type: string) {
+    let textToCopy = '';
+    
+    if (type === 'script-tag') {
+      textToCopy = '<script src="https://whiskeywiz2.firebaseapp.com/whiskey-wiz.js" defer></script>';
+    } else {
+      // For quarter tags
+      textToCopy = `<whiskey-wiz-${type}></whiskey-wiz-${type}>`;
+    }
+
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      // Could add a toast notification here
+      console.log('Copied to clipboard');
+    }).catch(err => {
+      console.error('Failed to copy:', err);
+    });
+  }
+
+  async loadScoringRules() {
+    try {
+      const rules = await this.firebaseService.getScoringRules().toPromise();
+      if (rules) {
+        this.scoringRules = rules;
+      }
+    } catch (error) {
+      console.error('Error loading scoring rules:', error);
+    }
   }
 
   async loadQuarters() {
@@ -92,23 +117,6 @@ export class AdminComponent implements OnInit {
     } catch (error) {
       console.error('Error creating new quarter:', error);
       this.error = 'Failed to create new quarter. Please try again.';
-    }
-  }
-
-  async populateQuarters() {
-    if (this.isPopulating) return;
-
-    try {
-      this.isPopulating = true;
-      this.error = null;
-      await this.quarterPopulation.populateQuarters();
-      console.log('All quarters populated successfully');
-      await this.loadQuarters();
-    } catch (error) {
-      console.error('Error populating quarters:', error);
-      this.error = 'Failed to populate quarters. Please try again.';
-    } finally {
-      this.isPopulating = false;
     }
   }
 
