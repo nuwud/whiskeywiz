@@ -35,6 +35,19 @@
           }
         }
       },
+      "outputHashing": "none",
+      "sourceMap": false,
+      "namedChunks": false,
+      "vendorChunk": false,
+      "commonChunk": false,
+      "buildOptimizer": true,
+      "budgets": [
+        {
+          "type": "initial",
+          "maximumWarning": "2mb",
+          "maximumError": "5mb"
+        }
+      ],
       "outputs": [
         "{options.outputPath}"
       ]

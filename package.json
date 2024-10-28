@@ -7,7 +7,9 @@
     "build": "nx build --prod",
     "watch": "nx build --watch --configuration development",
     "test": "nx test",
-    "lint": "nx lint"
+    "lint": "nx lint",
+    "build:elements": "nx build whiskey-wiz --configuration=production && node concat.js",
+    "deploy": "npm run build:elements && firebase deploy --only hosting"
   },
   "private": true,
   "dependencies": {
@@ -52,7 +54,9 @@
     "@types/wrap-ansi": "^8.0.2",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
+    "concat": "^1.0.3",
     "eslint": "^8.56.0",
+    "fs-extra": "^11.2.0",
     "jasmine-core": "~5.1.1",
     "karma": "~6.4.2",
     "karma-chrome-launcher": "~3.2.0",
