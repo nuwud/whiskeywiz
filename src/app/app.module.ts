@@ -1,6 +1,8 @@
 import { NgModule, Injector, DoBootstrap, ApplicationRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from './shared/shared.module';
 import { createCustomElement } from '@angular/elements';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
@@ -14,7 +16,6 @@ import { AppComponent } from './app.component';
 import { BaseQuarterComponent } from './quarters/base-quarter.component';
 import { AdminComponent } from './admin/admin.component';
 import { PlayerComponent } from './player/player.component';
-import { LeaderboardComponent } from './shared/leaderboard/leaderboard.component';
 import { LoginComponent } from './auth/login/login.component';
 import { GameService } from './services/game.service';
 import { FirebaseService } from './services/firebase.service';
@@ -48,7 +49,6 @@ import { AppRoutingModule } from './app-routing.module';
     BaseQuarterComponent,
     AdminComponent,
     PlayerComponent, 
-    LeaderboardComponent, 
     LoginComponent, 
     RegisterComponent,
     Q0122Component, 
@@ -76,6 +76,8 @@ import { AppRoutingModule } from './app-routing.module';
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
+    SharedModule,
+    CommonModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
@@ -94,8 +96,8 @@ export class AppModule implements DoBootstrap {
   
   ngDoBootstrap() {
     // Define main app component as web component
-    const appElement = createCustomElement(AppComponent, { injector: this.injector });
-    customElements.define('whiskey-wiz-app', appElement);
+    //const appElement = createCustomElement(AppComponent, { injector: this.injector });
+    //customElements.define('whiskey-wiz-app', appElement);
     // Define all components that will be used as web components
     const webComponents = [
       { name: 'whiskey-wiz-admin', component: AdminComponent },

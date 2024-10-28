@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FirebaseService, Quarter, PlayerScore } from '../../services/firebase.service';
+import { GameService } from '../../services/game.service';
 
 interface Guess {
   age: number;
@@ -13,19 +14,26 @@ interface Guess {
   styleUrls: ['./game.component.css']
 })
 export class GameComponent implements OnInit {
+  @Input() quarterData: any = {
+    name: '',
+    samples: {}
+  };
   @Input() quarterId: string = '';
-  quarterData: Quarter | null = null;
   currentSample: number = 1;
+  playerName: string = '';
   guesses: { [key: string]: Guess } = {};
   scores: { [key: string]: number } = {};
   totalScore: number = 0;
   gameCompleted: boolean = false;
-  playerName: string = '';
+
 
   mashbillCategories = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Blend', 'Specialty'];
 
-  constructor(private firebaseService: FirebaseService) {}
-
+  constructor(
+    private firebaseService: FirebaseService,
+    private gameService: GameService
+  ) {}
+  
   ngOnInit() {
     this.loadQuarterData();
   }

@@ -1,0 +1,51 @@
+.leaderboard {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 8px;
+  }
+  
+  .leaderboard h2 {
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  .leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .leaderboard-table th {
+    background: #f8f8f8;
+    font-weight: bold;
+    color: #666;
+  }
+  
+  .leaderboard-table tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .leaderboard-table tr:hover {
+    background: #f9f9f9;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 600px) {
+    .leaderboard-table {
+      font-size: 14px;
+    }
+    
+    .leaderboard-table th,
+    .leaderboard-table td {
+      padding: 8px;
+    }
+  }

@@ -16,7 +16,7 @@ import { NgForm } from '@angular/forms';
   template: `
     <div *ngIf="!quarterData">Loading...</div>
     <div *ngIf="quarterData">
-      <h2>{{ quarterData.name }}</h2>
+      <h2>{{ quarterData?.name || 'June 2026' }}</h2>
       <div *ngIf="!gameCompleted">
         <form (ngSubmit)="onSubmit(guessForm)" #guessForm="ngForm">
           <div>

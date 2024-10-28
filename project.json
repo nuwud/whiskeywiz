@@ -22,7 +22,20 @@
         "styles": [
           "src/styles.css"
         ],
-        "scripts": []
+        "scripts": [],
+        "outputHashing": "none",
+        "sourceMap": false,
+        "namedChunks": false,
+        "vendorChunk": false,
+        "commonChunk": false,
+        "buildOptimizer": true,
+        "budgets": [
+          {
+            "type": "initial",
+            "maximumWarning": "2mb",
+            "maximumError": "5mb"
+          }
+        ]
       },
       "configurations": {
         "production": {
@@ -35,22 +48,21 @@
           }
         }
       },
-      "outputHashing": "none",
-      "sourceMap": false,
-      "namedChunks": false,
-      "vendorChunk": false,
-      "commonChunk": false,
-      "buildOptimizer": true,
-      "budgets": [
-        {
-          "type": "initial",
-          "maximumWarning": "2mb",
-          "maximumError": "5mb"
-        }
-      ],
       "outputs": [
         "{options.outputPath}"
       ]
+    },
+    "build:elements": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx build whiskey-wiz --configuration=production"
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "firebase deploy --only hosting"
+      }
     },
     "lint": {
       "executor": "@angular-eslint/builder:lint",
@@ -66,6 +78,7 @@
       ]
     },
     "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
         "production": {
           "browserTarget": "whiskey-wiz:build:production"
@@ -73,31 +86,30 @@
       },
       "options": {
         "browserTarget": "whiskey-wiz:build"
-      },
-      "executor": "@angular-devkit/build-angular:dev-server"
+      }
     },
     "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
         "browserTarget": "whiskey-wiz:build"
-      },
-      "executor": "@angular-devkit/build-angular:extract-i18n"
+      }
     },
     "test": {
+      "executor": "@angular-devkit/build-angular:karma",
       "options": {
+        "main": "src/test.ts",
+        "polyfills": "src/polyfills.ts",
+        "tsConfig": "tsconfig.spec.json",
+        "karmaConfig": "karma.conf.js",
         "assets": [
           "src/favicon.ico",
           "src/assets"
         ],
-        "polyfills": "src/polyfills.ts",
-        "scripts": [],
         "styles": [
           "src/styles.css"
         ],
-        "tsConfig": "tsconfig.spec.json",
-        "karmaConfig": "karma.conf.js",
-        "main": "src/test.ts"
-      },
-      "executor": "@angular-devkit/build-angular:karma"
+        "scripts": []
+      }
     }
   }
 }

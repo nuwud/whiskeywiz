@@ -2,6 +2,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FirebaseService } from '../services/firebase.service';
 import { AuthService } from '../services/auth.service';
 import { Quarter, PlayerScore } from '../shared/models/quarter.model';
+import { SharedModule } from '../shared/shared.module';
+
 @Component({
   template: `
     <div *ngIf="quarterData">

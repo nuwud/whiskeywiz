@@ -13,13 +13,25 @@ export class LeaderboardComponent implements OnInit {
   constructor(private firebaseService: FirebaseService) {}
 
   ngOnInit() {
-    this.loadLeaderboard();
+    if (this.quarterId) {
+      this.loadLeaderboard();
+    }
+  }
+
+  ngOnChanges() {
+    if (this.quarterId) {
+      this.loadLeaderboard();
+    }
   }
 
   loadLeaderboard() {
-    this.firebaseService.getLeaderboard(this.quarterId).subscribe(
-      scores => this.leaderboard = scores,
-      error => console.error('Error loading leaderboard:', error)
-    );
+    this.firebaseService.getLeaderboard(this.quarterId).subscribe({
+      next: (scores) => {
+        this.leaderboard = scores.sort((a, b) => b.score - a.score).slice(0, 10); // Top 10 scores
+      },
+      error: (error) => {
+        console.error('Error loading leaderboard:', error);
+      }
+    });
   }
 }

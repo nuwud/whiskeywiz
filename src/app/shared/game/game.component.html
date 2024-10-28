@@ -3,23 +3,39 @@
 
   <div *ngIf="!gameCompleted">
     <h3>Sample {{ currentSample }}</h3>
-    <form (ngSubmit)="submitGuess()">
+    <form #gameForm="ngForm" (ngSubmit)="submitGuess()">
       <div>
         <label for="ageGuess">Age Guess:</label>
-        <input type="range" id="ageGuess" [(ngModel)]="guesses['sample' + currentSample].age" name="ageGuess" min="1" max="30" step="1">
+        <input type="range" 
+               id="ageGuess" 
+               [(ngModel)]="guesses['sample' + currentSample].age" 
+               name="ageGuess" 
+               min="1" 
+               max="30" 
+               step="1">
         <span>{{ guesses['sample' + currentSample].age }} years</span>
       </div>
 
       <div>
         <label for="proofGuess">Proof Guess:</label>
-        <input type="range" id="proofGuess" [(ngModel)]="guesses['sample' + currentSample].proof" name="proofGuess" min="80" max="130" step="1">
+        <input type="range" 
+               id="proofGuess" 
+               [(ngModel)]="guesses['sample' + currentSample].proof" 
+               name="proofGuess" 
+               min="80" 
+               max="130" 
+               step="1">
         <span>{{ guesses['sample' + currentSample].proof }} proof</span>
       </div>
 
       <div>
         <label for="mashbillGuess">Mashbill Category:</label>
-        <select id="mashbillGuess" [(ngModel)]="guesses['sample' + currentSample].mashbill" name="mashbillGuess">
-          <option *ngFor="let category of mashbillCategories" [value]="category">{{ category }}</option>
+        <select id="mashbillGuess" 
+                [(ngModel)]="guesses['sample' + currentSample].mashbill" 
+                name="mashbillGuess">
+          <option *ngFor="let category of mashbillCategories" [value]="category">
+            {{ category }}
+          </option>
         </select>
       </div>
 
@@ -33,13 +49,22 @@
     <div *ngFor="let sample of [1, 2, 3, 4]">
       <h4>Sample {{ sample }}</h4>
       <p>Score: {{ scores['sample' + sample] }}</p>
-      <p>Your guess: {{ guesses['sample' + sample].age }} years, {{ guesses['sample' + sample].proof }} proof, {{ guesses['sample' + sample].mashbill }}</p>
-      <p>Actual: {{ quarterData.samples['sample' + sample].age }} years, {{ quarterData.samples['sample' + sample].proof }} proof, {{ quarterData.samples['sample' + sample].mashbill }}</p>
+      <p>Your guess: {{ guesses['sample' + sample].age }} years, 
+         {{ guesses['sample' + sample].proof }} proof, 
+         {{ guesses['sample' + sample].mashbill }}</p>
+      <p>Actual: {{ quarterData.samples['sample' + sample].age }} years, 
+         {{ quarterData.samples['sample' + sample].proof }} proof, 
+         {{ quarterData.samples['sample' + sample].mashbill }}</p>
     </div>
-    <input [(ngModel)]="playerName" placeholder="Enter your name">
-    <button (click)="finishGame()">Submit Score</button>
-    <button (click)="shareResults()">Share Results</button>
-    <button (click)="restartGame()">Play Again</button>
+    <div>
+      <input [(ngModel)]="playerName" 
+             name="playerName"
+             placeholder="Enter your name">
+      <button (click)="finishGame()" 
+              [disabled]="!playerName">Submit Score</button>
+      <button (click)="shareResults()">Share Results</button>
+      <button (click)="restartGame()">Play Again</button>
+    </div>
   </div>
   <app-leaderboard [quarterId]="quarterId"></app-leaderboard>
 </div>

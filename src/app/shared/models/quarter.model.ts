@@ -1,8 +1,11 @@
+export interface Sample {
+  age: number;
+  proof: number;
+  mashbill: string;
+}
 export interface Quarter {
     id?: string;
     name: string;
-    startDate: Date;
-    endDate: Date;
     active: boolean;
     samples: {
       [key: string]: {
