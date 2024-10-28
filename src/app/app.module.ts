@@ -40,6 +40,7 @@ import { Q1224Component } from './quarters/1224/1224.component';
 import { Q1225Component } from './quarters/1225/1225.component';
 import { QuarterPopulationService } from './services/quarter-population.service';
 import { RegisterComponent } from './auth/register/register.component';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [
@@ -75,6 +76,7 @@ import { RegisterComponent } from './auth/register/register.component';
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
+    AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
@@ -89,7 +91,7 @@ import { RegisterComponent } from './auth/register/register.component';
 })
 export class AppModule implements DoBootstrap {
   constructor(private injector: Injector) {}
-
+  
   ngDoBootstrap() {
     // Define main app component as web component
     const appElement = createCustomElement(AppComponent, { injector: this.injector });
