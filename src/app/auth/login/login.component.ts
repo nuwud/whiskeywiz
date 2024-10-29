@@ -12,25 +12,25 @@ export class LoginComponent {
   password: string = '';
   error: string = '';
 
-  constructor(public authService: AuthService, private router: Router) {}
+  constructor(
+    public authService: AuthService, 
+    private router: Router
+  ) {}
 
   async login() {
-    try {
-      await this.authService.signIn(this.email, this.password);
-      this.router.navigate(['/admin']);
-    } catch (error) {
-      this.error = 'Failed to log in. Please check your credentials.';
-      console.error('Login error:', error);
+    if (!this.email || !this.password) {
+      this.error = 'Please enter both email and password';
+      return;
     }
-  }
 
-  async logout() {
     try {
-      await this.authService.signOut();
-      this.router.navigate(['/']);
-    } catch (error) {
-      this.error = 'Failed to log out.';
-      console.error('Logout error:', error);
+      console.log('Attempting login...');
+      await this.authService.signIn(this.email, this.password);
+      console.log('Login successful');
+      await this.router.navigate(['/player']); // Change this to /player instead of /admin first
+    } catch (error: any) {
+      console.error('Login error:', error);
+      this.error = error.message || 'Failed to log in. Please check your credentials.';
     }
   }
 }
