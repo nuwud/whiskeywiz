@@ -270,3 +270,7 @@ Copy.logout-link {
 .logout-link:hover {
   color: #004499;
 }
+
+a[routerlink="/logout"] {
+  display: none;
+}

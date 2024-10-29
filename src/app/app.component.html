@@ -1,7 +1,7 @@
 <header>
   <h1>{{ title }}</h1>
   <nav *ngIf="isLoggedIn">
-    <a routerLink="/logout">Logout</a>
+    <a routerlink="/logout" (click)="logout($event)">Logout</a>
   </nav>
 </header>
 <main>
