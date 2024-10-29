@@ -23,16 +23,10 @@
           {
             "key": "Expires",
             "value": "0"
-          }
-        ]
-      },
-      {
-        "source":
-          "**/*.@(jpg|jpeg|gif|png|svg|webp|js|css|eot|otf|ttf|ttc|woff|woff2|font.css)",
-        "headers": [
+          },
           {
-            "key": "Cache-Control",
-            "value": "max-age=86400"
+            "key": "X-Deploy-Time",
+            "value": "${TIMESTAMP}"
           }
         ]
       }

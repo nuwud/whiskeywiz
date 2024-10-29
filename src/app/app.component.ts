@@ -13,6 +13,7 @@ import { FirebaseService } from './services/firebase.service';
     <main>
       <router-outlet></router-outlet>
     </main>
+    <small class="version-indicator">Version: {{deployTime}}</small>
   `,
   styles: [`
     header {
@@ -24,10 +25,12 @@ import { FirebaseService } from './services/firebase.service';
     }
   `]
 })
+
 export class AppComponent {
   title = 'Whiskey Wiz';
   isLoggedIn = false;
-
+  deployTime =  new Date().toISOString();
+  
   constructor(private firebaseService: FirebaseService) {
     this.firebaseService.getAuthState().subscribe(user => {
       this.isLoggedIn = !!user;
