@@ -1,7 +1,6 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { FirebaseService } from '../services/firebase.service';
 import { Quarter } from '../shared/models/quarter.model';
@@ -22,7 +21,7 @@ export class AdminNavComponent implements OnInit {
     private router: Router
   ) {
     this.isAdmin$ = this.authService.user$.pipe(
-      switchMap(user => user ? this.authService.isAdmin(user.email || '') : of(false))
+      switchMap(user => user ? this.authService.isAdmin() : of(false))
     );
     this.quarters$ = this.firebaseService.getQuarters();
   }

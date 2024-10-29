@@ -1,10 +1,9 @@
 // auth.service.ts
 import { Injectable } from '@angular/core';
-import { Auth, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, User } from '@angular/fire/auth';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
 import { Observable, from, of } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
-import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
-import { switchMap as rxjsSwitchMap } from 'rxjs/operators';
+import { map, switchMap, catchError } from 'rxjs/operators';
 
 interface UserData {
   email: string;
@@ -16,24 +15,28 @@ interface UserData {
   providedIn: 'root'
 })
 export class AuthService {
-  user$: Observable<User | null>;
-  private adminEmails = ['nuwudorder@gmail.com']; // Add second admin email when ready
+  user$: Observable<any>;
+  private readonly adminEmails = ['nuwudorder@gmail.com']; // Add second admin email when ready
 
   constructor(
-    private auth: Auth,
-    private firestore: Firestore
+    private afAuth: AngularFireAuth,
+    private afs: AngularFirestore
   ) {
-    this.user$ = new Observable((subscriber) => {
-      return auth.onAuthStateChanged(subscriber);
-    });
+    this.user$ = this.afAuth.authState;
   }
 
-  // Sign in method
+  // Authentication methods
   async signIn(email: string, password: string) {
     try {
       console.log('Attempting sign in...', { email });
-      const result = await signInWithEmailAndPassword(this.auth, email, password);
+      const result = await this.afAuth.signInWithEmailAndPassword(email, password);
       console.log('Sign in successful', result);
+      
+      // Check and update admin status
+      if (result.user) {
+        await this.updateUserData(result.user);
+      }
+      
       return result;
     } catch (error: any) {
       console.error('Sign in error:', error);
@@ -41,17 +44,11 @@ export class AuthService {
     }
   }
 
-  // Register method
-  async register(email: string, password: string): Promise<User> {
+  async register(email: string, password: string) {
     try {
-      const credential = await createUserWithEmailAndPassword(this.auth, email, password);
+      const credential = await this.afAuth.createUserWithEmailAndPassword(email, password);
       if (credential.user) {
-        // Create user document in Firestore
-        await setDoc(doc(this.firestore, `users/${credential.user.uid}`), {
-          email: credential.user.email,
-          isAdmin: false,
-          createdAt: new Date()
-        });
+        await this.updateUserData(credential.user);
         return credential.user;
       }
       throw new Error('User creation failed');
@@ -61,17 +58,29 @@ export class AuthService {
     }
   }
 
-  // Sign out method
   async signOut() {
     try {
-      await signOut(this.auth);
+      await this.afAuth.signOut();
     } catch (error) {
       console.error('Sign out error:', error);
       throw error;
     }
   }
 
-  // Authentication check
+  // User data methods
+  private async updateUserData(user: any) {
+    const userRef: AngularFirestoreDocument<UserData> = this.afs.doc(`users/${user.uid}`);
+    
+    const data: UserData = {
+      email: user.email,
+      isAdmin: this.adminEmails.includes(user.email),
+      createdAt: new Date()
+    };
+
+    return userRef.set(data, { merge: true });
+  }
+
+  // Auth state checks
   isAuthenticated(): Observable<boolean> {
     return this.user$.pipe(
       map(user => !!user),
@@ -79,21 +88,24 @@ export class AuthService {
     );
   }
 
-  // Admin check
-  isAdmin(email: string): Observable<boolean> {
+  isAdmin(): Observable<boolean> {
     return this.user$.pipe(
-      switchMap(async (user) => {
+      switchMap(user => {
         if (!user) return of(false);
-        const userDoc = await getDoc(doc(this.firestore, `users/${user.uid}`));
-        const userData = userDoc.data() as UserData;
-        return of(userData?.isAdmin || false);
-      }),
-      catchError(() => of(false))
+        return this.afs.doc<UserData>(`users/${user.uid}`).valueChanges().pipe(
+          map(userData => userData?.isAdmin || false),
+          catchError(() => of(false))
+        );
+      })
     );
   }
 
-  
-  // Get current user ID
+  // Helper method for synchrous admin check (useful for immediate checks)
+  isAdminSync(email: string | null): boolean {
+    if (!email) return false;
+    return this.adminEmails.includes(email);
+  }
+
   getCurrentUserId(): Observable<string | null> {
     return this.user$.pipe(
       map(user => user?.uid || null)
@@ -134,7 +146,4 @@ export class AuthService {
 
     return new Error(message);
   }
-}
-function switchMap<T, R>(project: (value: T, index: number) => Promise<Observable<R>>): import("rxjs").OperatorFunction<T, R> {
-  return rxjsSwitchMap((value, index) => from(project(value, index)).pipe(rxjsSwitchMap(innerObservable => innerObservable)));
 }
