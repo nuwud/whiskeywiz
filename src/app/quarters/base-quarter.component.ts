@@ -1,4 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { FirebaseService } from '../services/firebase.service';
 import { AuthService } from '../services/auth.service';
 import { Quarter, PlayerScore } from '../shared/models/quarter.model';
@@ -27,7 +29,34 @@ export class BaseQuarterComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadQuarterData();
+    this.initializePlayer();
+  }
+
+  protected initializePlayer(): void {
+    this.authService.getCurrentUserId().pipe(
+      catchError((error: Error) => {
+        console.error('Error getting user ID:', error);
+        return of(null);
+      })
+    ).subscribe(userId => {
+      userId = userId as string | null;
+      if (userId) {
+        // Handle authenticated user
+        console.log('Authenticated user:', userId);
+      } else {
+        // Handle guest player
+        console.log('Guest player');
+      }
+      userId = userId as string | null;
+      if (userId) {
+        // Handle authenticated user
+        console.log('Authenticated user:', userId);
+      } else {
+        // Handle guest player
+        console.log('Guest player');
+      }
+      this.loadQuarterData();
+    });
   }
 
   loadQuarterData() {
@@ -112,4 +141,8 @@ export class BaseQuarterComponent implements OnInit {
     this.playerScore = 0;
     this.guess = { age: 0, proof: 0, mashbill: '' };
   }
+}
+
+function ofNull(arg0: null): any {
+  throw new Error('Function not implemented.');
 }
