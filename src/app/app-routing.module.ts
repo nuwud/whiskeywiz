@@ -13,8 +13,7 @@ import { canActivateAdmin, canActivateAuth, combineGuards } from './guards/auth.
 const appRoutes: Routes = [
   { path: 'admin', component: AdminComponent, canActivate: [canActivateAdmin] },
   { path: 'player', component: PlayerComponent, canActivate: [canActivateAdmin] },
-  { path: 'superadmin', canActivate: [combineGuards(canActivateAuth, canActivateAdmin)]
-  },
+  { path: 'superadmin', canActivate: [combineGuards(canActivateAuth, canActivateAdmin)] },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'game', component: GameComponent },

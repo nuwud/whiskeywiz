@@ -42,6 +42,10 @@ export class AuthService {
     return this.user$.pipe(map(user => !!user));
   }
 
+  isAuthenticated(): Observable<boolean> {
+    return this.user$.pipe(map(user => user ? true : false)); 
+  }
+
   getCurrentUserId(): Observable<string | null> {
     return this.user$.pipe(map(user => user ? user.uid : null));
   }
