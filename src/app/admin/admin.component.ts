@@ -98,11 +98,19 @@ export class AdminComponent implements OnInit {
       this.error = 'No quarter selected for update.';
       return;
     }
-
+  
     try {
-      await this.firebaseService.updateQuarter(this.selectedQuarter.id, this.selectedQuarter).toPromise();
+      // Create a clean copy of the quarter data
+      const quarterData = {
+        id: this.selectedQuarter.id,
+        name: this.selectedQuarter.name,
+        active: this.selectedQuarter.active,
+        samples: this.selectedQuarter.samples
+      };
+  
+      await this.firebaseService.updateQuarter(this.selectedQuarter.id, quarterData).toPromise();
       console.log('Quarter updated successfully');
-      this.loadQuarters();
+      await this.loadQuarters(); // Refresh the list
       this.error = null;
     } catch (error) {
       console.error('Error updating quarter:', error);
