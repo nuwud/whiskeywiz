@@ -2,6 +2,7 @@ import { NgModule, Injector, DoBootstrap, ApplicationRef, CUSTOM_ELEMENTS_SCHEMA
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { SharedModule } from './shared/shared.module';
 import { createCustomElement } from '@angular/elements';
 import { AngularFireModule } from '@angular/fire/compat';
@@ -50,8 +51,7 @@ import { Q1225Component } from './quarters/1225/1225.component';
 import { QuarterPopulationService } from './services/quarter-population.service';
 import { RegisterComponent } from './auth/register/register.component';
 import { AppRoutingModule } from './app-routing.module';
-import { provideFirebaseApp } from '@angular/fire/app';
-import { initializeApp } from 'firebase/app';
+import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 
 @NgModule({
   declarations: [
@@ -85,6 +85,7 @@ import { initializeApp } from 'firebase/app';
   imports: [
     BrowserModule,
     FormsModule,
+    RouterModule,
     ReactiveFormsModule,
     SharedModule,
     CommonModule,
@@ -102,6 +103,13 @@ import { initializeApp } from 'firebase/app';
     FirebaseService, 
     QuarterPopulationService, 
     { provide: FIREBASE_OPTIONS, useValue: environment.firebase },
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAuth(() => getAuth()),
+    provideFirestore(() => getFirestore()),
+    provideStorage(() => getStorage()),
+    provideFunctions(() => getFunctions()),
+    provideAnalytics(() => getAnalytics()),
+    provideDatabase(() => getDatabase()),
     {
       provide: SETTINGS,
       useValue: {
@@ -110,14 +118,8 @@ import { initializeApp } from 'firebase/app';
         persistenceEnabled: true, // Enable offline persistence
         ignoreUndefinedProperties: true // Helps with serialization issues
       }
-    },
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
-    provideStorage(() => getStorage()),
-    provideFunctions(() => getFunctions()),
-    provideAnalytics(() => getAnalytics()),
-    provideDatabase(() => getDatabase())
+    }
+    
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

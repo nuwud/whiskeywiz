@@ -1,9 +1,10 @@
 // auth.service.ts
 import { Injectable } from '@angular/core';
+import { Auth, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Observable, of } from 'rxjs';
-import { catchError, map, switchMap, take } from 'rxjs/operators';
+import { catchError, map, switchMap, tap, take } from 'rxjs/operators';
 
 // Define the user interface with all possible properties
 export interface User {

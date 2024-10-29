@@ -7,10 +7,10 @@ import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 import { Observable, from, throwError } from 'rxjs';
 import { map, switchMap, tap, catchError } from 'rxjs/operators';
-import firebase from 'firebase/compat';
+import { Timestamp } from '@angular/fire/firestore';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanActivateFn } from '@angular/router';
 import { AuthService } from './auth.service';
-import { Timestamp } from '@angular/fire/firestore';
+
 
 interface SampleData {
   mashbill: string;
@@ -78,7 +78,7 @@ export class FirebaseService {
     quarterData: Partial<Quarter>,
     scores: PlayerScore[]
   ): Promise<void> {
-    const batch = firebase.firestore().batch();
+    const batch = this.firestore.firestore.batch();
     
     // Update quarter
     const quarterRef = this.quartersCollection.doc(quarterId).ref;
