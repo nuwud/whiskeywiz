@@ -27,6 +27,7 @@ export class LoginComponent {
 
     try {
       const result = await this.authService.signIn(this.email, this.password);
+      console.log('Login successful, navigating...');
       
       // Route based on admin status
       if (this.authService.isAdminSync(this.email)) {

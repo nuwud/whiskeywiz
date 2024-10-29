@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
 import { Observable, from, of } from 'rxjs';
-import { map, switchMap, catchError } from 'rxjs/operators';
+import { map, switchMap, catchError, tap } from 'rxjs/operators';
 
 interface UserData {
   email: string;
@@ -34,8 +34,14 @@ export class AuthService {
       
       // Check and update admin status
       if (result.user) {
-        await this.updateUserData(result.user);
+        await this.afs.doc(`users/${result.user.uid}`).set({
+          email: result.user.email,
+          isAdmin: this.adminEmails.includes(email),
+          lastLogin: new Date()
+        }, { merge: true });
       }
+      
+      console.log('Sign in successful', result);
       
       return result;
     } catch (error: any) {
@@ -59,12 +65,7 @@ export class AuthService {
   }
 
   async signOut() {
-    try {
-      await this.afAuth.signOut();
-    } catch (error) {
-      console.error('Sign out error:', error);
-      throw error;
-    }
+    return this.afAuth.signOut();
   }
 
   // User data methods
@@ -83,6 +84,7 @@ export class AuthService {
   // Auth state checks
   isAuthenticated(): Observable<boolean> {
     return this.user$.pipe(
+      tap(user => console.log('Auth state:', user)),
       map(user => !!user),
       catchError(() => of(false))
     );
@@ -139,6 +141,9 @@ export class AuthService {
         break;
       case 'auth/too-many-requests':
         message = 'Too many failed attempts. Please try again later';
+        break;
+        case 'permission-denied':
+        message = 'Missing or insufficient permissions';
         break;
       default:
         message = error.message || message;

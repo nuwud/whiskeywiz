@@ -34,6 +34,10 @@
     margin-top: 10px;
   }
   
+  button:disabled {
+    background-color: #cccccc;
+  }
+  
   .error-message {
     color: red;
     margin-top: 10px;
