@@ -1,189 +1,71 @@
 // auth.service.ts
 import { Injectable } from '@angular/core';
 import { Auth, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { Observable, of } from 'rxjs';
-import { catchError, map, switchMap, tap, take } from 'rxjs/operators';
-
-// Define the user interface with all possible properties
-export interface User {
-  uid: string;
-  email: string | null;
-  roles?: string[];
-  isAdmin?: boolean;
-  displayName?: string | null;
-  createdAt?: Date;
-}
-
-// Define the Firestore user data interface
-interface UserData {
-  email: string | null;
-  isAdmin: boolean;
-  roles?: string[];
-  displayName?: string | null;
-  createdAt: Date;
-}
+import { Observable, from, of } from 'rxjs';
+import { map, catchError, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  user$: Observable<User | null>;
+  constructor(private auth: Auth) {}
 
-  constructor(
-    private afAuth: AngularFireAuth,
-    private firestore: AngularFirestore
-  ) {
-    this.user$ = this.afAuth.authState.pipe(
-      switchMap(user => {
-        if (!user) {
-          return of(null);
-        }
-        // Get additional user data from Firestore
-        return this.firestore.doc<UserData>(`users/${user.uid}`).valueChanges().pipe(
-          map(userData => {
-            if (!userData) {
-              return {
-                uid: user.uid,
-                email: user.email,
-                isAdmin: false,
-                roles: []
-              };
-            }
-            return {
-              uid: user.uid,
-              email: user.email,
-              isAdmin: userData.isAdmin || false,
-              roles: userData.roles || [],
-              displayName: user.displayName || userData.displayName,
-              createdAt: userData.createdAt
-            };
-          })
-        );
-      }),
-      catchError(error => {
-        console.error('Error in user stream:', error);
-        return of(null);
-      })
-    );
-  }
-
-  async register(email: string, password: string): Promise<User | null> {
+  async signIn(email: string, password: string) {
     try {
-      const credential = await this.afAuth.createUserWithEmailAndPassword(email, password);
-      if (credential.user) {
-        const userData: UserData = {
-          email: credential.user.email,
-          isAdmin: false,
-          roles: ['player'], // Default role
-          createdAt: new Date()
-        };
-
-        await this.firestore.doc(`users/${credential.user.uid}`).set(userData);
-        
-        return {
-          uid: credential.user.uid,
-          email: credential.user.email,
-          isAdmin: false,
-          roles: ['player']
-        };
-      }
-      return null;
-    } catch (error) {
-      console.error('Registration error:', error);
-      throw this.handleAuthError(error);
-    }
-  }
-
-  async signIn(email: string, password: string): Promise<User | null> {
-    try {
-      const credential = await this.afAuth.signInWithEmailAndPassword(email, password);
-      if (!credential.user) return null;
-      
-      const userDoc = await this.firestore
-        .doc<UserData>(`users/${credential.user.uid}`)
-        .get()
-        .toPromise();
-
-      const userData = userDoc?.data();
-      return userData ? {
-        uid: credential.user.uid,
-        email: credential.user.email,
-        isAdmin: userData.isAdmin || false,
-        roles: userData.roles || [],
-        displayName: credential.user.displayName || userData.displayName
-      } : null;
-    } catch (error) {
+      console.log('Attempting sign in...', { email });
+      const result = await signInWithEmailAndPassword(this.auth, email, password);
+      console.log('Sign in successful', result);
+      return result;
+    } catch (error: any) {
       console.error('Sign in error:', error);
       throw this.handleAuthError(error);
     }
   }
 
-  async signOut(): Promise<void> {
+  async signOut() {
     try {
-      await this.afAuth.signOut();
+      await signOut(this.auth);
     } catch (error) {
       console.error('Sign out error:', error);
-      throw this.handleAuthError(error);
+      throw error;
     }
   }
 
   isAuthenticated(): Observable<boolean> {
-    return this.user$.pipe(
-      map(user => !!user),
-      catchError(() => of(false))
-    );
-  }
-
-  getCurrentUser(): Observable<User | null> {
-    return this.user$.pipe(take(1));
-  }
-
-  getCurrentUserId(): Observable<string | null> {
-    return this.user$.pipe(
-      map(user => user?.uid || null),
-      take(1)
-    );
-  }
-
-  hasRole(role: string): Observable<boolean> {
-    return this.user$.pipe(
-      map(user => user?.roles?.includes(role) || false),
-      catchError(() => of(false))
-    );
-  }
-
-  isAdmin(): Observable<boolean> {
-    return this.user$.pipe(
-      map(user => user?.isAdmin || false),
-      catchError(() => of(false))
-    );
+    return new Observable(subscriber => {
+      return this.auth.onAuthStateChanged(user => {
+        subscriber.next(!!user);
+        if (user) {
+          console.log('User is authenticated:', user.email);
+        }
+      });
+    });
   }
 
   private handleAuthError(error: any): Error {
     let message = 'An authentication error occurred';
     
-    if (error.code) {
-      switch (error.code) {
-        case 'auth/user-not-found':
-          message = 'No user found with this email address';
-          break;
-        case 'auth/wrong-password':
-          message = 'Incorrect password';
-          break;
-        case 'auth/email-already-in-use':
-          message = 'This email address is already registered';
-          break;
-        case 'auth/invalid-email':
-          message = 'Invalid email address';
-          break;
-        case 'auth/weak-password':
-          message = 'Password is too weak';
-          break;
-        default:
-          message = error.message || message;
-      }
+    switch (error.code) {
+      case 'auth/invalid-email':
+        message = 'Invalid email address';
+        break;
+      case 'auth/user-disabled':
+        message = 'This account has been disabled';
+        break;
+      case 'auth/user-not-found':
+        message = 'No account found with this email';
+        break;
+      case 'auth/wrong-password':
+        message = 'Incorrect password';
+        break;
+      case 'auth/network-request-failed':
+        message = 'Network error - please check your connection';
+        break;
+      case 'auth/too-many-requests':
+        message = 'Too many failed attempts. Please try again later';
+        break;
+      default:
+        message = error.message || message;
     }
 
     return new Error(message);
