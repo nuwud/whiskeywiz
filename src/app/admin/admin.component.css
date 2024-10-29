@@ -233,10 +233,16 @@ input[type="range"] {
   background: #45a049;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
 .logout-btn {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  left: 0;
   padding: 8px 16px;
   background-color: #dc3545;
   color: white;
@@ -248,4 +254,9 @@ input[type="range"] {
 
 .logout-btn:hover {
   background-color: #c82333;
+}
+
+h2 {
+  margin: 0 auto;
+  text-align: center;
 }

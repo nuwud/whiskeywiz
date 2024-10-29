@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FirebaseService, Quarter } from '../services/firebase.service';
 import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router'; 
 
 @Component({
   selector: 'app-admin',
@@ -24,7 +25,8 @@ export class AdminComponent implements OnInit {
 
   constructor(
     private firebaseService: FirebaseService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -52,7 +54,7 @@ export class AdminComponent implements OnInit {
   async logout() {
     try {
       await this.authService.signOut();
-      // You might want to redirect to login page or handle logout success
+      this.router.navigate(['/login']);
     } catch (error) {
       console.error('Error logging out:', error);
     }
