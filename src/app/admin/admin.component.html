@@ -4,11 +4,11 @@
   <h2>Whiskey Wiz Admin</h2>
 
   <!-- Only show Return to Scoring Rules button when editing a quarter -->
-  <div class="action-bar" *ngIf="selectedQuarter">
-    <button (click)="showScoringRules()" class="return-btn">
-      Return to Scoring Rules
-    </button>
-  </div>
+  <button *ngIf="selectedQuarter" 
+          (click)="showScoringRules()" 
+          class="return-btn">
+    Return to Scoring Rules
+  </button>
 
   <div class="admin-layout">
     <!-- Quarters List -->
@@ -20,32 +20,26 @@
              class="quarter-item"
              [class.active]="selectedQuarter?.id === quarter.id">
           {{quarter.name}}
-          <span class="status">
+          <span class="quarter-status" [class.active]="quarter.active">
             ({{quarter.active ? 'Active' : 'Inactive'}})
           </span>
         </div>
       </div>
     </div>
 
-    <!-- Quarter Editor -->
-    <div class="editor-content" *ngIf="selectedQuarter">
-      <h3>Editing {{selectedQuarter.name}}</h3>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Quarter Editor -->
+      <div *ngIf="selectedQuarter" class="quarter-editor">
+        <h3>Editing {{selectedQuarter.name}}</h3>
 
-      <!-- Integration Code -->
-      <div class="integration-code">
-        <div class="code-block">
-          <code>&lt;whiskey-wiz-{{selectedQuarter.id}}&gt;&lt;/whiskey-wiz-{{selectedQuarter.id}}&gt;</code>
-          <button (click)="copyToClipboard(selectedQuarter.id || '')" class="copy-btn">Copy</button>
-        </div>
-</div>
-
-      <!-- Active Status -->
-      <div class="active-status">
-        <label>
-          <input type="checkbox" [(ngModel)]="selectedQuarter.active">
-          Active
-        </label>
-      </div>
+        <div class="editor-section">
+          <div class="active-toggle">
+            <label>
+              <input type="checkbox" [(ngModel)]="selectedQuarter.active">
+              Active Quarter
+            </label>
+          </div>
 
       <!-- Sample Grid -->
       <div class="samples-grid">
@@ -147,11 +141,62 @@
       </div>
 
       <button (click)="updateQuarter()" class="save-btn">Save Changes</button>
-    </div>
 
-    <!-- Scoring Rules (when no quarter selected) -->
-    <div *ngIf="!selectedQuarter" class="scoring-rules">
-      <!-- Your existing scoring rules content -->
+      <!-- Integration Code -->
+      <div class="integration-code">
+        <h4>Integration Code</h4>
+        <div class="code-block">
+          <code>&lt;whiskey-wiz-{{selectedQuarter.id}}&gt;&lt;/whiskey-wiz-{{selectedQuarter.id}}&gt;</code>
+          <button (click)="copyToClipboard(selectedQuarter.id || '')" class="copy-btn">Copy</button>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- Scoring Rules -->
+  <div *ngIf="!selectedQuarter" class="scoring-rules">
+    <h3>Scoring Rules</h3>
+    
+    <!-- Your existing scoring rules sliders -->
+    <div class="scoring-rules-grid">
+      <!-- ... scoring rules content ... -->
+    </div>
+    
+    <button (click)="updateScoringRules()" class="update-btn">Update Scoring Rules</button>
+
+    <!-- Integration Instructions -->
+    <div class="integration-instructions">
+      <h3>Integration Instructions</h3>
+      
+      <div class="instruction-section">
+        <h4>1. Required Script</h4>
+        <p>Add this script to your theme.liquid file:</p>
+        <div class="code-block">
+          <code>&lt;script src="https://whiskeywiz2.firebaseapp.com/whiskey-wiz.js" defer&gt;&lt;/script&gt;</code>
+          <button (click)="copyToClipboard('script-tag')" class="copy-btn">Copy</button>
+        </div>
+      </div>
+
+      <div class="instruction-section">
+        <h4>2. Admin Panel Integration</h4>
+        <p>Add this code to your admin page:</p>
+        <div class="code-block">
+          <code>&lt;whiskey-wiz-admin&gt;&lt;/whiskey-wiz-admin&gt;</code>
+          <button (click)="copyToClipboard('admin')" class="copy-btn">Copy</button>
+        </div>
+      </div>
+
+      <div class="notes-section">
+        <h4>Important Notes</h4>
+        <ul>
+          <li>The admin panel should only be embedded on admin-specific pages</li>
+          <li>Each quarter can be embedded independently</li>
+          <li>Components will automatically handle authentication</li>
+          <li>Changes made in admin panel affect all embedded instances</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
 </div>

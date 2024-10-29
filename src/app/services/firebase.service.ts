@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, DocumentChangeAction } from '@angular/fire/compat/firestore';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
+import firebase from 'firebase/compat/app';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
@@ -12,8 +13,6 @@ import { map, switchMap, tap, catchError } from 'rxjs/operators';
 export interface Quarter {
   id?: string;
   name: string;
-  startDate: Date;
-  endDate: Date;
   active: boolean;
   samples: {
     [key: string]: {
@@ -58,54 +57,70 @@ export class FirebaseService {
     return this.auth.authState;
   }
 
+  getQuarters(): Observable<Quarter[]> {
+    console.log('Fetching quarters from Firestore');
+    return this.quartersCollection.get({ source: 'server' }).pipe(
+      map(snapshot => {
+        const quarters = snapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            name: data.name,
+            active: data.active,
+            samples: data.samples,
+          } as Quarter;
+        });
+        console.log('Fetched quarters:', quarters);
+        return quarters;
+      }),
+      catchError(error => {
+        console.error('Fetch error:', error);
+        return throwError(() => new Error(`Failed to fetch quarters: ${error.message}`));
+      })
+    );
+  }
+
+  updateQuarter(quarterId: string, data: Quarter): Observable<void> {
+    console.log(`Updating quarter ${quarterId} with data:`, data);
+    return from(this.quartersCollection.doc(quarterId).set(data, { merge: true }))
+      .pipe(
+        tap(() => console.log(`Quarter ${quarterId} update completed`)),
+        catchError(error => {
+          console.error(`Error updating quarter ${quarterId}:`, error);
+          return throwError(() => new Error(`Failed to update quarter: ${error.message}`));
+        })
+      );
+  }
+
   getQuarterById(id: string): Observable<Quarter | null> {
     console.log(`Fetching quarter ${id} from Firestore`);
     return this.quartersCollection.doc<Quarter>(id)
-      .get({ source: 'server' }) // Force server fetch
+      .get({ source: 'server' })
       .pipe(
         map(doc => {
           console.log(`Quarter ${id} raw response:`, doc);
           if (doc.exists) {
-            const data = doc.data() as Quarter;
-            const result = { ...data, id: doc.id };
+            const data = doc.data() as any;
+            const result: Quarter = {
+              id: doc.id,
+              name: data.name,
+              active: data.active,
+              samples: data.samples,
+            };
             console.log(`Quarter ${id} processed data:`, result);
             return result;
           } else {
             console.log(`Quarter ${id} not found`);
             return null;
           }
-        })
-      );
-  }
-
-  getQuarters(): Observable<Quarter[]> {
-    console.log('Fetching all quarters from Firestore');
-    return this.quartersCollection
-      .get({ source: 'server' }) // Force server fetch
-      .pipe(
-        map(snapshot => {
-          console.log('All quarters raw response:', snapshot);
-          const quarters = snapshot.docs.map(doc => {
-            const data = doc.data() as Quarter;
-            return { id: doc.id, ...data };
-          });
-          console.log('Processed quarters:', quarters);
-          return quarters;
-        })
-      );
-  }
-
-  updateQuarter(quarterId: string, data: Partial<Quarter>): Observable<void> {
-    console.log(`Updating quarter ${quarterId} with data:`, data);
-    return from(this.quartersCollection.doc(quarterId).update(data))
-      .pipe(
-        tap(() => console.log(`Quarter ${quarterId} update completed`)),
+        }),
         catchError(error => {
-          console.error(`Error updating quarter ${quarterId}:`, error);
-          return throwError(error);
+          console.error(`Error fetching quarter ${id}:`, error);
+          return throwError(() => new Error(`Failed to fetch quarter: ${error.message}`));
         })
       );
   }
+
 
   submitScore(score: PlayerScore): Observable<void> {
     return from(this.scoresCollection.add(score)).pipe(
@@ -119,29 +134,33 @@ export class FirebaseService {
     ).valueChanges();
   }
 
+  private generateQuarterId(quarterName: string): string {
+    // Assuming quarter names are in format "Q1 2024", "Q2 2024", etc.
+    const [quarter, year] = quarterName.split(' ');
+    const quarterNumber = quarter.substring(1); // Get the number after 'Q'
+    // Convert Q1->01, Q2->04, Q3->07, Q4->10
+    const month = ((parseInt(quarterNumber) - 1) * 3 + 1).toString().padStart(2, '0');
+    const shortYear = year.substring(2);
+    return `${month}${shortYear}`;
+  }
+  
   createQuarter(quarter: Quarter): Observable<void> { 
-    const id = this.generateQuarterId(quarter.startDate);
+    const id = this.generateQuarterId(quarter.name);
     return from(this.quartersCollection.doc(id).set(quarter)).pipe(
       map(() => { 
         quarter.id = id;
-        return;  // explicitly return `void`
+        return;
       })
     );
   }  
-
+  
   getQuarterGameData(quarterId: string): Observable<Quarter | undefined> {
     return this.quartersCollection.doc<Quarter>(quarterId).valueChanges();
   }
-
+  
   createNewQuarter(quarterData: Quarter): Observable<void> {
-    const quarterId = this.generateQuarterId(quarterData.startDate);
+    const quarterId = this.generateQuarterId(quarterData.name);
     return from(this.quartersCollection.doc(quarterId).set(quarterData));
-  }
-
-  private generateQuarterId(date: Date): string {
-    const year = date.getFullYear().toString().substring(2);
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    return `${month}${year}`;
   }
 
   updateScoringRules(rules: any): Observable<void> {

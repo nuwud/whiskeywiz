@@ -120,3 +120,77 @@
 .save-btn:hover {
   background: #45a049;
 }
+
+/* Add these styles to your admin.component.css */
+.integration-instructions {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.instruction-section {
+  margin: 20px 0;
+}
+
+.code-block {
+  background: #2d2d2d;
+  padding: 15px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.code-block code {
+  color: white;
+  font-family: monospace;
+}
+
+.copy-btn {
+  background: #4a4a4a;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.notes-section {
+  background: #f5f5f5;
+  padding: 20px;
+  border-radius: 4px;
+  margin-top: 20px;
+}
+
+.notes-section ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.notes-section li {
+  margin: 5px 0;
+}
+
+/* Quarter editing styles */
+.quarter-editor {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.editor-section {
+  margin-top: 20px;
+}
+
+.active-toggle {
+  margin-bottom: 20px;
+}
+
+.samples-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
