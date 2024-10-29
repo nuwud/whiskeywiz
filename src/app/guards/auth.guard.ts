@@ -1,11 +1,14 @@
 // auth.guard.ts
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { CanActivateFn, Router, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { Observable, of, from, combineLatest } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
-export const canActivateAuth: CanActivateFn = () => {
+export const canActivateAuth: CanActivateFn = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+): Observable<boolean | UrlTree> => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
@@ -41,4 +44,32 @@ export const canActivateAdmin: CanActivateFn = () => {
       return of(false);
     })
   );
+};
+
+export const combineGuards = (...guards: CanActivateFn[]): CanActivateFn => {
+  return (route: ActivatedRouteSnapshot, state: RouterStateSnapshot): 
+    Observable<boolean | UrlTree> => {
+    const observables = guards.map(guard => {
+      const result = guard(route, state);
+      if (result instanceof Observable) {
+        return result;
+      }
+      if (result instanceof Promise) {
+        return from(result);
+      }
+      return of(result);
+    });
+
+    return combineLatest(observables).pipe(
+      map(results => {
+        // If any result is a UrlTree, use the first one for navigation
+        const urlTree = results.find(result => result instanceof UrlTree);
+        if (urlTree) {
+          return urlTree;
+        }
+        // All guards must return true to proceed
+        return results.every(result => result === true);
+      })
+    );
+  };
 };
