@@ -1,3 +1,4 @@
+// login.component.ts
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
@@ -25,21 +26,17 @@ export class LoginComponent {
     }
 
     try {
-      console.log('Attempting login...');
-      await this.authService.signIn(this.email, this.password);
-      console.log('Login successful');
-      this.isLoggedIn = true;
-      await this.router.navigate(['/player']); // Change this to /player instead of /admin first
+      const result = await this.authService.signIn(this.email, this.password);
+      
+      // Route based on admin status
+      if (this.authService.isAdminSync(this.email)) {
+        await this.router.navigate(['/admin']);
+      } else {
+        await this.router.navigate(['/player']);
+      }
     } catch (error: any) {
       console.error('Login error:', error);
       this.error = error.message || 'Failed to log in. Please check your credentials.';
-      this.isLoggedIn = false;
     }
   }
-
-  navigateTo(destination: string): void {
-    // Implement navigation logic here
-    console.log(`Navigating to ${destination}`);
-  }
-
 }
