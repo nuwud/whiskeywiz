@@ -1,62 +1,30 @@
-// auth.guards.ts
+// auth.guard.ts
 import { inject } from '@angular/core';
-import { 
-  CanActivateFn, 
-  CanActivateChildFn,
-  Router, 
-  ActivatedRouteSnapshot, 
-  RouterStateSnapshot,
-  UrlTree 
-} from '@angular/router';
-import { 
-  Observable, 
-  map, 
-  catchError, 
-  of, 
-  combineLatest, 
-  from 
-} from 'rxjs';
+import { CanActivateFn, Router } from '@angular/router';
+import { map, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
-export type UserRole = 'admin' | 'superadmin' | 'player';
-
-// Helper function to check user roles
-const checkUserRole = (user: any, requiredRole: UserRole): boolean => {
-  if (!user) return false;
-  
-  // Check for superadmin first (they have access to everything)
-  if (user.email?.endsWith('@whiskeywiz.com')) return true;
-  
-  // For other roles, check the roles array
-  return user.roles?.includes(requiredRole) || false;
-};
-
-export const canActivateAuth: CanActivateFn = (
-  route: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot
-): Observable<boolean | UrlTree> => {
+export const canActivateAuth: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
   return authService.isAuthenticated().pipe(
-    map(authenticated => {
-      if (authenticated) {
+    map(isAuthenticated => {
+      if (isAuthenticated) {
         return true;
       }
-      return router.createUrlTree(['/login'], {
-        queryParams: { returnUrl: state.url }
-      });
+      router.navigate(['/login']);
+      return false;
     }),
     catchError(() => {
-      return of(router.createUrlTree(['/login']));
+      router.navigate(['/login']);
+      return of(false);
     })
   );
 };
 
-export const canActivateAdmin: CanActivateFn = (
-  route: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot
-): Observable<boolean | UrlTree> => {
+export const canActivateAdmin: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
@@ -65,36 +33,12 @@ export const canActivateAdmin: CanActivateFn = (
       if (isAdmin) {
         return true;
       }
-      return router.createUrlTree(['/unauthorized']);
+      router.navigate(['/unauthorized']);
+      return false;
     }),
     catchError(() => {
-      return of(router.createUrlTree(['/unauthorized']));
+      router.navigate(['/unauthorized']);
+      return of(false);
     })
   );
-};
-
-export const canActivateChild: CanActivateChildFn = (
-  route: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot
-) => canActivateAuth(route, state);
-
-// If you need to combine multiple guards, you can create a helper function
-export const combineGuards = (...guards: CanActivateFn[]): CanActivateFn => {
-  return (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-    const observables = guards.map(guard => {
-      const result = guard(route, state);
-      // Convert synchronous results to observables
-      if (result instanceof Observable) {
-        return result;
-      }
-      if (result instanceof Promise) {
-        return from(result);
-      }
-      return of(result);
-    });
-
-    return combineLatest(observables).pipe(
-      map(results => results.every(result => result === true))
-    );
-  };
 };
