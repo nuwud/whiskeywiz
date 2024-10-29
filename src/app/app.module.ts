@@ -5,7 +5,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from './shared/shared.module';
 import { createCustomElement } from '@angular/elements';
 import { AngularFireModule } from '@angular/fire/compat';
-import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { AngularFirestoreModule, SETTINGS } from '@angular/fire/compat/firestore';
+import { CACHE_SIZE_UNLIMITED } from 'firebase/firestore'; 
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
@@ -19,6 +20,7 @@ import { PlayerComponent } from './player/player.component';
 import { LoginComponent } from './auth/login/login.component';
 import { GameService } from './services/game.service';
 import { FirebaseService } from './services/firebase.service';
+import { FIREBASE_OPTIONS } from '@angular/fire/compat';
 import { Q0122Component } from './quarters/0122/0122.component'; 
 import { Q0322Component } from './quarters/0322/0322.component'; 
 import { Q0323Component } from './quarters/0323/0323.component'; 
@@ -87,7 +89,21 @@ import { AppRoutingModule } from './app-routing.module';
     AngularFireFunctionsModule,
     AngularFireAnalyticsModule
   ],
-  providers: [GameService, FirebaseService, QuarterPopulationService],
+  providers: [
+    GameService, 
+    FirebaseService, 
+    QuarterPopulationService, 
+    { provide: FIREBASE_OPTIONS, useValue: environment.firebase },
+    {
+      provide: SETTINGS,
+      useValue: {
+        experimentalForceLongPolling: true, // Helps with Firestore connection issues
+        cacheSizeBytes: CACHE_SIZE_UNLIMITED, // or some specific size
+        persistenceEnabled: true, // Enable offline persistence
+        ignoreUndefinedProperties: true // Helps with serialization issues
+      }
+    }
+  ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

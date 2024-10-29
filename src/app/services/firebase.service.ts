@@ -5,8 +5,8 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
-import { Observable, from } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable, from, throwError } from 'rxjs';
+import { map, switchMap, tap, catchError } from 'rxjs/operators';
 
 
 export interface Quarter {
@@ -59,16 +59,52 @@ export class FirebaseService {
   }
 
   getQuarterById(id: string): Observable<Quarter | null> {
-    return this.quartersCollection.doc<Quarter>(id).snapshotChanges().pipe(
-      map(doc => {
-        if (doc.payload.exists) {
-          const data = doc.payload.data() as Quarter;
-          return { ...data, id: doc.payload.id };
-        } else {
-          return null;
-        }
-      })
-    );
+    console.log(`Fetching quarter ${id} from Firestore`);
+    return this.quartersCollection.doc<Quarter>(id)
+      .get({ source: 'server' }) // Force server fetch
+      .pipe(
+        map(doc => {
+          console.log(`Quarter ${id} raw response:`, doc);
+          if (doc.exists) {
+            const data = doc.data() as Quarter;
+            const result = { ...data, id: doc.id };
+            console.log(`Quarter ${id} processed data:`, result);
+            return result;
+          } else {
+            console.log(`Quarter ${id} not found`);
+            return null;
+          }
+        })
+      );
+  }
+
+  getQuarters(): Observable<Quarter[]> {
+    console.log('Fetching all quarters from Firestore');
+    return this.quartersCollection
+      .get({ source: 'server' }) // Force server fetch
+      .pipe(
+        map(snapshot => {
+          console.log('All quarters raw response:', snapshot);
+          const quarters = snapshot.docs.map(doc => {
+            const data = doc.data() as Quarter;
+            return { id: doc.id, ...data };
+          });
+          console.log('Processed quarters:', quarters);
+          return quarters;
+        })
+      );
+  }
+
+  updateQuarter(quarterId: string, data: Partial<Quarter>): Observable<void> {
+    console.log(`Updating quarter ${quarterId} with data:`, data);
+    return from(this.quartersCollection.doc(quarterId).update(data))
+      .pipe(
+        tap(() => console.log(`Quarter ${quarterId} update completed`)),
+        catchError(error => {
+          console.error(`Error updating quarter ${quarterId}:`, error);
+          return throwError(error);
+        })
+      );
   }
 
   submitScore(score: PlayerScore): Observable<void> {
@@ -83,18 +119,6 @@ export class FirebaseService {
     ).valueChanges();
   }
 
-  getQuarters(): Observable<Quarter[]> {
-    return this.quartersCollection.snapshotChanges().pipe(
-      map((actions: DocumentChangeAction<Quarter>[]) => 
-        actions.map(a => {
-          const data = a.payload.doc.data() as Quarter;
-          const id = a.payload.doc.id;
-          return { id, ...data };
-        })
-      )
-    );
-  }  
-
   createQuarter(quarter: Quarter): Observable<void> { 
     const id = this.generateQuarterId(quarter.startDate);
     return from(this.quartersCollection.doc(id).set(quarter)).pipe(
@@ -107,10 +131,6 @@ export class FirebaseService {
 
   getQuarterGameData(quarterId: string): Observable<Quarter | undefined> {
     return this.quartersCollection.doc<Quarter>(quarterId).valueChanges();
-  }
-
-  updateQuarter(quarterId: string, data: Partial<Quarter>): Observable<void> {
-    return from(this.quartersCollection.doc(quarterId).update(data));
   }
 
   createNewQuarter(quarterData: Quarter): Observable<void> {
