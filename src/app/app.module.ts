@@ -9,12 +9,18 @@ import { AngularFirestoreModule, SETTINGS } from '@angular/fire/compat/firestore
 import { CACHE_SIZE_UNLIMITED } from 'firebase/firestore'; 
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
+import { getStorage, provideStorage } from '@angular/fire/storage';
+import { getFunctions, provideFunctions } from '@angular/fire/functions';
 import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 import { AngularFireFunctionsModule } from '@angular/fire/compat/functions';
 import { AngularFireAnalyticsModule } from '@angular/fire/compat/analytics';
+import { getAnalytics, provideAnalytics } from '@angular/fire/analytics';
+import { getDatabase, provideDatabase } from '@angular/fire/database';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
 import { BaseQuarterComponent } from './quarters/base-quarter.component';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { AdminComponent } from './admin/admin.component';
 import { PlayerComponent } from './player/player.component';
 import { LoginComponent } from './auth/login/login.component';
@@ -44,6 +50,8 @@ import { Q1225Component } from './quarters/1225/1225.component';
 import { QuarterPopulationService } from './services/quarter-population.service';
 import { RegisterComponent } from './auth/register/register.component';
 import { AppRoutingModule } from './app-routing.module';
+import { provideFirebaseApp } from '@angular/fire/app';
+import { initializeApp } from 'firebase/app';
 
 @NgModule({
   declarations: [
@@ -102,7 +110,14 @@ import { AppRoutingModule } from './app-routing.module';
         persistenceEnabled: true, // Enable offline persistence
         ignoreUndefinedProperties: true // Helps with serialization issues
       }
-    }
+    },
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAuth(() => getAuth()),
+    provideFirestore(() => getFirestore()),
+    provideStorage(() => getStorage()),
+    provideFunctions(() => getFunctions()),
+    provideAnalytics(() => getAnalytics()),
+    provideDatabase(() => getDatabase())
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

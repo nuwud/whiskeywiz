@@ -8,8 +8,9 @@ import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 import { Observable, from, throwError } from 'rxjs';
 import { map, switchMap, tap, catchError } from 'rxjs/operators';
 import firebase from 'firebase/compat';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanActivateFn } from '@angular/router';
 import { AuthService } from './auth.service';
+import { Timestamp } from '@angular/fire/firestore';
 
 interface SampleData {
   mashbill: string;
@@ -93,20 +94,12 @@ export class FirebaseService {
   }
 
   getQuarters(): Observable<Quarter[]> {
-    console.log('Fetching quarters from Firestore');
-    return this.quartersCollection.get({ source: 'server' }).pipe(
-      map(snapshot => {
-        const quarters = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        } as Quarter));
-        console.log('Fetched quarters:', quarters);
-        return quarters;
-      }),
-      catchError(error => {
-        console.error('Fetch error:', error);
-        return throwError(() => error);
-      })
+    return this.quartersCollection.snapshotChanges().pipe(
+      map(actions => actions.map(a => {
+        const data = a.payload.doc.data();
+        const id = a.payload.doc.id;
+        return { id, ...data };
+      }))
     );
   }
 
