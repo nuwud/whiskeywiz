@@ -11,6 +11,7 @@ export class LoginComponent {
   email: string = '';
   password: string = '';
   error: string = '';
+  isLoggedIn: boolean = false;
 
   constructor(
     public authService: AuthService, 
@@ -27,10 +28,18 @@ export class LoginComponent {
       console.log('Attempting login...');
       await this.authService.signIn(this.email, this.password);
       console.log('Login successful');
+      this.isLoggedIn = true;
       await this.router.navigate(['/player']); // Change this to /player instead of /admin first
     } catch (error: any) {
       console.error('Login error:', error);
       this.error = error.message || 'Failed to log in. Please check your credentials.';
+      this.isLoggedIn = false;
     }
   }
+
+  navigateTo(destination: string): void {
+    // Implement navigation logic here
+    console.log(`Navigating to ${destination}`);
+  }
+
 }

@@ -8,7 +8,7 @@ import { RegisterComponent } from './auth/register/register.component';
 import { GameComponent } from './shared/game/game.component';
 import { LeaderboardComponent } from './shared/leaderboard/leaderboard.component';
 
-const appRoutes: Routes = [
+const routes: Routes = [
   { path: 'admin', component: AdminComponent, canActivate: [canActivateAuth, canActivateAdmin] },
   { path: 'player', component: PlayerComponent, canActivate: [canActivateAuth] },
   { path: 'login', component: LoginComponent },
@@ -21,7 +21,7 @@ const appRoutes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(appRoutes)],
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

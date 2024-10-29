@@ -23,6 +23,7 @@ import { BaseQuarterComponent } from './quarters/base-quarter.component';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { AdminComponent } from './admin/admin.component';
+import { AdminNavComponent } from './admin-nav/admin-nav.component';
 import { PlayerComponent } from './player/player.component';
 import { LoginComponent } from './auth/login/login.component';
 import { GameService } from './services/game.service';
@@ -58,6 +59,7 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
     AppComponent,
     BaseQuarterComponent,
     AdminComponent,
+    AdminNavComponent,
     PlayerComponent, 
     LoginComponent, 
     RegisterComponent,

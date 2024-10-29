@@ -29,4 +29,14 @@
       {{ error }}
     </div>
   </form>
+
+  <!-- Show navigation options after successful login -->
+  <div *ngIf="isLoggedIn" class="nav-options">
+    <button (click)="navigateTo('admin')" class="nav-button">
+      Go to Admin
+    </button>
+    <button (click)="navigateTo('player')" class="nav-button">
+      Go to Player
+    </button>
+  </div>
 </div>

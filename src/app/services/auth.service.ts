@@ -17,6 +17,7 @@ interface UserData {
 })
 export class AuthService {
   user$: Observable<User | null>;
+  private adminEmails = ['nuwudorder@gmail.com']; // Add second admin email when ready
 
   constructor(
     private auth: Auth,
@@ -79,7 +80,7 @@ export class AuthService {
   }
 
   // Admin check
-  isAdmin(): Observable<boolean> {
+  isAdmin(email: string): Observable<boolean> {
     return this.user$.pipe(
       switchMap(async (user) => {
         if (!user) return of(false);
@@ -91,6 +92,7 @@ export class AuthService {
     );
   }
 
+  
   // Get current user ID
   getCurrentUserId(): Observable<string | null> {
     return this.user$.pipe(
