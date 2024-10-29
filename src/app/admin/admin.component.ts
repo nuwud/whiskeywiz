@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FirebaseService, Quarter } from '../services/firebase.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-admin',
@@ -22,7 +23,8 @@ export class AdminComponent implements OnInit {
   };
 
   constructor(
-    private firebaseService: FirebaseService
+    private firebaseService: FirebaseService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -45,6 +47,15 @@ export class AdminComponent implements OnInit {
     }).catch(err => {
       console.error('Failed to copy:', err);
     });
+  }
+
+  async logout() {
+    try {
+      await this.authService.signOut();
+      // You might want to redirect to login page or handle logout success
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   }
 
   async loadScoringRules() {
