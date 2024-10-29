@@ -260,3 +260,13 @@ h2 {
   margin: 0 auto;
   text-align: center;
 }
+
+Copy.logout-link {
+  cursor: pointer;
+  color: #0066cc;
+  text-decoration: underline;
+}
+
+.logout-link:hover {
+  color: #004499;
+}
