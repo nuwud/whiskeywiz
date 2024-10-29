@@ -8,10 +8,13 @@ import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { GameComponent } from './shared/game/game.component';
 import { LeaderboardComponent } from './shared/leaderboard/leaderboard.component';
+import { canActivateAdmin, canActivateAuth, combineGuards } from './guards/auth.guard';
 
 const appRoutes: Routes = [
-  { path: 'admin', component: AdminComponent },
-  { path: 'player', component: PlayerComponent },
+  { path: 'admin', component: AdminComponent, canActivate: [canActivateAdmin] },
+  { path: 'player', component: PlayerComponent, canActivate: [canActivateAdmin] },
+  { path: 'superadmin', canActivate: [combineGuards(canActivateAuth, canActivateAdmin)]
+  },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'game', component: GameComponent },

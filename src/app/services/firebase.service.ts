@@ -7,12 +7,16 @@ import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 import { Observable, from, throwError } from 'rxjs';
 import { map, switchMap, tap, catchError } from 'rxjs/operators';
+import firebase from 'firebase/compat';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { AuthService } from './auth.service';
 
 interface SampleData {
   mashbill: string;
   proof: number;
   age: number;
 }
+
 export interface Quarter {
   id?: string;
   name: string;
@@ -26,6 +30,7 @@ export interface Quarter {
 }
 
 export interface PlayerScore {
+  id?: string;
   playerId: string;
   playerName: string;
   score: number;
@@ -59,22 +64,32 @@ export class FirebaseService {
     return this.auth.authState;
   }
 
-  updateQuarter(quarterId: string, data: Quarter): Observable<void> {
-    console.log('Updating quarter with ID:', quarterId, 'Data:', data);
-    return from(this.quartersCollection.doc(quarterId).set(
-      {
-        name: data.name,
-        active: data.active,
-        samples: data.samples
-      }, 
-      { merge: true }
-    )).pipe(
-      tap(() => console.log('Update completed for quarter:', quarterId)),
+  updateQuarter(quarterId: string, data: Partial<Quarter>): Observable<void> {
+    return from(this.quartersCollection.doc(quarterId).update(data)).pipe(
       catchError(error => {
-        console.error('Error in updateQuarter:', error);
-        return throwError(() => error);
+        console.error('Quarter update failed:', error);
+        return throwError(() => new Error('Failed to update quarter'));
       })
     );
+  }
+  async updateQuarterAndScores(
+    quarterId: string, 
+    quarterData: Partial<Quarter>,
+    scores: PlayerScore[]
+  ): Promise<void> {
+    const batch = firebase.firestore().batch();
+    
+    // Update quarter
+    const quarterRef = this.quartersCollection.doc(quarterId).ref;
+    batch.update(quarterRef, quarterData);
+    
+    // Update scores
+    scores.forEach(score => {
+      const scoreRef = this.scoresCollection.doc(score.id).ref;
+      batch.set(scoreRef, score, { merge: true });
+    });
+    
+    return batch.commit();
   }
 
   getQuarters(): Observable<Quarter[]> {
@@ -229,4 +244,21 @@ export class FirebaseService {
     this.analytics.logEvent(eventName, eventParams);
   }
   
+}
+
+export class AuthGuard implements CanActivate {
+  constructor(private authService: AuthService, private router: Router) {}
+
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Observable<boolean> | Promise<boolean> | boolean {
+    return this.authService.isAuthenticated().pipe(
+      tap(isAuthenticated => {
+        if (!isAuthenticated) {
+          this.router.navigate(['/login']);
+        }
+      })
+    );
+  }
 }
