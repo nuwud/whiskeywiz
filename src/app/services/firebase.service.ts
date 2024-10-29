@@ -145,12 +145,8 @@ export class FirebaseService {
   }
   
   createQuarter(quarter: Quarter): Observable<void> { 
-    const id = this.generateQuarterId(quarter.name);
-    return from(this.quartersCollection.doc(id).set(quarter)).pipe(
-      map(() => { 
-        quarter.id = id;
-        return;
-      })
+    return from(this.quartersCollection.doc(quarter.id).set(quarter)).pipe(
+      map(() => undefined)
     );
   }  
   
@@ -159,8 +155,7 @@ export class FirebaseService {
   }
   
   createNewQuarter(quarterData: Quarter): Observable<void> {
-    const quarterId = this.generateQuarterId(quarterData.name);
-    return from(this.quartersCollection.doc(quarterId).set(quarterData));
+    return from(this.quartersCollection.doc(quarterData.id).set(quarterData));
   }
 
   updateScoringRules(rules: any): Observable<void> {
