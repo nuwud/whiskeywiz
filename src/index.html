@@ -1,10 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Whiskey Wiz</title>
   <base href="/">
 </head>
 <body>
   <app-root></app-root>
+  <script>
+    // Force reload if version mismatch
+    fetch('/version.json?' + new Date().getTime())
+      .then(response => response.json())
+      .then(data => {
+        const currentVersion = localStorage.getItem('app-version');
+        if (currentVersion && currentVersion !== data.version) {
+          localStorage.setItem('app-version', data.version);
+          window.location.reload(true);
+        }
+        localStorage.setItem('app-version', data.version);
+      });
+  </script>
 </body>
 </html>
