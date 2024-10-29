@@ -29,6 +29,69 @@
 
     <!-- Main Content -->
     <div class="main-content">
+      <div *ngIf="!selectedQuarter" class="scoring-rules">
+        <h3>Scoring Rules</h3>
+        
+        <div class="scoring-rules-grid">
+          <div class="control-group">
+            <label>Perfect Age Score:</label>
+            <input type="range" 
+                   [(ngModel)]="scoringRules.agePerfectScore" 
+                   min="0" max="50" step="1">
+            <span>{{scoringRules.agePerfectScore}}</span>
+          </div>
+      
+          <div class="control-group">
+            <label>Age Bonus:</label>
+            <input type="range" 
+                   [(ngModel)]="scoringRules.ageBonus" 
+                   min="0" max="20" step="1">
+            <span>{{scoringRules.ageBonus}}</span>
+          </div>
+      
+          <div class="control-group">
+            <label>Age Penalty Per Year:</label>
+            <input type="range" 
+                   [(ngModel)]="scoringRules.agePenaltyPerYear" 
+                   min="0" max="10" step="0.5">
+            <span>{{scoringRules.agePenaltyPerYear}}</span>
+          </div>
+      
+          <div class="control-group">
+            <label>Perfect Proof Score:</label>
+            <input type="range" 
+                   [(ngModel)]="scoringRules.proofPerfectScore" 
+                   min="0" max="50" step="1">
+            <span>{{scoringRules.proofPerfectScore}}</span>
+          </div>
+      
+          <div class="control-group">
+            <label>Proof Bonus:</label>
+            <input type="range" 
+                   [(ngModel)]="scoringRules.proofBonus" 
+                   min="0" max="20" step="1">
+            <span>{{scoringRules.proofBonus}}</span>
+          </div>
+      
+          <div class="control-group">
+            <label>Proof Penalty Per Point:</label>
+            <input type="range" 
+                   [(ngModel)]="scoringRules.proofPenaltyPerPoint" 
+                   min="0" max="5" step="0.1">
+            <span>{{scoringRules.proofPenaltyPerPoint}}</span>
+          </div>
+      
+          <div class="control-group">
+            <label>Correct Mashbill Score:</label>
+            <input type="range" 
+                   [(ngModel)]="scoringRules.mashbillCorrectScore" 
+                   min="0" max="20" step="1">
+            <span>{{scoringRules.mashbillCorrectScore}}</span>
+          </div>
+        </div>
+      
+        <button (click)="updateScoringRules()" class="update-btn">Update Scoring Rules</button>
+      </div>
       <!-- Quarter Editor -->
       <div *ngIf="selectedQuarter" class="quarter-editor">
         <h3>Editing {{selectedQuarter.name}}</h3>

@@ -56,39 +56,34 @@ export class FirebaseService {
     return this.auth.authState;
   }
 
+  updateQuarter(quarterId: string, data: Partial<Quarter>): Observable<void> {
+    console.log('Updating quarter:', quarterId, data);
+    return from(this.quartersCollection.doc(quarterId).set(data as Quarter, { merge: true }))
+      .pipe(
+        tap(() => console.log('Quarter update completed')),
+        catchError(error => {
+          console.error('Update error:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+  
   getQuarters(): Observable<Quarter[]> {
     console.log('Fetching quarters from Firestore');
     return this.quartersCollection.get({ source: 'server' }).pipe(
       map(snapshot => {
-        const quarters = snapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            name: data.name,
-            active: data.active,
-            samples: data.samples,
-          } as Quarter;
-        });
+        const quarters = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        } as Quarter));
         console.log('Fetched quarters:', quarters);
         return quarters;
       }),
       catchError(error => {
         console.error('Fetch error:', error);
-        return throwError(() => new Error(`Failed to fetch quarters: ${error.message}`));
+        return throwError(() => error);
       })
     );
-  }
-
-  updateQuarter(quarterId: string, data: Quarter): Observable<void> {
-    console.log(`Updating quarter ${quarterId} with data:`, data);
-    return from(this.quartersCollection.doc(quarterId).set(data, { merge: true }))
-      .pipe(
-        tap(() => console.log(`Quarter ${quarterId} update completed`)),
-        catchError(error => {
-          console.error(`Error updating quarter ${quarterId}:`, error);
-          return throwError(() => new Error(`Failed to update quarter: ${error.message}`));
-        })
-      );
   }
 
   getQuarterById(id: string): Observable<Quarter | null> {
