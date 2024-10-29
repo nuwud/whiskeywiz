@@ -34,24 +34,21 @@ const checkUserRole = (user: any, requiredRole: UserRole): boolean => {
 export const canActivateAuth: CanActivateFn = (
   route: ActivatedRouteSnapshot,
   state: RouterStateSnapshot
-): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree => {
+): Observable<boolean | UrlTree> => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  return authService.isLoggedIn().pipe(
-    map(loggedIn => {
-      if (loggedIn) {
+  return authService.isAuthenticated().pipe(
+    map(authenticated => {
+      if (authenticated) {
         return true;
       }
-      // Store the attempted URL for redirecting after login
-      router.navigate(['/login'], {
+      return router.createUrlTree(['/login'], {
         queryParams: { returnUrl: state.url }
       });
-      return false;
     }),
-    catchError(error => {
-      console.error('Auth guard error:', error);
-      return of(false);
+    catchError(() => {
+      return of(router.createUrlTree(['/login']));
     })
   );
 };
@@ -59,23 +56,19 @@ export const canActivateAuth: CanActivateFn = (
 export const canActivateAdmin: CanActivateFn = (
   route: ActivatedRouteSnapshot,
   state: RouterStateSnapshot
-): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree => {
+): Observable<boolean | UrlTree> => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  return authService.user$.pipe(
-    map(user => {
-      // Add your admin role check logic here
-      const isAdmin = user?.roles?.includes('admin') || false;
+  return authService.isAdmin().pipe(
+    map(isAdmin => {
       if (isAdmin) {
         return true;
       }
-      router.navigate(['/unauthorized']);
-      return false;
+      return router.createUrlTree(['/unauthorized']);
     }),
-    catchError(error => {
-      console.error('Admin guard error:', error);
-      return of(false);
+    catchError(() => {
+      return of(router.createUrlTree(['/unauthorized']));
     })
   );
 };
