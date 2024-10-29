@@ -74,6 +74,7 @@ export class AdminComponent implements OnInit {
   loadQuarters() {
     this.firebaseService.getQuarters().subscribe(
       quarters => {
+        console.log('Quarters loaded:', quarters);
         this.quarters = quarters;
         this.error = null;
       },
@@ -95,26 +96,30 @@ export class AdminComponent implements OnInit {
 
   async updateQuarter() {
     if (!this.selectedQuarter || !this.selectedQuarter.id) {
-      this.error = 'No quarter selected for update.';
+      console.error('No quarter selected or no ID');
       return;
     }
   
-    try {
-      // Create a clean copy of the quarter data
-      const quarterData = {
-        id: this.selectedQuarter.id,
-        name: this.selectedQuarter.name,
-        active: this.selectedQuarter.active,
-        samples: this.selectedQuarter.samples
-      };
+    console.log('Attempting to update quarter:', this.selectedQuarter);
   
-      await this.firebaseService.updateQuarter(this.selectedQuarter.id, quarterData).toPromise();
+    try {
+      await this.firebaseService.updateQuarter(
+        this.selectedQuarter.id,
+        this.selectedQuarter
+      ).toPromise();
+      
+      // Refresh the quarters list
+      await this.loadQuarters();
+      
+      // Re-select the updated quarter
+      const updatedQuarter = this.quarters.find(q => q.id === this.selectedQuarter?.id);
+      if (updatedQuarter) {
+        this.selectedQuarter = { ...updatedQuarter };
+      }
+  
       console.log('Quarter updated successfully');
-      await this.loadQuarters(); // Refresh the list
-      this.error = null;
     } catch (error) {
-      console.error('Error updating quarter:', error);
-      this.error = 'Failed to update quarter. Please try again.';
+      console.error('Failed to update quarter:', error);
     }
   }
 

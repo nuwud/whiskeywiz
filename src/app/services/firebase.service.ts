@@ -8,17 +8,20 @@ import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 import { Observable, from, throwError } from 'rxjs';
 import { map, switchMap, tap, catchError } from 'rxjs/operators';
 
-
+interface SampleData {
+  mashbill: string;
+  proof: number;
+  age: number;
+}
 export interface Quarter {
   id?: string;
   name: string;
   active: boolean;
   samples: {
-    [key: string]: {
-      mashbill: string;
-      proof: number;
-      age: number;
-    }
+    sample1: SampleData;
+    sample2: SampleData;
+    sample3: SampleData;
+    sample4: SampleData;
   };
 }
 
@@ -56,18 +59,24 @@ export class FirebaseService {
     return this.auth.authState;
   }
 
-  updateQuarter(quarterId: string, data: Partial<Quarter>): Observable<void> {
-    console.log('Updating quarter:', quarterId, data);
-    return from(this.quartersCollection.doc(quarterId).set(data as Quarter, { merge: true }))
-      .pipe(
-        tap(() => console.log('Quarter update completed')),
-        catchError(error => {
-          console.error('Update error:', error);
-          return throwError(() => error);
-        })
-      );
+  updateQuarter(quarterId: string, data: Quarter): Observable<void> {
+    console.log('Updating quarter with ID:', quarterId, 'Data:', data);
+    return from(this.quartersCollection.doc(quarterId).set(
+      {
+        name: data.name,
+        active: data.active,
+        samples: data.samples
+      }, 
+      { merge: true }
+    )).pipe(
+      tap(() => console.log('Update completed for quarter:', quarterId)),
+      catchError(error => {
+        console.error('Error in updateQuarter:', error);
+        return throwError(() => error);
+      })
+    );
   }
-  
+
   getQuarters(): Observable<Quarter[]> {
     console.log('Fetching quarters from Firestore');
     return this.quartersCollection.get({ source: 'server' }).pipe(
