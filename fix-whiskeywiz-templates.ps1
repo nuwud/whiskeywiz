@@ -1,3 +1,6 @@
+# fix-whiskeywiz-templates.ps1
+
+$adminHtmlContent = @'
 <div class="admin-container">
   <a href="#" class="logout-link" (click)="logout()">Logout</a>
 
@@ -125,3 +128,17 @@
     </div>
   </div>
 </div>
+'@
+
+# Get the current directory
+$currentDir = Get-Location
+
+# Create backup of existing file
+Copy-Item "$currentDir\src\app\admin\admin.component.html" "$currentDir\src\app\admin\admin.component.html.bak"
+
+# Write new content
+$adminHtmlContent | Set-Content "$currentDir\src\app\admin\admin.component.html" -Force
+
+Write-Host "Templates have been updated successfully."
+Write-Host "Backup of original file created at: $currentDir\src\app\admin\admin.component.html.bak"
+Write-Host "Please verify the changes and run 'ng serve' to test the application."

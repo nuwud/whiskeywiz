@@ -16,6 +16,7 @@ import { firstValueFrom } from 'rxjs';
 export class AdminComponent implements OnInit {
   quarters: Quarter[] = [];
   selectedQuarter: Quarter | null = null;
+  sampleNumbers = [1, 2, 3, 4];
   error: string | null = null;
   successMessage: string | null = null;
 
@@ -67,15 +68,33 @@ export class AdminComponent implements OnInit {
     }
   }
 
-  copyToClipboard(type: string) {
-    let textToCopy = '';
-    
-    if (type === 'script-tag') {
-      textToCopy = '<script src="https://whiskeywiz2.firebaseapp.com/whiskey-wiz.js" defer></script>';
-    } else {
-      // For quarter tags
-      textToCopy = `<whiskey-wiz-${type}></whiskey-wiz-${type}>`;
+  // Helper method for type-safe sample access
+  getSample(sampleNumber: number): Sample | null {
+    if (!this.selectedQuarter) return null;
+    const sampleKey = `sample${sampleNumber}` as keyof QuarterSamples;
+    return this.selectedQuarter.samples[sampleKey];
+  }
+
+  // Helper method for type-safe sample update
+  updateSample(sampleNumber: number, updates: Partial<Sample>) {
+    if (!this.selectedQuarter) return;
+    const sampleKey = `sample${sampleNumber}` as keyof QuarterSamples;
+    this.selectedQuarter.samples[sampleKey] = {
+      ...this.selectedQuarter.samples[sampleKey],
+      ...updates
+    };
+  }
+
+  copyToClipboard(quarterId: string | undefined) {
+    if (!quarterId) {
+      console.error('No quarter ID provided');
+      return;
     }
+    const textToCopy = `<whiskey-wiz-${quarterId}></whiskey-wiz-${quarterId}>`;
+    navigator.clipboard.writeText(textToCopy)
+      .then(() => console.log('Copied to clipboard'))
+      .catch(err => console.error('Failed to copy:', err));
+  }
 
     navigator.clipboard.writeText(textToCopy).then(() => {
       console.log('Copied to clipboard');

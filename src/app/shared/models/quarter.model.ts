@@ -5,18 +5,21 @@ export interface Sample {
   mashbill: 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt'; // Make this a union type for better type safety
 }
 
+export interface QuarterSamples {
+  [key: string]: Sample;  // Allow string indexing
+  sample1: Sample;
+  sample2: Sample;
+  sample3: Sample;
+  sample4: Sample;
+}
+
 export interface Quarter {
   id?: string;
   name: string;
   active: boolean;
   startDate?: string;  // Add this based on your Firestore data
   endDate?: string;    // Add this based on your Firestore data
-  samples: {
-    sample1: Sample;
-    sample2: Sample;
-    sample3: Sample;
-    sample4: Sample;
-  };
+  samples: QuarterSamples;
 }
 export interface PlayerScore {
   id?: string;
