@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FirebaseService, PlayerScore } from '../../services/firebase.service';
+import { FirebaseService } from '../../services/firebase.service';
+import { Quarter, PlayerScore } from '../../shared/models/quarter.model';
 
 @Component({
   selector: 'app-leaderboard',

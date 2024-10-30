@@ -1,12 +1,9 @@
-// src/app/admin/admin.component.ts
 import { Component, OnInit } from '@angular/core';
 import { FirebaseService } from '../services/firebase.service';
-import { Quarter, ScoringRules } from '../shared/models/quarter.model';
 import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router'; 
+import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-
-// Removed local declaration of Quarter interface
+import { Quarter, Sample, ScoringRules } from '../shared/models/quarter.model';
 
 @Component({
   selector: 'app-admin',
@@ -20,7 +17,7 @@ export class AdminComponent implements OnInit {
   error: string | null = null;
   successMessage: string | null = null;
 
-  scoringRules = {
+  scoringRules: ScoringRules = {
     agePerfectScore: 20,
     ageBonus: 10,
     agePenaltyPerYear: 4,
@@ -68,21 +65,41 @@ export class AdminComponent implements OnInit {
     }
   }
 
-  // Helper method for type-safe sample access
-  getSample(sampleNumber: number): Sample | null {
-    if (!this.selectedQuarter) return null;
-    const sampleKey = `sample${sampleNumber}` as keyof QuarterSamples;
-    return this.selectedQuarter.samples[sampleKey];
+  async loadScoringRules() {
+    try {
+      const rules = await firstValueFrom(this.firebaseService.getScoringRules());
+      if (rules) {
+        this.scoringRules = rules;
+      }
+    } catch (error) {
+      console.error('Error loading scoring rules:', error);
+    }
   }
 
-  // Helper method for type-safe sample update
-  updateSample(sampleNumber: number, updates: Partial<Sample>) {
-    if (!this.selectedQuarter) return;
-    const sampleKey = `sample${sampleNumber}` as keyof QuarterSamples;
-    this.selectedQuarter.samples[sampleKey] = {
-      ...this.selectedQuarter.samples[sampleKey],
-      ...updates
-    };
+  async logout() {
+    try {
+      await this.authService.signOut();
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  }
+
+  // Non-null assertion method for use in template
+  getQuarterId(): string {
+    if (!this.selectedQuarter?.id) {
+      throw new Error('Quarter ID is undefined');
+    }
+    return this.selectedQuarter.id;
+  }
+  
+  // Safe navigation method for use in component
+  navigateToQuarter(quarterId: string | undefined) {
+    if (!quarterId) {
+      console.error('No quarter ID provided');
+      return;
+    }
+    this.router.navigate(['/player'], { queryParams: { quarter: quarterId }});
   }
 
   copyToClipboard(quarterId: string | undefined) {
@@ -96,46 +113,8 @@ export class AdminComponent implements OnInit {
       .catch(err => console.error('Failed to copy:', err));
   }
 
-    navigator.clipboard.writeText(textToCopy).then(() => {
-      console.log('Copied to clipboard');
-    }).catch(err => {
-      console.error('Failed to copy:', err);
-    });
-  }
-
-  async logout() {
-    try {
-      await this.authService.signOut();
-      this.router.navigate(['/login']);
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
-  }
-
-  async loadScoringRules() {
-    try {
-      const rules = await firstValueFrom(this.firebaseService.getScoringRules());
-      if (rules) {
-        this.scoringRules = rules;
-      }
-    } catch (error) {
-      console.error('Error loading scoring rules:', error);
-    }
-  }
-
-  navigateToQuarter(quarterId: string | undefined) {
-    if (!quarterId) {
-      console.error('No quarter ID provided');
-      return;
-    }
-    this.router.navigate(['/player'], { queryParams: { quarter: quarterId }});
-  }
-
   async selectQuarter(quarter: Quarter) {
-    if (!quarter) {
-      console.error('Invalid quarter selected');
-      return;
-    }
+    if (!quarter) return;
     this.selectedQuarter = { ...quarter };
     this.error = null;
     this.successMessage = null;
@@ -163,7 +142,6 @@ export class AdminComponent implements OnInit {
         await Promise.all(deactivatePromises);
       }
   
-      // Update selected quarter
       await firstValueFrom(
         this.firebaseService.updateQuarter(
           this.selectedQuarter.id,
@@ -187,11 +165,6 @@ export class AdminComponent implements OnInit {
     }
   }
 
-  clearMessages() {
-    this.error = null;
-    this.successMessage = null;
-  }
-
   async updateScoringRules() {
     try {
       await firstValueFrom(this.firebaseService.updateScoringRules(this.scoringRules));
@@ -203,7 +176,20 @@ export class AdminComponent implements OnInit {
     }
   }
 
+  clearMessages() {
+    this.error = null;
+    this.successMessage = null;
+  }
+
   clearError() {
     this.error = null;
+  }
+
+  getSampleKey(num: number): string {
+    return `sample${num}`;
+  }
+
+  getSample(num: number): Sample | undefined {
+    return this.selectedQuarter?.samples[this.getSampleKey(num)];
   }
 }

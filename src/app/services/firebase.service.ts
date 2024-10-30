@@ -10,7 +10,7 @@ import { map, switchMap, tap, catchError } from 'rxjs/operators';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanActivateFn } from '@angular/router';
 import { AuthService } from './auth.service';
 import { Quarter, PlayerScore, ScoringRules } from '../shared/models/quarter.model';
-
+a
 @Injectable({
   providedIn: 'root'
 })
