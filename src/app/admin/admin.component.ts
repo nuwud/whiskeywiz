@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FirebaseService, Quarter } from '../services/firebase.service';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router'; 
+import { Observable, firstValueFrom } from 'rxjs';
+
+// Removed local declaration of Quarter interface
 
 @Component({
   selector: 'app-admin',
@@ -12,6 +15,7 @@ export class AdminComponent implements OnInit {
   quarters: Quarter[] = [];
   selectedQuarter: Quarter | null = null;
   error: string | null = null;
+  successMessage: string | null = null;
 
   scoringRules = {
     agePerfectScore: 20,
@@ -32,6 +36,24 @@ export class AdminComponent implements OnInit {
   ngOnInit() {
     this.loadQuarters();
     this.loadScoringRules();
+  }
+
+  async loadQuarters() {
+    try {
+      const quarters = await firstValueFrom(this.firebaseService.getQuarters());
+      console.log('Loaded quarters:', quarters);
+      this.quarters = quarters
+        .filter((q): q is Quarter => q.id !== undefined) // Type guard
+        .sort((a, b) => {
+          const aNum = a.id ? parseInt(a.id.substring(1)) : 0;
+          const bNum = b.id ? parseInt(b.id.substring(1)) : 0;
+          return bNum - aNum;
+        });
+      this.error = null;
+    } catch (error) {
+      console.error('Error loading quarters:', error);
+      this.error = 'Failed to load quarters. Please try again.';
+    }
   }
 
   copyToClipboard(type: string) {
@@ -62,7 +84,7 @@ export class AdminComponent implements OnInit {
 
   async loadScoringRules() {
     try {
-      const rules = await this.firebaseService.getScoringRules().toPromise();
+      const rules = await firstValueFrom(this.firebaseService.getScoringRules());
       if (rules) {
         this.scoringRules = rules;
       }
@@ -71,23 +93,10 @@ export class AdminComponent implements OnInit {
     }
   }
 
-  loadQuarters() {
-    this.firebaseService.getQuarters().subscribe(
-      quarters => {
-        console.log('Quarters loaded:', quarters);
-        this.quarters = quarters;
-        this.error = null;
-      },
-      error => {
-        console.error('Error loading quarters:', error);
-        this.error = 'Failed to load quarters. Please try again.';
-      }
-    );
-  }
-
-  selectQuarter(quarter: Quarter) {
+  async selectQuarter(quarter: Quarter) {
     this.selectedQuarter = { ...quarter };
     this.error = null;
+    this.successMessage = null;
   }
 
   showScoringRules() {
@@ -95,37 +104,55 @@ export class AdminComponent implements OnInit {
   }
 
   async updateQuarter() {
-    if (!this.selectedQuarter || !this.selectedQuarter.id) {
-      console.error('No quarter selected or no ID');
+    if (!this.selectedQuarter?.id) {
+      this.error = 'No quarter selected';
       return;
     }
   
-    console.log('Attempting to update quarter:', this.selectedQuarter);
-  
     try {
-      await this.firebaseService.updateQuarter(
-        this.selectedQuarter.id,
-        this.selectedQuarter
-      ).toPromise();
-      
-      // Refresh the quarters list
+      if (this.selectedQuarter.active) {
+        // Deactivate other active quarters
+        const deactivatePromises = this.quarters
+          .filter(q => q.id && q.id !== this.selectedQuarter?.id && q.active)
+          .map(q => firstValueFrom(
+            this.firebaseService.updateQuarter(q.id!, { ...q, active: false })
+          ));
+        
+        await Promise.all(deactivatePromises);
+      }
+  
+      // Update selected quarter
+      await firstValueFrom(
+        this.firebaseService.updateQuarter(
+          this.selectedQuarter.id,
+          this.selectedQuarter
+        )
+      );
+  
       await this.loadQuarters();
       
-      // Re-select the updated quarter
       const updatedQuarter = this.quarters.find(q => q.id === this.selectedQuarter?.id);
       if (updatedQuarter) {
         this.selectedQuarter = { ...updatedQuarter };
       }
   
-      console.log('Quarter updated successfully');
+      this.successMessage = 'Quarter updated successfully';
+      this.error = null;
     } catch (error) {
       console.error('Failed to update quarter:', error);
+      this.error = 'Failed to update quarter. Please try again.';
+      this.successMessage = null;
     }
+  }
+
+  clearMessages() {
+    this.error = null;
+    this.successMessage = null;
   }
 
   async updateScoringRules() {
     try {
-      await this.firebaseService.updateScoringRules(this.scoringRules).toPromise();
+      await firstValueFrom(this.firebaseService.updateScoringRules(this.scoringRules));
       console.log('Scoring rules updated successfully');
       this.error = null;
     } catch (error) {
