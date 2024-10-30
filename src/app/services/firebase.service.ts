@@ -7,36 +7,9 @@ import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 import { Observable, from, throwError } from 'rxjs';
 import { map, switchMap, tap, catchError } from 'rxjs/operators';
-import { Timestamp } from '@angular/fire/firestore';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanActivateFn } from '@angular/router';
 import { AuthService } from './auth.service';
-
-
-interface SampleData {
-  mashbill: string;
-  proof: number;
-  age: number;
-}
-
-export interface Quarter {
-  id?: string;
-  name: string;
-  active: boolean;
-  samples: {
-    sample1: SampleData;
-    sample2: SampleData;
-    sample3: SampleData;
-    sample4: SampleData;
-  };
-}
-
-export interface PlayerScore {
-  id?: string;
-  playerId: string;
-  playerName: string;
-  score: number;
-  quarterId: string;
-}
+import { Quarter, PlayerScore, ScoringRules } from '../shared/models/quarter.model';
 
 @Injectable({
   providedIn: 'root'
@@ -65,14 +38,26 @@ export class FirebaseService {
     return this.auth.authState;
   }
 
-  updateQuarter(quarterId: string, data: Partial<Quarter>): Observable<void> {
-    return from(this.quartersCollection.doc(quarterId).update(data)).pipe(
+  updateQuarter(quarterId: string, quarterData: Partial<Quarter>): Observable<void> {
+    console.log('Attempting to update quarter:', { quarterId, quarterData });
+    const docRef = this.firestore.collection('quarters').doc(quarterId);
+    
+    return from(docRef.get()).pipe(
+      tap(doc => {
+        if (!doc.exists) {
+          throw new Error(`Quarter document ${quarterId} does not exist`);
+        }
+      }),
+      tap(() => console.log('Document exists, proceeding with update')),
+      switchMap(() => from(docRef.update(quarterData))),
+      tap(() => console.log('Quarter update successful')),
       catchError(error => {
         console.error('Quarter update failed:', error);
-        return throwError(() => new Error('Failed to update quarter'));
+        throw error;
       })
     );
   }
+
   async updateQuarterAndScores(
     quarterId: string, 
     quarterData: Partial<Quarter>,
@@ -94,12 +79,8 @@ export class FirebaseService {
   }
 
   getQuarters(): Observable<Quarter[]> {
-    return this.quartersCollection.snapshotChanges().pipe(
-      map(actions => actions.map(a => {
-        const data = a.payload.doc.data();
-        const id = a.payload.doc.id;
-        return { id, ...data };
-      }))
+    return this.firestore.collection<Quarter>('quarters').valueChanges({ idField: 'id' }).pipe(
+      tap(quarters => console.log('Fetched quarters:', quarters))
     );
   }
 
@@ -117,6 +98,8 @@ export class FirebaseService {
               name: data.name,
               active: data.active,
               samples: data.samples,
+              ...(data.startDate && { startDate: data.startDate }),
+              ...(data.endDate && { endDate: data.endDate })
             };
             console.log(`Quarter ${id} processed data:`, result);
             return result;
@@ -131,7 +114,6 @@ export class FirebaseService {
         })
       );
   }
-
 
   submitScore(score: PlayerScore): Observable<void> {
     return from(this.scoresCollection.add(score)).pipe(
@@ -169,11 +151,11 @@ export class FirebaseService {
     return from(this.quartersCollection.doc(quarterData.id).set(quarterData));
   }
 
-  updateScoringRules(rules: any): Observable<void> {
+  updateScoringRules(rules: ScoringRules): Observable<void> {
     return from(this.scoringRulesDoc.set(rules));
   }
 
-  getScoringRules(): Observable<any> {
+  getScoringRules(): Observable<ScoringRules> {
     return this.scoringRulesDoc.valueChanges();
   }
 

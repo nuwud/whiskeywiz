@@ -1,8 +1,10 @@
+// src/app/admin/admin.component.ts
 import { Component, OnInit } from '@angular/core';
-import { FirebaseService, Quarter } from '../services/firebase.service';
+import { FirebaseService } from '../services/firebase.service';
+import { Quarter, ScoringRules } from '../shared/models/quarter.model';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router'; 
-import { Observable, firstValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 // Removed local declaration of Quarter interface
 
@@ -43,11 +45,20 @@ export class AdminComponent implements OnInit {
       const quarters = await firstValueFrom(this.firebaseService.getQuarters());
       console.log('Loaded quarters:', quarters);
       this.quarters = quarters
-        .filter((q): q is Quarter => q.id !== undefined) // Type guard
+        .filter((q): q is Quarter => {
+          return q !== null && 
+                 typeof q === 'object' && 
+                 'id' in q && 
+                 typeof q.name === 'string' && 
+                 typeof q.active === 'boolean';
+        })
         .sort((a, b) => {
-          const aNum = a.id ? parseInt(a.id.substring(1)) : 0;
-          const bNum = b.id ? parseInt(b.id.substring(1)) : 0;
-          return bNum - aNum;
+          const matchA = a.id?.match(/Q(\d)(\d{2})(\d{2})/);
+          const matchB = b.id?.match(/Q(\d)(\d{2})(\d{2})/);
+          if (!matchA || !matchB) return 0;
+          const [aYear, aQuarter] = matchA.slice(2);
+          const [bYear, bQuarter] = matchB.slice(2);
+          return (parseInt(bYear + bQuarter, 10)) - (parseInt(aYear + aQuarter, 10));
         });
       this.error = null;
     } catch (error) {
@@ -93,7 +104,19 @@ export class AdminComponent implements OnInit {
     }
   }
 
+  navigateToQuarter(quarterId: string | undefined) {
+    if (!quarterId) {
+      console.error('No quarter ID provided');
+      return;
+    }
+    this.router.navigate(['/player'], { queryParams: { quarter: quarterId }});
+  }
+
   async selectQuarter(quarter: Quarter) {
+    if (!quarter) {
+      console.error('Invalid quarter selected');
+      return;
+    }
     this.selectedQuarter = { ...quarter };
     this.error = null;
     this.successMessage = null;

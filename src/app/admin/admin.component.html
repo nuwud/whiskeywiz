@@ -77,6 +77,31 @@
 
         <button (click)="updateScoringRules()" class="update-btn">Update Scoring Rules</button>
 
+        <!-- Quarter Actions Section -->
+        <div class="quarter-actions">
+          <button 
+            *ngIf="selectedQuarter && selectedQuarter.id"
+            (click)="navigateToQuarter(selectedQuarter.id)"
+            class="play-button">
+            Play Quarter
+          </button>
+        </div>
+
+        <!-- Quarter List Section -->
+        <div class="quarter-items">
+          <div class="quarter-item" 
+               *ngFor="let quarter of quarters" 
+               (click)="selectQuarter(quarter)" 
+               [class.active]="selectedQuarter?.id === quarter.id">
+            {{quarter.name}} 
+            <span class="quarter-status" 
+                  [class.active]="quarter.active">
+              ({{quarter.active ? 'Active' : 'Inactive'}})
+            </span>
+          </div>
+        </div>
+        
+
         <div class="integration-instructions">
           <h3>Integration Instructions</h3>
           
@@ -217,11 +242,11 @@
 
           <button (click)="updateQuarter()" class="save-btn">Save Changes</button>
 
-          <div class="integration-code">
+          <div class="integration-code" *ngIf="selectedQuarter?.id">
             <h4>Integration Code</h4>
             <div class="code-block">
-              <code>&lt;whiskey-wiz-{{selectedQuarter.id}}&gt;&lt;/whiskey-wiz-{{selectedQuarter.id}}&gt;</code>
-              <button *ngIf="selectedQuarter?.id" (click)="copyToClipboard(selectedQuarter.id!)" class="copy-btn">Copy</button>
+              <code>{{`<whiskey-wiz-${selectedQuarter.id}></whiskey-wiz-${selectedQuarter.id}>`}}</code>
+              <button (click)="copyToClipboard(selectedQuarter.id)">Copy</button>
             </div>
           </div>
         </div>
@@ -229,4 +254,3 @@
     </div>
   </div>
 </div>
-```

@@ -160,8 +160,10 @@ export class AppModule implements DoBootstrap {
 
     // Register each web component
     webComponents.forEach(({ name, component }) => {
-      const element = createCustomElement(component, { injector: this.injector });
-      customElements.define(name, element);
+      if (!customElements.get(name)) { // Add check to prevent re-registration
+        const element = createCustomElement(component, { injector: this.injector });
+        customElements.define(name, element);
+      }
     });
 
     // Bootstrap the Angular app if app-root element exists

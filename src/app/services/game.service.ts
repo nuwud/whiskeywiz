@@ -44,4 +44,9 @@ export class GameService {
       observer.complete();
     });
   }
+
+  shareScore(score: number, quarter: string) {
+    const shareText = `I scored ${score} points in the Whiskey Wiz ${quarter} challenge!`;
+    // Implement sharing logic here
+  }
 }
