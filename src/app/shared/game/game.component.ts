@@ -82,6 +82,15 @@ export class GameComponent implements OnInit {
     );
   }
 
+  
+private isValidQuarter(quarter: any): quarter is Quarter {
+  return quarter 
+    && typeof quarter === 'object'
+    && 'id' in quarter
+    && 'name' in quarter
+    && 'samples' in quarter;
+}
+
   initializeGuesses() {
     for (let i = 1; i <= 4; i++) {
       this.guesses[`sample${i}`] = {

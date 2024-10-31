@@ -129,7 +129,7 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 export class AppModule implements DoBootstrap {
   constructor(private injector: Injector) {}
   
-  ngDoBootstrap() {
+  ngDoBootstrap(appRef: ApplicationRef) {
     // Define main app component as web component
     //const appElement = createCustomElement(AppComponent, { injector: this.injector });
     //customElements.define('whiskey-wiz-app', appElement);
