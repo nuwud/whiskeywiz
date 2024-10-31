@@ -19,6 +19,16 @@ export class LoginComponent {
     private router: Router
   ) {}
 
+  async playAsGuest() {
+    this.authService.createGuestSession().subscribe(() => {
+      this.router.navigate(['/game']);
+    });
+  }
+
+  goToRegister() {
+    this.router.navigate(['/register']);
+  }
+
   async login() {
     if (!this.email || !this.password) {
       this.error = 'Please enter both email and password';

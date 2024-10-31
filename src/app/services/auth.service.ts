@@ -18,6 +18,27 @@ export class AuthService {
   user$: Observable<any>;
   private readonly adminEmails = ['nuwudorder@gmail.com', 'bobby@blindbarrels.com'];
 
+  createGuestSession(): Observable<string> {
+    return of(this.generateGuestId()).pipe(
+      tap(guestId => localStorage.setItem('guestId', guestId))
+    );
+  }
+
+  private generateGuestId(): string {
+    return 'guest_' + Math.random().toString(36).substr(2, 9);
+  }
+
+  getPlayerId(): Observable<string> {
+    return this.user$.pipe(
+      switchMap(user => {
+        if (user) return of(user.uid);
+        const guestId = localStorage.getItem('guestId');
+        if (guestId) return of(guestId);
+        return this.createGuestSession();
+      })
+    );
+  }
+
   constructor(
     private afAuth: AngularFireAuth,
     private afs: AngularFirestore

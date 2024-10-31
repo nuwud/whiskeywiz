@@ -32,6 +32,8 @@ export class GameComponent implements OnInit {
   quarterData: Quarter | null = null;
   currentSample: number = 1;
   playerName: string = '';
+  playerId: string = '';
+  isGuest: boolean = true;
   guesses: { [key: string]: Guess } = {};
   scores: { [key: string]: number } = {};
   totalScore: number = 0;
@@ -45,8 +47,14 @@ export class GameComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private firebaseService: FirebaseService,
-    private gameService: GameService
-  ) {}
+    private gameService: GameService,
+    private authService: AuthService
+  ) {
+    this.authService.getPlayerId().subscribe(id => {
+      this.playerId = id;
+      this.isGuest = id.startsWith('guest_');
+    });
+  }
 
   ngOnInit() {
     // Handle route parameters for direct navigation
@@ -181,10 +189,11 @@ private isValidQuarter(quarter: any): quarter is Quarter {
     }
 
     const playerScore: PlayerScore = {
-      playerId: 'guest',
-      playerName: this.playerName,
+      playerId: this.playerId,
+      playerName: this.isGuest ? this.playerName : '',  // For registered users, name comes from profile
       score: this.totalScore,
-      quarterId: this._quarterId
+      quarterId: this._quarterId,
+      isGuest: this.isGuest
     };
 
     this.firebaseService.submitScore(playerScore).subscribe(
@@ -192,12 +201,22 @@ private isValidQuarter(quarter: any): quarter is Quarter {
         console.log('Score submitted successfully');
         this.scoreSubmitted = true;
         this.error = null;
+
+        if (this.isGuest) {
+          // Prompt to register to save scores
+          this.showRegisterPrompt();
+        }
       },
       error => {
         console.error('Error submitting score:', error);
         this.error = 'Failed to submit score';
       }
     );
+  }
+
+  private showRegisterPrompt() {
+    // Implementation for showing registration prompt
+    // Could be a modal or a simple message
   }
 
   playAgain() {
@@ -209,10 +228,46 @@ private isValidQuarter(quarter: any): quarter is Quarter {
     this.initializeGuesses();
   }
 
-  shareResults() {
-    const shareText = `I scored ${this.totalScore} points in the Blind Barrels Whiskey Wiz game! Can you beat my score? #WhiskeyWiz`;
-    navigator.clipboard.writeText(shareText)
-      .then(() => console.log('Results copied to clipboard'))
-      .catch(err => console.error('Failed to copy results:', err));
+  async share() {
+    const shareData = {
+      title: 'Whiskey Wiz Challenge',
+      text: this.getShareText(),
+      url: `https://whiskeywiz2.web.app/game?quarter=${this._quarterId}`
+    };
+  
+    if (navigator.share && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        this.fallbackShare();
+      }
+    } else {
+      this.fallbackShare();
+    }
+  }
+  
+  private getShareText(): string {
+    const quip = this.getScoreQuip();
+    return `🥃 I scored ${this.totalScore} points in Whiskey Wiz!\n${quip}\nCan you beat my score? #WhiskeyWiz`;
+  }
+  
+  private getScoreQuip(): string {
+    if (this.totalScore >= 240) return "🌟 Master Distiller Status!";
+    if (this.totalScore >= 200) return "🥃 Whiskey Connoisseur!";
+    if (this.totalScore >= 160) return "👍 Solid Palate!";
+    if (this.totalScore >= 120) return "🎯 Good Start!";
+    return "🌱 Keep Tasting!";
+  }
+  
+  private fallbackShare() {
+    const text = this.getShareText();
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        alert('Results copied to clipboard! Share with your friends!');
+      })
+      .catch(err => {
+        console.error('Failed to copy results:', err);
+        alert('Unable to copy results. Please try again.');
+      });
   }
 }

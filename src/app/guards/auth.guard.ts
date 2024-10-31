@@ -27,6 +27,22 @@ export const canActivateAuth: CanActivateFn = (
   );
 };
 
+export const canActivateGame: CanActivateFn = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+): Observable<boolean | UrlTree> => {
+  const router = inject(Router);
+  const authService = inject(AuthService);
+
+  return authService.getPlayerId().pipe(
+    map(playerId => {
+      if (playerId) return true;
+      router.navigate(['/login']);
+      return false;
+    })
+  );
+};
+
 export const canActivateAdmin: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);

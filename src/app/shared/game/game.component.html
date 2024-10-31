@@ -2,7 +2,6 @@
   <h2 class="game-title">Whiskey Challenge - {{quarterData.name}}</h2>
 
   <div class="game-content" *ngIf="!gameCompleted">
-    <!-- Sample Navigation -->
     <div class="sample-navigation">
       <button class="nav-button" [disabled]="currentSample === 1" (click)="changeSample(-1)">
         Previous
@@ -13,10 +12,8 @@
       </button>
     </div>
 
-    <!-- Current Sample Card -->
     <div class="sample-card">
       <h3>Sample {{currentSample}}</h3>
-      
       <div class="guess-form">
         <div class="form-group">
           <label>Mashbill</label>
@@ -32,10 +29,11 @@
           <label>Age: {{guesses['sample' + currentSample].age}} Years</label>
           <input 
             type="range" 
+            class="slider"
             min="1" 
             max="30" 
             [(ngModel)]="guesses['sample' + currentSample].age"
-            class="slider">
+          >
           <div class="slider-labels">
             <span>1</span>
             <span>15</span>
@@ -47,10 +45,11 @@
           <label>Proof: {{guesses['sample' + currentSample].proof}}</label>
           <input 
             type="range" 
+            class="slider"
             min="80" 
             max="160" 
             [(ngModel)]="guesses['sample' + currentSample].proof"
-            class="slider">
+          >
           <div class="slider-labels">
             <span>80</span>
             <span>120</span>
@@ -76,8 +75,39 @@
     </div>
   </div>
 
-  <!-- Results Section (unchanged) -->
   <div class="results-container" *ngIf="gameCompleted">
-    <!-- Your existing results code -->
+    <div class="results-header">
+      <h3>Game Completed!</h3>
+      <div class="total-score">Total Score: {{totalScore}}</div>
+    </div>
+
+    <div class="results-grid">
+      <div class="result-card" *ngFor="let num of [1, 2, 3, 4]">
+        <h4>Sample {{num}}</h4>
+        <div class="score-display">
+          Score: {{scores['sample' + num]}}
+        </div>
+        <div class="comparison-grid">
+          <div class="guess-column">
+            <h5>Your Guess</h5>
+            <p>Age: {{guesses['sample' + num].age}} years</p>
+            <p>Proof: {{guesses['sample' + num].proof}}</p>
+            <p>Type: {{guesses['sample' + num].mashbill}}</p>
+          </div>
+          <div class="actual-column">
+            <h5>Actual</h5>
+            <p>Age: {{quarterData.samples['sample' + num].age}} years</p>
+            <p>Proof: {{quarterData.samples['sample' + num].proof}}</p>
+            <p>Type: {{quarterData.samples['sample' + num].mashbill}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-actions">
+      <button class="standard-button" (click)="submitScore()">Submit Score</button>
+      <button class="standard-button" (click)="share()">Share Results</button>
+      <button class="standard-button secondary" (click)="playAgain()">Play Again</button>
+    </div>
   </div>
 </div>

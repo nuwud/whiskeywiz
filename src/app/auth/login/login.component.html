@@ -1,7 +1,19 @@
 <div class="login-container">
-  <h2>Login</h2>
+  <h2>Welcome to Whiskey Wiz</h2>
   
-  <form (ngSubmit)="login()">
+  <div class="play-options">
+    <button class="standard-button" (click)="playAsGuest()">
+      Play as Guest
+    </button>
+    
+    <div class="or-divider">
+      <span>or</span>
+    </div>
+  </div>
+
+  <div class="auth-form">
+    <h3>Sign In to Save Scores</h3>
+    
     <div class="form-group">
       <label for="email">Email</label>
       <input 
@@ -22,10 +34,15 @@
         required>
     </div>
 
-    <button type="submit" [disabled]="!email || !password">Login</button>
-
-    <div *ngIf="error" class="error-message">
-      {{ error }}
+    <button class="standard-button" (click)="login()">Login</button>
+    
+    <div class="register-prompt">
+      <p>Don't have an account?</p>
+      <button class="link-button" (click)="goToRegister()">Register</button>
     </div>
-  </form>
+  </div>
+
+  <div class="error-message" *ngIf="error">
+    {{ error }}
+  </div>
 </div>
