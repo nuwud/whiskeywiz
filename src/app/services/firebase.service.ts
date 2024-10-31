@@ -6,6 +6,8 @@ import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
 import { Observable, from, throwError } from 'rxjs';
+import * as functions from 'firebase-functions';
+import { CallableRequest } from 'firebase-functions/v2/https';
 import { map, switchMap, tap, catchError } from 'rxjs/operators';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanActivateFn } from '@angular/router';
 import { AuthService } from './auth.service';
@@ -219,6 +221,19 @@ export class FirebaseService {
     this.analytics.logEvent(eventName, eventParams);
   }
   
+}
+
+interface SetAdminData {
+  userId: string;
+}
+
+interface SetAdminContext {
+  auth?: {
+    uid: string;
+    token: {
+      [key: string]: any;
+    };
+  };
 }
 
 export class AuthGuard implements CanActivate {

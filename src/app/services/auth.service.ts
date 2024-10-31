@@ -16,7 +16,7 @@ interface UserData {
 })
 export class AuthService {
   user$: Observable<any>;
-  private readonly adminEmails = ['nuwudorder@gmail.com']; // Add second admin email when ready
+  private readonly adminEmails = ['nuwudorder@gmail.com', 'bobby@blindbarrels.com'];
 
   constructor(
     private afAuth: AngularFireAuth,

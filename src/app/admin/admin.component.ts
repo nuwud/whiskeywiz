@@ -129,10 +129,15 @@ export class AdminComponent implements OnInit {
       this.error = 'No quarter selected';
       return;
     }
-  
+
     try {
+      const isAdmin = await firstValueFrom(this.authService.isAdmin());
+      if (!isAdmin) {
+        this.error = 'You do not have permission to update quarters';
+        return;
+      }
+
       if (this.selectedQuarter.active) {
-        // Deactivate other active quarters
         const deactivatePromises = this.quarters
           .filter(q => q.id && q.id !== this.selectedQuarter?.id && q.active)
           .map(q => firstValueFrom(
@@ -141,21 +146,21 @@ export class AdminComponent implements OnInit {
         
         await Promise.all(deactivatePromises);
       }
-  
+
       await firstValueFrom(
         this.firebaseService.updateQuarter(
           this.selectedQuarter.id,
           this.selectedQuarter
         )
       );
-  
+
       await this.loadQuarters();
       
       const updatedQuarter = this.quarters.find(q => q.id === this.selectedQuarter?.id);
       if (updatedQuarter) {
         this.selectedQuarter = { ...updatedQuarter };
       }
-  
+
       this.successMessage = 'Quarter updated successfully';
       this.error = null;
     } catch (error) {
@@ -165,10 +170,21 @@ export class AdminComponent implements OnInit {
     }
   }
 
+  getSample(num: number): Sample | undefined {
+    if (!this.selectedQuarter) return undefined;
+    const sampleKey = `sample${num}`;
+    return this.selectedQuarter.samples[sampleKey];
+  }
+
   async updateScoringRules() {
     try {
+      if (!await firstValueFrom(this.authService.isAdmin())) {
+        this.error = 'You do not have permission to update scoring rules';
+        return;
+      }
+
       await firstValueFrom(this.firebaseService.updateScoringRules(this.scoringRules));
-      console.log('Scoring rules updated successfully');
+      this.successMessage = 'Scoring rules updated successfully';
       this.error = null;
     } catch (error) {
       console.error('Error updating scoring rules:', error);
@@ -187,9 +203,5 @@ export class AdminComponent implements OnInit {
 
   getSampleKey(num: number): string {
     return `sample${num}`;
-  }
-
-  getSample(num: number): Sample | undefined {
-    return this.selectedQuarter?.samples[this.getSampleKey(num)];
   }
 }
