@@ -82,6 +82,12 @@ export class GameComponent implements OnInit {
     );
   }
 
+  changeSample(direction: number) {
+    const newSample = this.currentSample + direction;
+    if (newSample >= 1 && newSample <= 4) {
+      this.currentSample = newSample;
+    }
+  }
   
 private isValidQuarter(quarter: any): quarter is Quarter {
   return quarter 
