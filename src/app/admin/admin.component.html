@@ -1,22 +1,42 @@
+<!-- admin.component.html -->
 <div class="admin-container">
-  <a class="logout-link" (click)="logout()">Logout</a>
-
-  <h1>Whiskey Wiz</h1>
-  <h2>Whiskey Wiz Admin</h2>
-
-  <div class="admin-layout">
-    <div class="quarters-list">
+  <div class="quarters-list">
+    <div class="quarters-header">
       <h3>Quarters</h3>
-      <div class="quarter-items">
-        <div class="quarter-item" 
-             *ngFor="let quarter of quarters" 
-             (click)="selectQuarter(quarter)" 
-             [class.active]="selectedQuarter?.id === quarter.id">
-          {{quarter.name}}
-          <span class="quarter-status" 
-                [class.active]="quarter.active">
-            ({{quarter.active ? 'Active' : 'Inactive'}})
-          </span>
+      <button class="toggle-button" (click)="toggleMenu()">
+        {{ isMenuCollapsed ? '▼' : '▲' }}
+      </button>
+    </div>
+
+    <div class="bulk-actions" *ngIf="!isMenuCollapsed">
+      <label>
+        <input type="checkbox" 
+               [checked]="selectedQuarters.size === quarters.length"
+               (change)="toggleSelectAll()">
+        Select All
+      </label>
+      <button class="standard-button" (click)="bulkActivate(true)">Activate Selected</button>
+      <button class="standard-button secondary" (click)="bulkActivate(false)">Deactivate Selected</button>
+    </div>
+
+    <div class="quarter-items" [class.collapsed]="isMenuCollapsed">
+      <div class="quarter-item" 
+           *ngFor="let quarter of quarters"
+           (click)="selectQuarter(quarter)"
+           [class.active]="selectedQuarter?.id === quarter.id">
+           <div class="quarter-content">
+            <label>
+              <input type="checkbox" 
+                    [checked]="selectedQuarters.has(quarter.id!)"
+                    (change)="$event.stopPropagation(); selectedQuarters.has(quarter.id!) ? 
+                              selectedQuarters.delete(quarter.id!) : 
+                              selectedQuarters.add(quarter.id!)">
+              {{quarter.name}}
+            </label>
+            <span class="quarter-status" [class.active]="quarter.active">
+              ({{quarter.active ? 'Active' : 'Inactive'}})
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -124,4 +144,3 @@
       </div>
     </div>
   </div>
-</div>

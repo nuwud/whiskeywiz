@@ -51,12 +51,23 @@ export class AdminComponent implements OnInit {
                  typeof q.active === 'boolean';
         })
         .sort((a, b) => {
-          const matchA = a.id?.match(/Q(\d)(\d{2})(\d{2})/);
-          const matchB = b.id?.match(/Q(\d)(\d{2})(\d{2})/);
-          if (!matchA || !matchB) return 0;
-          const [aYear, aQuarter] = matchA.slice(2);
-          const [bYear, bQuarter] = matchB.slice(2);
-          return (parseInt(bYear + bQuarter, 10)) - (parseInt(aYear + aQuarter, 10));
+          // Parse quarter and year from the name (e.g., "Q1 2024")
+          const parseQuarter = (name: string) => {
+            const [q, y] = name.split(' ');
+            return {
+              year: parseInt(y),
+              quarter: parseInt(q.substring(1))
+            };
+          };
+          
+          const quarterA = parseQuarter(a.name);
+          const quarterB = parseQuarter(b.name);
+          
+          // Sort by year first, then by quarter
+          if (quarterA.year !== quarterB.year) {
+            return quarterA.year - quarterB.year;
+          }
+          return quarterA.quarter - quarterB.quarter;
         });
       this.error = null;
     } catch (error) {
@@ -195,4 +206,43 @@ export class AdminComponent implements OnInit {
   getSampleKey(num: number): string {
     return `sample${num}`;
   }
+
+  isMenuCollapsed = false;
+  selectedQuarters: Set<string> = new Set();
+  
+  toggleMenu() {
+    this.isMenuCollapsed = !this.isMenuCollapsed;
+  }
+
+  toggleSelectAll() {
+    if (this.selectedQuarters.size === this.quarters.length) {
+      this.selectedQuarters.clear();
+    } else {
+      this.selectedQuarters = new Set(this.quarters.map(q => q.id!));
+    }
+  }
+
+  async bulkActivate(active: boolean) {
+    if (this.selectedQuarters.size === 0) return;
+
+    try {
+      const updatePromises = Array.from(this.selectedQuarters).map(id => {
+        const quarter = this.quarters.find(q => q.id === id);
+        if (quarter) {
+          return firstValueFrom(
+            this.firebaseService.updateQuarter(id, { ...quarter, active })
+          );
+        }
+        return Promise.resolve();
+      });
+
+      await Promise.all(updatePromises);
+      await this.loadQuarters();
+      this.successMessage = `Successfully ${active ? 'activated' : 'deactivated'} selected quarters`;
+    } catch (error) {
+      console.error('Bulk update failed:', error);
+      this.error = 'Failed to update quarters. Please try again.';
+    }
+  }
+  
 }
