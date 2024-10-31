@@ -21,12 +21,15 @@ export interface Quarter {
   endDate?: string;    // Add this based on your Firestore data
   samples: QuarterSamples;
 }
+
 export interface PlayerScore {
   id?: string;
   playerId: string;
   playerName: string;
   score: number;
   quarterId: string;
+  isGuest: boolean;  // Added this line
+  timestamp?: number; // Optional: add timestamp for sorting
 }
 
 export interface ScoringRules {

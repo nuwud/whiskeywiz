@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { FirebaseService } from '../../services/firebase.service';
 import { Quarter, PlayerScore } from '../../shared/models/quarter.model';
 import { GameService } from '../../services/game.service';
+import { AuthService } from '../../services/auth.service';
 
 type Mashbill = 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt';
 
@@ -29,11 +30,11 @@ export class GameComponent implements OnInit {
   }
 
   private _quarterId: string = '';
+  playerId: string = '';
+  isGuest: boolean = true;
   quarterData: Quarter | null = null;
   currentSample: number = 1;
   playerName: string = '';
-  playerId: string = '';
-  isGuest: boolean = true;
   guesses: { [key: string]: Guess } = {};
   scores: { [key: string]: number } = {};
   totalScore: number = 0;
