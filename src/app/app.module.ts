@@ -26,9 +26,12 @@ import { AdminComponent } from './admin/admin.component';
 import { AdminNavComponent } from './admin-nav/admin-nav.component';
 import { PlayerComponent } from './player/player.component';
 import { LoginComponent } from './auth/login/login.component';
+import { GameComponent } from './shared/game/game.component';
 import { GameService } from './services/game.service';
 import { FirebaseService } from './services/firebase.service';
 import { FIREBASE_OPTIONS } from '@angular/fire/compat';
+
+// Quarter components imports
 import { Q0122Component } from './quarters/0122/0122.component'; 
 import { Q0322Component } from './quarters/0322/0322.component'; 
 import { Q0323Component } from './quarters/0323/0323.component'; 
@@ -49,6 +52,7 @@ import { Q1222Component } from './quarters/1222/1222.component';
 import { Q1223Component } from './quarters/1223/1223.component'; 
 import { Q1224Component } from './quarters/1224/1224.component'; 
 import { Q1225Component } from './quarters/1225/1225.component';
+
 import { QuarterPopulationService } from './services/quarter-population.service';
 import { RegisterComponent } from './auth/register/register.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -135,6 +139,7 @@ export class AppModule implements DoBootstrap {
     //customElements.define('whiskey-wiz-app', appElement);
     // Define all components that will be used as web components
     const webComponents = [
+      { name: 'whiskey-wiz-game', component: GameComponent },
       { name: 'whiskey-wiz-admin', component: AdminComponent },
       { name: 'whiskey-wiz-0122', component: Q0122Component },
       { name: 'whiskey-wiz-0322', component: Q0322Component },
@@ -161,16 +166,24 @@ export class AppModule implements DoBootstrap {
     // Register each web component
     webComponents.forEach(({ name, component }) => {
       if (!customElements.get(name)) { // Add check to prevent re-registration
-        const element = createCustomElement(component, { injector: this.injector });
-        customElements.define(name, element);
+        try {
+          const element = createCustomElement(component, { injector: this.injector });
+          customElements.define(name, element);
+        } catch (err) {
+          console.error(`Failed to register web component ${name}:`, err);
+        }
       }
     });
+
+    // Bootstrap the app
+    if (document.querySelector('app-root')) {
+      appRef.bootstrap(AppComponent);
+    }
 
     // Bootstrap the Angular app if app-root element exists
     const rootElement = document.querySelector('app-root');
     if (rootElement) {
-      const applicationRef = this.injector.get(ApplicationRef);
-      const componentRef = applicationRef.bootstrap(AppComponent);
+      appRef.bootstrap(AppComponent);
     }
   }
 }

@@ -1,10 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { GameComponent } from './game/game.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router'; // Ensure this import is present
 
 @NgModule({
   declarations: [
@@ -13,12 +12,14 @@ import { Router } from '@angular/router'; // Ensure this import is present
   ],
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    RouterModule
   ],
   exports: [
     GameComponent,
     LeaderboardComponent,
-    FormsModule
+    FormsModule,
+    CommonModule
   ]
 })
 export class SharedModule { }

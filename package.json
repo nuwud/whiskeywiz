@@ -9,7 +9,9 @@
     "test": "nx test",
     "lint": "nx lint",
     "build:elements": "nx build --configuration=production --output-hashing=none && node concat.js && node scripts/build-web-components.js",
+    "serve:elements": "http-server dist/whiskey-wiz -p 8080",
     "build:all": "npm run build:elements",
+    "postbuild:elements": "node scripts/concat-elements.js",
     "deploy": "npm run build:elements && firebase deploy --only hosting"
   },
   "private": true,
