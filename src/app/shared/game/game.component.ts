@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FirebaseService } from '../../services/firebase.service';
-import { Quarter, PlayerScore, Sample } from '../../shared/models/quarter.model';
+import { Quarter, PlayerScore } from '../../shared/models/quarter.model';
 import { GameService } from '../../services/game.service';
 
 type Mashbill = 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt';
@@ -8,7 +9,7 @@ type Mashbill = 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt';
 interface Guess {
   age: number;
   proof: number;
-  mashbill: Mashbill | null;  // Allow null for initial state
+  mashbill: Mashbill | null;
 }
 
 @Component({
@@ -17,19 +18,18 @@ interface Guess {
   styleUrls: ['./game.component.css']
 })
 export class GameComponent implements OnInit {
-  @Input() quarterData: Quarter = {
-    name: '',
-    id: '',
-    active: false,
-    samples: {
-      sample1: { age: 0, proof: 0, mashbill: 'Bourbon' },  // Set default values
-      sample2: { age: 0, proof: 0, mashbill: 'Bourbon' },
-      sample3: { age: 0, proof: 0, mashbill: 'Bourbon' },
-      sample4: { age: 0, proof: 0, mashbill: 'Bourbon' }
+  @Input() set quarterId(value: string) {
+    if (value) {
+      this._quarterId = value;
+      this.loadQuarterData();
     }
-  };
-  
-  @Input() quarterId: string = '';
+  }
+  get quarterId(): string {
+    return this._quarterId;
+  }
+
+  private _quarterId: string = '';
+  quarterData: Quarter | null = null;
   currentSample: number = 1;
   playerName: string = '';
   guesses: { [key: string]: Guess } = {};
@@ -37,38 +37,67 @@ export class GameComponent implements OnInit {
   totalScore: number = 0;
   gameCompleted: boolean = false;
   scoreSubmitted: boolean = false;
+  loading: boolean = false;
+  error: string | null = null;
 
   mashbillCategories: Mashbill[] = ['Bourbon', 'Rye', 'Wheat', 'Single Malt'];
 
   constructor(
+    private route: ActivatedRoute,
     private firebaseService: FirebaseService,
     private gameService: GameService
   ) {}
-  
+
   ngOnInit() {
-    this.loadQuarterData();
+    // Handle route parameters for direct navigation
+    this.route.queryParams.subscribe(params => {
+      const quarterId = params['quarter'];
+      if (quarterId) {
+        this.quarterId = quarterId;
+      }
+    });
   }
 
   loadQuarterData() {
-    if (this.quarterId) {
-      this.firebaseService.getQuarterById(this.quarterId).subscribe(quarter => {
+    if (!this._quarterId) return;
+
+    this.loading = true;
+    this.error = null;
+
+    this.firebaseService.getQuarterById(this._quarterId).subscribe(
+      quarter => {
         if (quarter) {
           this.quarterData = quarter;
           this.initializeGuesses();
+        } else {
+          this.error = 'Quarter not found';
         }
-      });
-    }
+        this.loading = false;
+      },
+      error => {
+        console.error('Error loading quarter:', error);
+        this.error = 'Failed to load quarter data';
+        this.loading = false;
+      }
+    );
   }
 
   initializeGuesses() {
     for (let i = 1; i <= 4; i++) {
-      this.guesses[`sample${i}`] = { 
-        age: 5, 
-        proof: 100, 
-        mashbill: null 
+      this.guesses[`sample${i}`] = {
+        age: 5,
+        proof: 100,
+        mashbill: null
       };
       this.scores[`sample${i}`] = 0;
     }
+  }
+
+  updateGuess(sampleNum: number, field: keyof Guess, value: any) {
+    if (!this.guesses[`sample${sampleNum}`]) {
+      this.guesses[`sample${sampleNum}`] = { age: 5, proof: 100, mashbill: null };
+    }
+    (this.guesses[`sample${sampleNum}`][field] as any) = value;
   }
 
   areAllGuessesFilled(): boolean {
@@ -83,19 +112,18 @@ export class GameComponent implements OnInit {
 
   submitGuesses() {
     if (!this.areAllGuessesFilled()) {
+      this.error = 'Please fill in all guesses';
       return;
     }
 
     this.totalScore = 0;
     for (let i = 1; i <= 4; i++) {
       const sampleKey = `sample${i}`;
-      const actualSample = this.quarterData.samples[sampleKey];
+      const actualSample = this.quarterData?.samples[sampleKey];
       const guess = this.guesses[sampleKey];
-      
-      if (!guess.mashbill) {
-        continue;  // Skip if mashbill is null
-      }
-      
+
+      if (!actualSample || !guess.mashbill) continue;
+
       let score = 0;
 
       // Age scoring
@@ -128,6 +156,12 @@ export class GameComponent implements OnInit {
 
   submitScore() {
     if (!this.playerName) {
+      this.error = 'Please enter your name';
+      return;
+    }
+
+    if (!this._quarterId) {
+      this.error = 'Quarter ID is missing';
       return;
     }
 
@@ -135,15 +169,19 @@ export class GameComponent implements OnInit {
       playerId: 'guest',
       playerName: this.playerName,
       score: this.totalScore,
-      quarterId: this.quarterId
+      quarterId: this._quarterId
     };
 
     this.firebaseService.submitScore(playerScore).subscribe(
       () => {
         console.log('Score submitted successfully');
         this.scoreSubmitted = true;
+        this.error = null;
       },
-      error => console.error('Error submitting score:', error)
+      error => {
+        console.error('Error submitting score:', error);
+        this.error = 'Failed to submit score';
+      }
     );
   }
 
@@ -152,6 +190,7 @@ export class GameComponent implements OnInit {
     this.totalScore = 0;
     this.gameCompleted = false;
     this.scoreSubmitted = false;
+    this.error = null;
     this.initializeGuesses();
   }
 

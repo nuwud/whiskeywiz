@@ -99,7 +99,7 @@ export class AdminComponent implements OnInit {
       console.error('No quarter ID provided');
       return;
     }
-    this.router.navigate(['/player'], { queryParams: { quarter: quarterId }});
+    this.router.navigate(['/game'], { queryParams: { quarter: quarterId }});
   }
 
   copyToClipboard(quarterId: string | undefined) {
@@ -129,38 +129,29 @@ export class AdminComponent implements OnInit {
       this.error = 'No quarter selected';
       return;
     }
-
+  
     try {
       const isAdmin = await firstValueFrom(this.authService.isAdmin());
       if (!isAdmin) {
         this.error = 'You do not have permission to update quarters';
         return;
       }
-
-      if (this.selectedQuarter.active) {
-        const deactivatePromises = this.quarters
-          .filter(q => q.id && q.id !== this.selectedQuarter?.id && q.active)
-          .map(q => firstValueFrom(
-            this.firebaseService.updateQuarter(q.id!, { ...q, active: false })
-          ));
-        
-        await Promise.all(deactivatePromises);
-      }
-
+  
+      // Simply update the selected quarter without affecting others
       await firstValueFrom(
         this.firebaseService.updateQuarter(
           this.selectedQuarter.id,
           this.selectedQuarter
         )
       );
-
+  
       await this.loadQuarters();
       
       const updatedQuarter = this.quarters.find(q => q.id === this.selectedQuarter?.id);
       if (updatedQuarter) {
         this.selectedQuarter = { ...updatedQuarter };
       }
-
+  
       this.successMessage = 'Quarter updated successfully';
       this.error = null;
     } catch (error) {
