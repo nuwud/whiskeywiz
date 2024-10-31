@@ -1,8 +1,8 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-function isAuthenticated() {
+    // Helper functions
+    function isAuthenticated() {
       return request.auth != null;
     }
     
@@ -11,38 +11,44 @@ function isAuthenticated() {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
+    // Quarters collection
     match /quarters/{quarterId} {
       allow read: if true;
       allow write: if isAdmin();  // Only admins can modify quarters
-      allow write: if request.auth != null && request.auth.uid == 'ADMIN_UID';
     }
     
+    // Scores collection
     match /scores/{scoreId} {
       allow read: if true;
-      allow create: if isAuthenticated();  // Any authenticated user can submit scores
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth != null && request.auth.uid == resource.data.playerId;
+      allow create: if isAuthenticated();
+      // Allow users to update/delete their own scores, or admins for any score
+      allow update, delete: if isAuthenticated() && 
+        (request.auth.uid == resource.data.playerId || isAdmin());
     }
 
+    // Users collection
     match /users/{userId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
-      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
-      allow write: if request.auth != null && request.auth.uid == userId;
-      // Only existing admins can modify admin status
-      allow update: if request.auth != null && 
-      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+      // Users can read their own data, admins can read any user data
+      allow read: if isAuthenticated() && 
+        (request.auth.uid == userId || isAdmin());
+      // Users can modify their own non-admin data
+      allow write: if isAuthenticated() && 
+        request.auth.uid == userId && 
+        !('isAdmin' in request.resource.data);
+      // Only admins can modify admin status
+      allow update: if isAdmin();
     }
 
-        // Config collection (scoring rules)
+    // Config collection (scoring rules)
     match /config/{configId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    match /databases/{database}/documents {
-      match /{document=**} {
-        allow read, write: if request.auth != null;
-      }
+    // Custom events collection (if needed)
+    match /customEvents/{eventId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
-
+  }
 }
