@@ -175,11 +175,6 @@ export class AppModule implements DoBootstrap {
       }
     });
 
-    // Bootstrap the app
-    if (document.querySelector('app-root')) {
-      appRef.bootstrap(AppComponent);
-    }
-
     // Bootstrap the Angular app if app-root element exists
     const rootElement = document.querySelector('app-root');
     if (rootElement) {
