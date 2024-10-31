@@ -1,10 +1,8 @@
 <div class="admin-container">
-  <a href="#" class="logout-link" (click)="logout()">Logout</a>
+  <a class="logout-link" (click)="logout()">Logout</a>
 
   <h1>Whiskey Wiz</h1>
   <h2>Whiskey Wiz Admin</h2>
-
-  <button (click)="showScoringRules()">Return to Scoring Rules</button>
 
   <div class="admin-layout">
     <div class="quarters-list">
@@ -28,78 +26,66 @@
         <h3>Scoring Rules</h3>
         <div class="scoring-rules-grid">
           <div class="control-group">
-            Perfect Age Score: {{scoringRules.agePerfectScore}}
+            <label>Perfect Age Score:</label>
+            <input type="number" [(ngModel)]="scoringRules.agePerfectScore">
           </div>
           <div class="control-group">
-            Age Bonus: {{scoringRules.ageBonus}}
+            <label>Age Bonus:</label>
+            <input type="number" [(ngModel)]="scoringRules.ageBonus">
           </div>
           <div class="control-group">
-            Age Penalty Per Year: {{scoringRules.agePenaltyPerYear}}
+            <label>Age Penalty Per Year:</label>
+            <input type="number" [(ngModel)]="scoringRules.agePenaltyPerYear">
           </div>
           <div class="control-group">
-            Perfect Proof Score: {{scoringRules.proofPerfectScore}}
+            <label>Perfect Proof Score:</label>
+            <input type="number" [(ngModel)]="scoringRules.proofPerfectScore">
           </div>
           <div class="control-group">
-            Proof Bonus: {{scoringRules.proofBonus}}
+            <label>Proof Bonus:</label>
+            <input type="number" [(ngModel)]="scoringRules.proofBonus">
           </div>
           <div class="control-group">
-            Proof Penalty Per Point: {{scoringRules.proofPenaltyPerPoint}}
+            <label>Proof Penalty Per Point:</label>
+            <input type="number" [(ngModel)]="scoringRules.proofPenaltyPerPoint">
           </div>
           <div class="control-group">
-            Correct Mashbill Score: {{scoringRules.mashbillCorrectScore}}
+            <label>Correct Mashbill Score:</label>
+            <input type="number" [(ngModel)]="scoringRules.mashbillCorrectScore">
           </div>
         </div>
-
-        <button (click)="updateScoringRules()">Update Scoring Rules</button>
+        <button class="standard-button" (click)="updateScoringRules()">Update Scoring Rules</button>
 
         <div class="integration-instructions">
           <h3>Integration Instructions</h3>
-          
           <div class="instruction-section">
             <h4>1. Required Script</h4>
             <div class="code-block">
               <code>&lt;script src="https://whiskeywiz2.firebaseapp.com/whiskey-wiz.js" defer&gt;&lt;/script&gt;</code>
-              <button (click)="copyToClipboard('script-tag')">Copy</button>
+              <button class="standard-button" (click)="copyToClipboard('script-tag')">Copy</button>
             </div>
-          </div>
-
-          <div class="instruction-section">
-            <h4>2. Admin Panel Integration</h4>
-            <div class="code-block">
-              <code>&lt;whiskey-wiz-admin&gt;&lt;/whiskey-wiz-admin&gt;</code>
-              <button (click)="copyToClipboard('admin')">Copy</button>
-            </div>
-          </div>
-
-          <div class="notes-section">
-            <h4>Important Notes</h4>
-            <ul>
-              <li>The admin panel should only be embedded on admin-specific pages</li>
-              <li>Each quarter can be embedded independently</li>
-              <li>Components will automatically handle authentication</li>
-              <li>Changes made in admin panel affect all embedded instances</li>
-            </ul>
           </div>
         </div>
       </div>
 
       <div class="quarter-editor" *ngIf="selectedQuarter">
-        <h3>Editing {{selectedQuarter.name}}</h3>
+        <div class="editor-header">
+          <h3>Editing {{selectedQuarter.name}}</h3>
+          <button class="standard-button secondary" (click)="showScoringRules()">Return to Scoring Rules</button>
+        </div>
         
         <div class="editor-section">
-          <div class="active-toggle">
-            <label>
-              <input type="checkbox" 
-                     [(ngModel)]="selectedQuarter.active"> 
-              Active Quarter
-            </label>
-          </div>
+          <label class="active-toggle">
+            <input type="checkbox" [(ngModel)]="selectedQuarter.active">
+            Active Quarter
+          </label>
 
           <div class="samples-grid">
             <div class="sample-card" *ngFor="let num of sampleNumbers">
               <h4>Sample {{num}}</h4>
               <ng-container *ngIf="getSample(num) as sample">
                 <div class="form-group">
+                  <label>Mashbill:</label>
                   <select [(ngModel)]="sample.mashbill">
                     <option value="Bourbon">Bourbon</option>
                     <option value="Rye">Rye</option>
@@ -119,22 +105,21 @@
             </div>
           </div>
 
-          <button (click)="updateQuarter()">Save Changes</button>
-
-          <div class="quarter-actions" *ngIf="selectedQuarter?.id">
-            <button (click)="navigateToQuarter(getQuarterId())">
+          <div class="button-group">
+            <button class="standard-button" (click)="updateQuarter()">Save Changes</button>
+            <button class="standard-button secondary" *ngIf="selectedQuarter.id" 
+                    (click)="navigateToQuarter(selectedQuarter.id)">
               Play Quarter
             </button>
           </div>
-          
-          <div class="integration-code" *ngIf="selectedQuarter?.id">
+
+          <div class="integration-code" *ngIf="selectedQuarter.id">
             <h4>Integration Code</h4>
             <div class="code-block">
-              <code>&lt;whiskey-wiz-{{getQuarterId()}}&gt;&lt;/whiskey-wiz-{{getQuarterId()}}&gt;</code>
-              <button (click)="copyToClipboard(getQuarterId())">Copy</button>
+              <code>&lt;whiskey-wiz-{{selectedQuarter.id}}&gt;&lt;/whiskey-wiz-{{selectedQuarter.id}}&gt;</code>
+              <button class="standard-button" (click)="copyToClipboard(selectedQuarter.id)">Copy</button>
             </div>
           </div>
-          
         </div>
       </div>
     </div>
