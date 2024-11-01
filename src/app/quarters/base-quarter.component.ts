@@ -17,11 +17,14 @@ import { SharedModule } from '../shared/shared.module';
 })
 export class BaseQuarterComponent implements OnInit {
   @Input()
-    quarterId!: string;
-    quarterData: Quarter | null = null;
-    gameCompleted = false;
-    playerScore: number = 0;
-    guess = { age: 0, proof: 0, mashbill: '' };
+  quarterId!: string;
+  quarterData: Quarter | null = null;
+  gameCompleted = false;
+  playerScore: number = 0;
+  guess = { age: 0, proof: 0, mashbill: '' };
+  isGuest: boolean = true;
+  playerId: string = 'guest';
+
 
   constructor(
     protected firebaseService: FirebaseService, 
@@ -39,20 +42,13 @@ export class BaseQuarterComponent implements OnInit {
         return of(null);
       })
     ).subscribe(userId => {
-      userId = userId as string | null;
       if (userId) {
-        // Handle authenticated user
+        this.isGuest = false;
+        this.playerId = userId;
         console.log('Authenticated user:', userId);
       } else {
-        // Handle guest player
-        console.log('Guest player');
-      }
-      userId = userId as string | null;
-      if (userId) {
-        // Handle authenticated user
-        console.log('Authenticated user:', userId);
-      } else {
-        // Handle guest player
+        this.isGuest = true;
+        this.playerId = 'guest_' + Math.random().toString(36).substr(2, 9);
         console.log('Guest player');
       }
       this.loadQuarterData();
@@ -103,37 +99,24 @@ export class BaseQuarterComponent implements OnInit {
   }
 
   submitScore() {
-    if (this.quarterData) {
-      this.authService.getCurrentUserId().subscribe(userId => {
-        if (userId) {
-          const playerScore: PlayerScore = {
-            playerId: userId,
-            playerName: 'Authenticated User',
-            score: this.playerScore,
-            quarterId: this.quarterId
-          };
-          this.firebaseService.submitScore(playerScore).subscribe(() => {
-            console.log('Score submitted successfully');
-          });
-        }
-      }, 
-      error => { // Fallback to guest player
-        const playerScore: PlayerScore = {
-          playerId: 'guest', // You might want to implement user identification later
-          playerName: 'Guest Player',
-          score: this.playerScore,
-          quarterId: this.quarterId
-        };
-        this.firebaseService.submitScore(playerScore).subscribe(() => {
-          console.log('Score submitted successfully');
-        },
-        error => {
-          console.error('Error submitting score:', error);
-          // Handle the error appropriately (e.g., show an error message to the user)
-        }
-      );
-      });
-    }
+    if (!this.quarterData) return;
+
+    const playerScore: PlayerScore = {
+      playerId: this.playerId,
+      playerName: this.isGuest ? 'Guest Player' : 'Authenticated User',
+      score: this.playerScore,
+      quarterId: this.quarterId,
+      isGuest: this.isGuest
+    };
+
+          this.firebaseService.submitScore(playerScore).subscribe(
+            () => {
+              console.log('Score submitted successfully');
+            },
+            error => {
+              console.error('Error submitting score:', error);
+            }
+          );
   }
 
   resetGame() {
@@ -141,8 +124,4 @@ export class BaseQuarterComponent implements OnInit {
     this.playerScore = 0;
     this.guess = { age: 0, proof: 0, mashbill: '' };
   }
-}
-
-function ofNull(arg0: null): any {
-  throw new Error('Function not implemented.');
 }
