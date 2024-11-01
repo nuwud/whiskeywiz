@@ -108,7 +108,10 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
     GameService, 
     FirebaseService, 
     QuarterPopulationService, 
-    { provide: FIREBASE_OPTIONS, useValue: environment.firebase },
+    { 
+      provide: FIREBASE_OPTIONS, 
+      useValue: environment.firebase 
+    },
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
@@ -122,7 +125,9 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
         experimentalForceLongPolling: true, // Helps with Firestore connection issues
         cacheSizeBytes: CACHE_SIZE_UNLIMITED, // or some specific size
         persistenceEnabled: true, // Enable offline persistence
-        ignoreUndefinedProperties: true // Helps with serialization issues
+        ignoreUndefinedProperties: true, // Helps with serialization issues
+        host: 'firestore.googleapis.com',
+        ssl: true
       }
     }
     
