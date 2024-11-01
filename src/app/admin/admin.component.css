@@ -9,6 +9,14 @@
   display: grid;
   grid-template-columns: 250px 1fr;
   gap: 30px;
+  min-height: 100vh;
+}
+
+.sidebar {
+  background: #f5f5f5;
+  padding: 20px;
+  border-right: 1px solid #ddd;
+  height: 100%;
 }
 
 /* Typography */
@@ -88,6 +96,18 @@ select {
   background: #f5f5f5;
   padding: 20px;
   border-radius: 8px;
+  position: sticky;
+  top: 20px;
+}
+
+.mobile-only {
+  display: none;
+}
+
+/* Quarter Items */
+.quarter-items {
+  max-height: none;
+  overflow: visible;
 }
 
 .quarter-item {
@@ -96,6 +116,7 @@ select {
   border-radius: 4px;
   margin-bottom: 5px;
   background: white;
+  transition: background-color 0.2s ease;
 }
 
 .quarter-item:hover {
@@ -105,6 +126,50 @@ select {
 .quarter-item.active {
   background: #4CAF50;
   color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .sidebar {
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .mobile-only {
+    display: block;
+  }
+
+  .quarter-items.collapsed-mobile {
+    display: none;
+  }
+
+  .hidden-mobile {
+    display: none;
+  }
+
+  .bulk-actions {
+    flex-direction: column;
+  }
+
+  .bulk-actions button {
+    width: 100%;
+    margin: 5px 0;
+  }
+}
+
+/* Status Indicators */
+.quarter-status {
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+.quarter-status.active {
+  color: #4CAF50;
 }
 
 /* Editor Styles */

@@ -33,9 +33,24 @@ export class AdminComponent implements OnInit {
     private router: Router
   ) {}
 
+  isMenuCollapsed = false;
+  selectedQuarters: Set<string> = new Set();
+
+  toggleMenu() {
+    if (window.innerWidth <= 768) {
+      this.isMenuCollapsed = !this.isMenuCollapsed;
+    }
+  }
+
   ngOnInit() {
     this.loadQuarters();
     this.loadScoringRules();
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768) {
+        this.isMenuCollapsed = false;
+      }
+    });
   }
 
   async loadQuarters() {
@@ -205,13 +220,6 @@ export class AdminComponent implements OnInit {
 
   getSampleKey(num: number): string {
     return `sample${num}`;
-  }
-
-  isMenuCollapsed = false;
-  selectedQuarters: Set<string> = new Set();
-  
-  toggleMenu() {
-    this.isMenuCollapsed = !this.isMenuCollapsed;
   }
 
   toggleSelectAll() {

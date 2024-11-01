@@ -1,45 +1,44 @@
 <!-- admin.component.html -->
 <div class="admin-container">
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
   <div class="quarters-list">
     <div class="quarters-header">
       <h3>Quarters</h3>
-      <button class="toggle-button" (click)="toggleMenu()">
-        {{ isMenuCollapsed ? '▼' : '▲' }}
+                <!-- Mobile only toggle -->
+                <button class="toggle-button mobile-only" (click)="toggleMenu()">
+                  {{ isMenuCollapsed ? '▼' : '▲' }}
+                </button>
+    </div>
+
+    <div class="bulk-actions" [class.hidden-mobile]="isMenuCollapsed">
+      <button class="standard-button" (click)="toggleSelectAll()">
+        Select All
+      </button>
+      <button class="standard-button" (click)="bulkActivate(true)">
+        Activate
+      </button>
+      <button class="standard-button" (click)="bulkActivate(false)">
+        Deactivate
       </button>
     </div>
 
-    <div class="bulk-actions" *ngIf="!isMenuCollapsed">
-      <label>
-        <input type="checkbox" 
-               [checked]="selectedQuarters.size === quarters.length"
-               (change)="toggleSelectAll()">
-        Select All
-      </label>
-      <button class="standard-button" (click)="bulkActivate(true)">Activate Selected</button>
-      <button class="standard-button secondary" (click)="bulkActivate(false)">Deactivate Selected</button>
-    </div>
-
-    <div class="quarter-items" [class.collapsed]="isMenuCollapsed">
+    <div class="quarter-items" [class.collapsed-mobile]="isMenuCollapsed">
       <div class="quarter-item" 
-           *ngFor="let quarter of quarters"
+           *ngFor="let quarter of quarters" 
            (click)="selectQuarter(quarter)"
            [class.active]="selectedQuarter?.id === quarter.id">
-           <div class="quarter-content">
-            <label>
-              <input type="checkbox" 
-                    [checked]="selectedQuarters.has(quarter.id!)"
-                    (change)="$event.stopPropagation(); selectedQuarters.has(quarter.id!) ? 
-                              selectedQuarters.delete(quarter.id!) : 
-                              selectedQuarters.add(quarter.id!)">
-              {{quarter.name}}
-            </label>
-            <span class="quarter-status" [class.active]="quarter.active">
-              ({{quarter.active ? 'Active' : 'Inactive'}})
-            </span>
-          </div>
+        <div class="quarter-content">
+          <span>{{quarter.name}}</span>
+          <span class="quarter-status" [class.active]="quarter.active">
+            ({{quarter.active ? 'Active' : 'Inactive'}})
+          </span>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
     <div class="main-content">
       <div class="scoring-rules" *ngIf="!selectedQuarter">
