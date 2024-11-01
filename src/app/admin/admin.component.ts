@@ -53,6 +53,10 @@ export class AdminComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    window.removeEventListener('resize', () => {});
+  }
+
   async loadQuarters() {
     try {
       const quarters = await firstValueFrom(this.firebaseService.getQuarters());
