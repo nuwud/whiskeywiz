@@ -1,5 +1,6 @@
 export const environment = {
     production: true,
+    buildTimestamp: Date.now(),
     firebase: {
       apiKey: "AIzaSyCqZMaGpJGf5veYgTXmytg1bLerva-of0U",
       authDomain: "whiskeywiz2.firebaseapp.com",
