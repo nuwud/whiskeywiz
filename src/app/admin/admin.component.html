@@ -5,12 +5,9 @@
       <div class="quarters-list">
         <div class="quarters-header">
           <h3>Quarters</h3>
-          <button (click)="toggleMenu()" class="toggle-button">
-            {{ isMenuCollapsed ? '▼' : '▲' }}
-          </button>
         </div>
 
-        <div class="quarter-items" [class.collapsed]="isMenuCollapsed">
+        <div class="quarter-items">
           <div *ngFor="let quarter of quarters" 
                class="quarter-item"
                [class.active]="selectedQuarter?.id === quarter.id"
@@ -28,7 +25,7 @@
 
     <!-- Main Content -->
     <main class="main-content">
-      <!-- Scoring Rules Section -->
+      <!-- Scoring Rules -->
       <section class="scoring-rules" *ngIf="!selectedQuarter">
         <h3>Scoring Rules</h3>
 
@@ -79,28 +76,26 @@
             <h4>1. Required Script</h4>
             <div class="code-block">
               <code>&lt;script src="https://whiskeywiz2.firebaseapp.com/whiskey-wiz.js" defer&gt;&lt;/script&gt;</code>
-              <button class="btn btn-sm" (click)="copyToClipboard('script')">Copy</button>
+              <button (click)="copyToClipboard('script')">Copy</button>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Quarter Editor Section -->
+      <!-- Quarter Editor -->
       <section class="quarter-editor" *ngIf="selectedQuarter">
         <div class="editor-header">
           <h3>Editing {{selectedQuarter.name}}</h3>
-          <button class="btn" (click)="showScoringRules()">
-            Return to Scoring Rules
-          </button>
+          <button (click)="showScoringRules()">Return to Scoring Rules</button>
         </div>
 
         <div class="editor-section">
           <label class="active-toggle">
-            <input type="checkbox" [(ngModel)]="selectedQuarter.active" />
+            <input type="checkbox" [(ngModel)]="selectedQuarter.active">
             Active Quarter
           </label>
 
-          <div class="samples-grid">
+          <div class="samples-container">
             <div class="sample-card" *ngFor="let num of sampleNumbers">
               <h4>Sample {{num}}</h4>
               
@@ -127,16 +122,8 @@
           </div>
 
           <div class="button-group">
-            <button class="btn btn-primary" (click)="updateQuarter()">Save Changes</button>
-            <button class="btn btn-secondary" (click)="navigateToQuarter(selectedQuarter.id)">Play Quarter</button>
-          </div>
-
-          <div class="integration-code" *ngIf="selectedQuarter.id">
-            <h4>Integration Code</h4>
-            <div class="code-block">
-              <code>&lt;whiskey-wiz-{{selectedQuarter.id}}&gt;&lt;/whiskey-wiz-{{selectedQuarter.id}}&gt;</code>
-              <button class="btn btn-sm" (click)="copyToClipboard(selectedQuarter.id)">Copy</button>
-            </div>
+            <button (click)="updateQuarter()">Save Changes</button>
+            <button (click)="navigateToQuarter(selectedQuarter.id)">Play Quarter</button>
           </div>
         </div>
       </section>
