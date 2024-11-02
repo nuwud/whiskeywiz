@@ -34,7 +34,6 @@ export class AdminComponent implements OnInit {
   ) {}
 
   isMenuCollapsed = false;
-  selectedQuarters: Set<string> = new Set();
 
   toggleMenu() {
     if (window.innerWidth <= 768) {
@@ -226,35 +225,7 @@ export class AdminComponent implements OnInit {
     return `sample${num}`;
   }
 
-  toggleSelectAll() {
-    if (this.selectedQuarters.size === this.quarters.length) {
-      this.selectedQuarters.clear();
-    } else {
-      this.selectedQuarters = new Set(this.quarters.map(q => q.id!));
-    }
-  }
+ 
 
-  async bulkActivate(active: boolean) {
-    if (this.selectedQuarters.size === 0) return;
-
-    try {
-      const updatePromises = Array.from(this.selectedQuarters).map(id => {
-        const quarter = this.quarters.find(q => q.id === id);
-        if (quarter) {
-          return firstValueFrom(
-            this.firebaseService.updateQuarter(id, { ...quarter, active })
-          );
-        }
-        return Promise.resolve();
-      });
-
-      await Promise.all(updatePromises);
-      await this.loadQuarters();
-      this.successMessage = `Successfully ${active ? 'activated' : 'deactivated'} selected quarters`;
-    } catch (error) {
-      console.error('Bulk update failed:', error);
-      this.error = 'Failed to update quarters. Please try again.';
-    }
-  }
   
 }

@@ -89,13 +89,13 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
     Q1225Component
   ],
   imports: [
-    BrowserModule,
     FormsModule,
-    RouterModule,
     ReactiveFormsModule,
+    BrowserModule,
+    AppRoutingModule,
+    RouterModule,
     SharedModule,
     CommonModule,
-    AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
@@ -108,10 +108,6 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
     GameService, 
     FirebaseService, 
     QuarterPopulationService, 
-    { 
-      provide: FIREBASE_OPTIONS, 
-      useValue: environment.firebase 
-    },
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
@@ -119,6 +115,10 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
     provideFunctions(() => getFunctions()),
     provideAnalytics(() => getAnalytics()),
     provideDatabase(() => getDatabase()),
+    { 
+      provide: FIREBASE_OPTIONS, 
+      useValue: environment.firebase 
+    },
     {
       provide: SETTINGS,
       useValue: {
@@ -130,7 +130,6 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
         ssl: true
       }
     }
-    
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

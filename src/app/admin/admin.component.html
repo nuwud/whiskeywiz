@@ -1,79 +1,77 @@
-<!-- admin.component.html -->
 <div class="admin-container">
   <div class="admin-layout">
     <!-- Sidebar -->
-    <div class="sidebar">
-  <div class="quarters-list">
-    <div class="quarters-header">
-      <h3>Quarters</h3>
-                <!-- Mobile only toggle -->
-                <button class="toggle-button mobile-only" (click)="toggleMenu()">
-                  {{ isMenuCollapsed ? '▼' : '▲' }}
-                </button>
-    </div>
+    <aside class="sidebar">
+      <div class="quarters-list">
+        <div class="quarters-header">
+          <h3>Quarters</h3>
+          <button (click)="toggleMenu()" class="toggle-button">
+            {{ isMenuCollapsed ? '▼' : '▲' }}
+          </button>
+        </div>
 
-    <div class="bulk-actions" [class.hidden-mobile]="isMenuCollapsed">
-      <button class="standard-button" (click)="toggleSelectAll()">
-        Select All
-      </button>
-      <button class="standard-button" (click)="bulkActivate(true)">
-        Activate
-      </button>
-      <button class="standard-button" (click)="bulkActivate(false)">
-        Deactivate
-      </button>
-    </div>
-
-    <div class="quarter-items" [class.collapsed-mobile]="isMenuCollapsed">
-      <div class="quarter-item" 
-           *ngFor="let quarter of quarters" 
-           (click)="selectQuarter(quarter)"
-           [class.active]="selectedQuarter?.id === quarter.id">
-        <div class="quarter-content">
-          <span>{{quarter.name}}</span>
-          <span class="quarter-status" [class.active]="quarter.active">
-            ({{quarter.active ? 'Active' : 'Inactive'}})
-          </span>
+        <div class="quarter-items" [class.collapsed]="isMenuCollapsed">
+          <div *ngFor="let quarter of quarters" 
+               class="quarter-item"
+               [class.active]="selectedQuarter?.id === quarter.id"
+               (click)="selectQuarter(quarter)">
+            <div class="quarter-content">
+              <span>{{quarter.name}}</span>
+              <span class="quarter-status" [class.active]="quarter.active">
+                {{quarter.active ? 'Active' : 'Inactive'}}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
+    </aside>
 
-    <div class="main-content">
-      <div class="scoring-rules" *ngIf="!selectedQuarter">
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Scoring Rules Section -->
+      <section class="scoring-rules" *ngIf="!selectedQuarter">
         <h3>Scoring Rules</h3>
+
         <div class="scoring-rules-grid">
-          <div class="control-group">
+          <div class="form-group">
             <label>Perfect Age Score:</label>
             <input type="number" [(ngModel)]="scoringRules.agePerfectScore">
           </div>
-          <div class="control-group">
+
+          <div class="form-group">
             <label>Age Bonus:</label>
             <input type="number" [(ngModel)]="scoringRules.ageBonus">
           </div>
-          <div class="control-group">
+
+          <div class="form-group">
             <label>Age Penalty Per Year:</label>
             <input type="number" [(ngModel)]="scoringRules.agePenaltyPerYear">
           </div>
-          <div class="control-group">
+
+          <div class="form-group">
             <label>Perfect Proof Score:</label>
             <input type="number" [(ngModel)]="scoringRules.proofPerfectScore">
           </div>
-          <div class="control-group">
+
+          <div class="form-group">
             <label>Proof Bonus:</label>
             <input type="number" [(ngModel)]="scoringRules.proofBonus">
           </div>
-          <div class="control-group">
+
+          <div class="form-group">
             <label>Proof Penalty Per Point:</label>
             <input type="number" [(ngModel)]="scoringRules.proofPenaltyPerPoint">
           </div>
-          <div class="control-group">
+
+          <div class="form-group">
             <label>Correct Mashbill Score:</label>
             <input type="number" [(ngModel)]="scoringRules.mashbillCorrectScore">
           </div>
         </div>
-        <button class="standard-button" (click)="updateScoringRules()">Update Scoring Rules</button>
+
+        <button class="btn btn-primary" (click)="updateScoringRules()">
+          Update Scoring Rules
+        </button>
 
         <div class="integration-instructions">
           <h3>Integration Instructions</h3>
@@ -81,65 +79,67 @@
             <h4>1. Required Script</h4>
             <div class="code-block">
               <code>&lt;script src="https://whiskeywiz2.firebaseapp.com/whiskey-wiz.js" defer&gt;&lt;/script&gt;</code>
-              <button class="standard-button" (click)="copyToClipboard('script-tag')">Copy</button>
+              <button class="btn btn-sm" (click)="copyToClipboard('script')">Copy</button>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="quarter-editor" *ngIf="selectedQuarter">
+      <!-- Quarter Editor Section -->
+      <section class="quarter-editor" *ngIf="selectedQuarter">
         <div class="editor-header">
           <h3>Editing {{selectedQuarter.name}}</h3>
-          <button class="standard-button secondary" (click)="showScoringRules()">Return to Scoring Rules</button>
+          <button class="btn" (click)="showScoringRules()">
+            Return to Scoring Rules
+          </button>
         </div>
-        
+
         <div class="editor-section">
           <label class="active-toggle">
-            <input type="checkbox" [(ngModel)]="selectedQuarter.active">
+            <input type="checkbox" [(ngModel)]="selectedQuarter.active" />
             Active Quarter
           </label>
 
           <div class="samples-grid">
             <div class="sample-card" *ngFor="let num of sampleNumbers">
               <h4>Sample {{num}}</h4>
-              <ng-container *ngIf="getSample(num) as sample">
-                <div class="form-group">
-                  <label>Mashbill:</label>
-                  <select [(ngModel)]="sample.mashbill">
-                    <option value="Bourbon">Bourbon</option>
-                    <option value="Rye">Rye</option>
-                    <option value="Wheat">Wheat</option>
-                    <option value="Single Malt">Single Malt</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>Proof:</label>
-                  <input type="number" [(ngModel)]="sample.proof">
-                </div>
-                <div class="form-group">
-                  <label>Age:</label>
-                  <input type="number" [(ngModel)]="sample.age">
-                </div>
-              </ng-container>
+              
+              <div class="form-group">
+                <label>Mashbill:</label>
+                <select [(ngModel)]="selectedQuarter.samples['sample' + num].mashbill">
+                  <option value="Bourbon">Bourbon</option>
+                  <option value="Rye">Rye</option>
+                  <option value="Wheat">Wheat</option>
+                  <option value="Single Malt">Single Malt</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Proof:</label>
+                <input type="number" [(ngModel)]="selectedQuarter.samples['sample' + num].proof">
+              </div>
+
+              <div class="form-group">
+                <label>Age:</label>
+                <input type="number" [(ngModel)]="selectedQuarter.samples['sample' + num].age">
+              </div>
             </div>
           </div>
 
           <div class="button-group">
-            <button class="standard-button" (click)="updateQuarter()">Save Changes</button>
-            <button class="standard-button secondary" *ngIf="selectedQuarter.id" 
-                    (click)="navigateToQuarter(selectedQuarter.id)">
-              Play Quarter
-            </button>
+            <button class="btn btn-primary" (click)="updateQuarter()">Save Changes</button>
+            <button class="btn btn-secondary" (click)="navigateToQuarter(selectedQuarter.id)">Play Quarter</button>
           </div>
 
           <div class="integration-code" *ngIf="selectedQuarter.id">
             <h4>Integration Code</h4>
             <div class="code-block">
               <code>&lt;whiskey-wiz-{{selectedQuarter.id}}&gt;&lt;/whiskey-wiz-{{selectedQuarter.id}}&gt;</code>
-              <button class="standard-button" (click)="copyToClipboard(selectedQuarter.id)">Copy</button>
+              <button class="btn btn-sm" (click)="copyToClipboard(selectedQuarter.id)">Copy</button>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   </div>
+</div>
