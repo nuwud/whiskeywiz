@@ -1,7 +1,7 @@
 <div class="game-container" *ngIf="quarterData">
-  <h2 class="game-title">Whiskey Challenge - {{quarterData.name}}</h2>
+  <h2 class="game-title font-hermona">Whiskey Challenge - {{quarterData.name}}</h2>
 
-  <div class="game-content" *ngIf="!gameCompleted">
+  <div class="game-content font-hermona" *ngIf="!gameCompleted">
     <div class="sample-navigation">
       <button class="nav-button" [disabled]="currentSample === 1" (click)="changeSample(-1)">
         Previous
@@ -16,7 +16,7 @@
       <h3>Sample {{currentSample}}</h3>
       <div class="guess-form">
         <div class="form-group">
-          <label>Mashbill</label>
+          <label class="font-hermona">Mashbill</label>
           <select [(ngModel)]="guesses['sample' + currentSample].mashbill">
             <option [ngValue]="null">Select type...</option>
             <option *ngFor="let type of mashbillCategories" [value]="type">
@@ -26,7 +26,7 @@
         </div>
 
         <div class="form-group">
-          <label>Age: {{guesses['sample' + currentSample].age}} Years</label>
+          <label class="font-hermona">Age: {{guesses['sample' + currentSample].age}} Years</label>
           <input 
             type="range" 
             class="slider"
@@ -42,7 +42,7 @@
         </div>
 
         <div class="form-group">
-          <label>Proof: {{guesses['sample' + currentSample].proof}}</label>
+          <label class="font-hermona">Proof: {{guesses['sample' + currentSample].proof}}</label>
           <input 
             type="range" 
             class="slider"
@@ -59,7 +59,7 @@
       </div>
     </div>
 
-    <div class="action-buttons">
+    <div class="action-button font-hermona">
       <button 
         class="standard-button"
         *ngIf="currentSample < 4"
@@ -105,9 +105,9 @@
     </div>
 
     <div class="results-actions">
-      <button class="standard-button" (click)="submitScore()">Submit Score</button>
-      <button class="standard-button" (click)="share()">Share Results</button>
-      <button class="standard-button secondary" (click)="playAgain()">Play Again</button>
+      <button class="standard-button font-hermona" (click)="submitScore()">Submit Score</button>
+      <button class="standard-button font-hermona" (click)="share()">Share Results</button>
+      <button class="standard-button font-hermona secondary" (click)="playAgain()">Play Again</button>
     </div>
   </div>
 </div>

@@ -1,0 +1,35 @@
+/* src/styles/_fonts.scss */
+@font-face {
+    font-family: 'Hermona';
+    src: url('/assets/fonts/Hermona.woff2') format('woff2'),
+         url('/assets/fonts/Hermona.woff') format('woff'),
+         url('/assets/fonts/Hermona.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; // Optimize font loading
+  }
+  
+  /* Font Variables */
+  :root {
+    --font-primary: Helvetica, Arial, sans-serif;
+    --font-headings: 'Hermona', Helvetica, Arial, sans-serif;
+  }
+  
+  /* Global Typography */
+  body {
+    font-family: var(--font-primary);
+  }
+  
+  h1, h2, h3, h4, h5, h6,
+  .heading {
+    font-family: var(--font-headings);
+  }
+  
+  /* Utility Classes */
+  .font-hermona {
+    font-family: var(--font-headings) !important;
+  }
+  
+  .font-helvetica {
+    font-family: var(--font-primary) !important;
+  }

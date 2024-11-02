@@ -1,6 +1,8 @@
 /* General styles for both admin and player pages */
 body {
-    font-family: Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: Helvetica, Arial, sans-serif;
     background-color: #f4f4f4;
     color: #333;
     margin: 0;

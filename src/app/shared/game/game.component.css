@@ -6,9 +6,16 @@
   }
   
   .game-title {
+    font-family: var(--font-display);
+    font-size: var(--text-4xl);
     text-align: center;
     margin-bottom: 30px;
-    color: #333;
+    color: #Ffdb58;
+  }
+
+  .sample-indicator {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
   }
   
   .samples-grid {
@@ -62,10 +69,9 @@
   }
   
   .total-score {
-    font-size: 24px;
-    font-weight: bold;
-    color: #4CAF50;
-    margin-top: 10px;
+    font-family: var(--font-display);
+    font-size: var(--text-4xl);
+    color: #Ffdb58;
   }
   
   .results-grid {
@@ -86,7 +92,7 @@
     font-size: 18px;
     font-weight: bold;
     margin: 10px 0;
-    color: #4CAF50;
+    color: #Ffdb58;
   }
   
   .comparison-grid {
@@ -115,7 +121,7 @@
     padding: 8px 16px;
     border: none;
     border-radius: 4px;
-    background-color: #4CAF50;
+    background-color: #Ffdb58;
     color: white;
     cursor: pointer;
     font-size: 14px;
@@ -146,7 +152,7 @@
 
 .nav-button {
   padding: 8px 16px;
-  background: #4CAF50;
+  background: #Ffdb58;
   color: white;
   border: none;
   border-radius: 4px;
@@ -180,13 +186,13 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #4CAF50;
+  background: #Ffdb58;
   cursor: pointer;
   transition: background .2s;
 }
 
 .slider::-webkit-slider-thumb:hover {
-  background: #45a049;
+  background: #Ffdb58;
 }
 
 .slider-labels {

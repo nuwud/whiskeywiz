@@ -1,12 +1,12 @@
 /* Base Layout */
 .admin-container {
+  font-family: var(--font-primary);
   display: flex;
   min-height: calc(100vh - 40px);
   max-width: 1400px;
   margin: 20px auto;
   padding: 0 20px;
   box-sizing: border-box;
-  overflow-x: hidden;
 }
 
 .admin-layout {
@@ -33,13 +33,12 @@
 /* Main Content */
 .main-content {
   flex: 1;
-  min-width: 0;  /* Important for flex container */
+  min-width: 0;
   padding: 20px;
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
-
 
 /* Form Controls */
 .form-group {
@@ -153,6 +152,28 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+.quarters-header h3,
+.scoring-rules h3,
+.editor-header h3,
+.integration-instructions h3 {
+  font-family: var(--font-headings);
+  font-weight: normal;
+  margin-bottom: 1rem;
+}
+
+/* Additional heading styles */
+.section-title {
+  font-family: var(--font-headings);
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Optional: Add some custom styles for the Hermona font */
+.quarters-header h3 {
+  font-size: 2rem;
+  letter-spacing: 0.02em;
+}
+
 /* Integration Code */
 .code-block {
   background: #2d2d2d;
@@ -176,16 +197,27 @@
   }
 }
 
+@media (max-width: 1024px) {
+  .admin-container {
+    padding: 0 15px;
+  }
+
+  .form-group input,
+  .form-group select {
+    max-width: 100%;
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .admin-container {
     margin: 10px auto;
-    padding: 0 10px;
+    padding: 0;
   }
 
   .admin-layout {
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
   }
 
   .sidebar {
@@ -193,6 +225,14 @@
     height: auto;
     position: relative;
     top: 0;
+    border-right: none;
+    margin-bottom: 15px;
+  }
+
+  .main-content {
+    width: 100%;
+    min-width: 100%;
+    padding: 15px;
   }
 
   .form-group {
@@ -200,9 +240,51 @@
     gap: 8px;
   }
 
-  .form-group input,
-  .form-group select {
-    max-width: 100%;
+  /* Adjust scoring rules for mobile */
+  .scoring-rules {
+    padding: 15px;
   }
 
+  .form-group label {
+    font-weight: 500;
+  }
+
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    max-width: none;
+  }
+
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .admin-container {
+    margin: 5px;
+  }
+
+  .sidebar,
+  .main-content {
+    padding: 10px;
+  }
+
+  .quarters-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .form-group {
+    margin: 10px 0;
+  }
+}
+
+/* Utility class for full-width containers */
+.full-width-mobile {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+  box-sizing: border-box !important;
 }
