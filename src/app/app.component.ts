@@ -15,7 +15,9 @@ import { AuthService } from './services/auth.service';
     <main>
       <router-outlet></router-outlet>
     </main>
-    <small class="version-indicator">Version: {{deployTime}}</small>
+    <small class="version-indicator" style="position: fixed; bottom: 5px; right: 5px; background: #f8f9fa; padding: 5px; border-radius: 4px; font-size: 10px;">
+      Version: {{pacificTime}}
+    </small>
   `,
   styles: [`
     header {
@@ -33,13 +35,18 @@ import { AuthService } from './services/auth.service';
     a:hover {
       color: #004499;
     }
+    .version-indicator {
+      opacity: 0.7;
+    }
+    .version-indicator:hover {
+      opacity: 1;
+    }
   `]
 })
-
 export class AppComponent {
   title = 'Whiskey Wiz';
   isLoggedIn = false;
-  deployTime =  new Date().toISOString();
+  pacificTime: string;
   
   constructor(
     private firebaseService: FirebaseService,
@@ -49,6 +56,19 @@ export class AppComponent {
     this.firebaseService.getAuthState().subscribe(user => {
       this.isLoggedIn = !!user;
     });
+    
+    // Set Pacific Time version
+    const now = new Date();
+    this.pacificTime = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Los_Angeles',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    }).format(now);
   }
 
   async logout(event: Event) {
@@ -61,4 +81,3 @@ export class AppComponent {
     }
   }
 }
-

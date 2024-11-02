@@ -1,15 +1,13 @@
 /* Base Layout */
 .admin-container {
   display: flex;
-  width: 100%;
   min-height: 100vh;
-  padding: 20px;
+  padding: 0; 
 }
 
 .admin-layout {
   display: flex;
   width: 100%;
-  position: relative;
 }
 
 /* Sidebar */
@@ -20,18 +18,19 @@
   padding: 20px;
   border-right: 1px solid #ddd;
   height: 100vh;
-  position: fixed;
-  top: 0;
   left: 0;
+  top: 0;
   overflow-y: auto;
+  z-index: 100;
 }
 
 /* Main Content */
 .main-content {
   flex: 1;
   padding: 20px;
-  margin-left: 270px;
-  width: calc(100% - 270px);
+  width: 100%;
+  min-width: 100%;
+  min-height: 100vh;
 }
 
 /* Quarters Header */
@@ -126,7 +125,6 @@
 .form-group {
   margin: 10px 0;
   display: grid;
-  grid-template-columns: 100px 1fr;
   align-items: center;
   gap: 10px;
 }
@@ -156,6 +154,12 @@
     height: auto;
     border-right: none;
     border-bottom: 1px solid #ddd;
+  }
+
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 20px;
   }
 
   .sample-card {

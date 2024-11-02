@@ -4,6 +4,7 @@ import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { Quarter, Sample, ScoringRules } from '../shared/models/quarter.model';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-admin',
