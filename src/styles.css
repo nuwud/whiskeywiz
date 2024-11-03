@@ -10,7 +10,7 @@ body {
 }
 
 h1, h2 {
-    color: #4CAF50;
+    color: #ffdb58;
     text-align: center;
     margin-bottom: 20px;
 }
@@ -38,7 +38,7 @@ input[type="range"] {
 }
 
 button {
-    background-color: #4CAF50;
+    background-color: #ffdb58;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -51,7 +51,7 @@ button {
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #ffdb58;
 }
 
 /* Container styles */
