@@ -1,0 +1,60 @@
+// src/app/shared/components/hermona-button/hermona-button.component.scss
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  
+  @keyframes press {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+  
+  .hermona-button {
+    position: relative;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  
+    &.animate {
+      &:hover .hermona-icon {
+        animation: pulse 1s infinite;
+      }
+  
+      &:active .hermona-icon {
+        animation: press 0.2s ease;
+      }
+    }
+  
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      
+      &:hover .hermona-icon {
+        animation: none;
+      }
+    }
+  }
+  
+  .hermona-icon {
+    font-family: 'Hermona-Extras';
+    font-size: 48px;
+    color: #FFD700;
+    display: block;
+    transition: transform 0.2s ease;
+  }
+  
+  .button-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #FFD700;
+    font-size: 1.2rem;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  
