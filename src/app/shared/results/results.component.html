@@ -1,0 +1,39 @@
+// src/app/shared/results/results.component.html
+<div class="results-container">
+  <div class="results-header">
+    <h3>Game Completed!</h3>
+    <div class="total-score">Total Score: {{ totalScore }}</div>
+    <div class="score-quip">{{ getScoreQuip(totalScore) }}</div>
+  </div>
+
+  <div class="results-grid">
+    <div class="result-card" *ngFor="let num of [1,2,3,4]">
+      <h4>Sample {{ num }}</h4>
+      <div class="score-display">
+        Score: {{ scores['sample' + num] }}
+        {{ getEmojiScore(scores['sample' + num]) }}
+      </div>
+
+      <div class="comparison-grid">
+        <div class="guess-column">
+          <h5>Your Guess</h5>
+          <p>Age: {{ guesses['sample' + num]?.age }} years</p>
+          <p>Proof: {{ guesses['sample' + num]?.proof }}</p>
+          <p>Type: {{ guesses['sample' + num]?.mashbill }}</p>
+        </div>
+        <div class="actual-column">
+          <h5>Actual</h5>
+          <p>Age: {{ quarterData?.samples['sample' + num]?.age }} years</p>
+          <p>Proof: {{ quarterData?.samples['sample' + num]?.proof }}</p>
+          <p>Type: {{ quarterData?.samples['sample' + num]?.mashbill }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-actions">
+    <button class="standard-button font-hermona" (click)="handleSubmitScore()">Submit Score</button>
+    <button class="standard-button font-hermona" (click)="handleShare()">Share Results</button>
+    <button class="standard-button font-hermona secondary" (click)="handlePlayAgain()">Play Again</button>
+  </div>
+</div>

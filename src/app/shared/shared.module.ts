@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { GameComponent } from './game/game.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
+import { ResultsComponent } from './results/results.component';
 
 @NgModule({
   declarations: [
     GameComponent,
-    LeaderboardComponent
+    LeaderboardComponent,
+    ResultsComponent
   ],
   imports: [
     CommonModule,
@@ -18,6 +20,7 @@ import { LeaderboardComponent } from './leaderboard/leaderboard.component';
   exports: [
     GameComponent,
     LeaderboardComponent,
+    ResultsComponent,
     FormsModule,
     CommonModule
   ]

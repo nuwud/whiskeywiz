@@ -5,7 +5,7 @@ import { Quarter, PlayerScore } from '../../shared/models/quarter.model';
 import { GameService } from '../../services/game.service';
 import { AuthService } from '../../services/auth.service';
 
-type Mashbill = 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt';
+type Mashbill = 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt' | 'Specialty';
 
 interface Guess {
   age: number;
@@ -16,7 +16,7 @@ interface Guess {
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
-  styleUrls: ['./game.component.css']
+  styleUrls: ['./game.component.scss']
 })
 export class GameComponent implements OnInit {
   @Input() set quarterId(value: string) {
@@ -43,7 +43,8 @@ export class GameComponent implements OnInit {
   loading: boolean = false;
   error: string | null = null;
 
-  mashbillCategories: Mashbill[] = ['Bourbon', 'Rye', 'Wheat', 'Single Malt'];
+  mashbillCategories: Mashbill[] = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
+  mashbillTypes = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
 
   constructor(
     private route: ActivatedRoute,
@@ -65,6 +66,10 @@ export class GameComponent implements OnInit {
         this.quarterId = quarterId;
       }
     });
+  }
+
+  getSampleLetter(num: number): string {
+    return String.fromCharCode(64 + num); // Converts 1 to A, 2 to B, etc.
   }
 
   loadQuarterData() {
@@ -176,6 +181,7 @@ private isValidQuarter(quarter: any): quarter is Quarter {
     }
 
     this.gameCompleted = true;
+    
   }
 
   submitScore() {
