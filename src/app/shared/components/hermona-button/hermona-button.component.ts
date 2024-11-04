@@ -14,7 +14,6 @@ export class HermonaButtonComponent {
   @Input() disabled: boolean = false;
   @Input() animate: boolean = true;
   @Output() click = new EventEmitter<void>();
-backgroundGlyph: any;
 
   constructor(private hermonaFont: HermonaFontService) {}
 
@@ -32,11 +31,13 @@ backgroundGlyph: any;
         glyphType = 'button-play';
         break;
       case 'next':
-        glyphType = 'button-rounded';
+        glyphType = 'nav-next';
         break;
       case 'previous':
-        glyphType = 'button-plain';
+        glyphType = 'nav-previous';
         break;
+      default:
+        glyphType = 'panel-frame';
     }
     
     return this.hermonaFont.getGlyphChar(glyphType);

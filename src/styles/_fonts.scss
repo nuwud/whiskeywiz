@@ -8,6 +8,14 @@
     font-style: normal;
     font-display: swap; // Optimize font loading
   }
+
+  @font-face {
+    font-family: 'Hermona-Extras';
+    src: url('../assets/fonts/Hermona-Extras.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+  }
   
   /* Font Variables */
   :root {
@@ -32,4 +40,8 @@
   
   .font-helvetica {
     font-family: var(--font-primary) !important;
+  }
+
+  .font-hermona-extras {
+    font-family: 'Hermona-Extras', sans-serif;
   }
