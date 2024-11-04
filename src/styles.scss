@@ -3,9 +3,6 @@
 @use 'styles/typography';
 
 /* General styles for both admin and player pages */
-
-@import 'styles/hermona';
-
 body {
   font-family: var(--font-primary);
   font-size: var(--text-base);
@@ -17,128 +14,138 @@ body {
   color: var(--color-dark-gray);
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display);
-  color: #ffdb58;
+h1,
+h2 {
+  color: var(--color-gold);
   text-align: center;
   margin-bottom: 20px;
 }
 
 .font-hermona {
-    font-family: var(--font-display);
-    font-size: 1.2rem; /* Adjust base size */
-    line-height: 1.5;
-    
-    h1&, &.h1 { font-size: 2.5rem; }
-    h2&, &.h2 { font-size: 2rem; }
-    h3&, &.h3 { font-size: 1.75rem; }
-  }
-
-  .font-hermona-extras {
-    font-family: 'Hermona-Extras', sans-serif;
-  }
-
-label {
-    display: block;
-    margin-top: 10px;
-    font-weight: bold;
-    color: #333;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  /* Adjust base size */
+  line-height: 1.5;
 }
 
-input {
-    &[type="text"],
-    &[type="number"],
-    &[type="range"] {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-  }
-  
-  select {
-    @extend input[type="text"];
-  }
+.font-hermona-extras {
+  font-family: 'Hermona-Extras', sans-serif;
+}
 
-    button {
-        background-color: $color-gold;
-        color: $color-white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        margin-top: 20px;
-        display: block;
-        width: 100%;
-      
-        &:hover {
-          background-color: darken($color-gold, 10%);
-        }
-      }
+/* Heading Variants */
+h1.font-hermona {
+  font-size: 2.5rem;
+}
+
+h2.font-hermona {
+  font-size: 2rem;
+}
+
+h3.font-hermona {
+  font-size: 1.75rem;
+}
+
+.font-hermona-h1 {
+  font-size: 2.5rem;
+}
+
+.font-hermona-h2 {
+  font-size: 2rem;
+}
+
+.font-hermona-h3 {
+  font-size: 1.75rem;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+  color: #333;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+input[type="range"] {
+  width: 100%;
+}
+
+button {
+  background-color: $color-gold;
+  color: $color-white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  display: block;
+  width: 100%;
+}
+
+button:hover {
+  background-color: darken($color-gold, 10%);
+}
 
 /* Container styles */
 .container {
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .sample {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
+}
 
-    &-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-        margin-top: 20px;
-      }
+.sample-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
 }
 
 /* Responsive layout for samples */
 .sample-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
 }
 
 #quarters-list {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 
 /* Styling for the list of quarters */
 .quarter-item {
-    background-color: #fafafa;
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-
-    button {
-        background-color: #f44336;
-        margin-left: 10px;
-        width: auto;
-    
-        &:hover {
-          background-color: #d32f2f;
-        }
-      }
+  background-color: #fafafa;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .quarter-item button {
-    background-color: #f44336;
-    margin-left: 10px;
-    width: auto;
+  background-color: #f44336;
+  margin-left: 10px;
+  width: auto;
 }
 
 .quarter-item button:hover {
-    background-color: #d32f2f;
+  background-color: #d32f2f;
 }
