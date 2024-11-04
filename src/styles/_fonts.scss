@@ -1,9 +1,9 @@
 /* src/styles/_fonts.scss */
 @font-face {
     font-family: 'Hermona';
-    src: url('/assets/fonts/Hermona.woff2') format('woff2'),
-         url('/assets/fonts/Hermona.woff') format('woff'),
-         url('/assets/fonts/Hermona.ttf') format('truetype');
+    src: url('../assets/fonts/Hermona.woff2') format('woff2'),
+         url('../assets/fonts/Hermona.woff') format('woff'),
+         url('../assets/fonts/Hermona.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     font-display: swap; // Optimize font loading

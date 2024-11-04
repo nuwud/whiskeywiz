@@ -25,9 +25,14 @@
           }
         ],
         "styles": [
-          "src/styles.css",
+          "src/styles.scss",
           "src/styles/_typography.scss"
         ],
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "src"
+          ]
+        },
         "scripts": [],
         "outputHashing": "none",
         "sourceMap": false,
@@ -51,7 +56,20 @@
               "minify": true,
               "inlineCritical": false
             }
-          }
+          },
+          "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
         }
       },
       "outputs": [

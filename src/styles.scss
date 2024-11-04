@@ -1,15 +1,18 @@
 /* General styles for both admin and player pages */
 
 @import 'hermona';
+@use 'styles/variables' as *;
+@use 'styles/fonts' as *;
 
 body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-family: Helvetica, Arial, sans-serif;
-    background-color: #f4f4f4;
     color: #333;
     margin: 0;
     padding: 20px;
+    background-color: var(--color-dark);
+
 }
 
 h1, h2 {
