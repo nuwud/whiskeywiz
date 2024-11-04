@@ -21,23 +21,17 @@ export class HermonaButtonComponent {
     let glyphType: HermonaGlyphType;
     
     switch (this.type) {
-      case 'submit':
-        glyphType = 'button-submit';
-        break;
-      case 'share':
-        glyphType = 'button-share';
-        break;
-      case 'play':
-        glyphType = 'button-play';
-        break;
       case 'next':
-        glyphType = 'nav-next';
-        break;
       case 'previous':
-        glyphType = 'nav-previous';
+        glyphType = 'button-nav';
+        break;
+      case 'submit':
+      case 'share':
+      case 'play':
+        glyphType = 'button-ornate';
         break;
       default:
-        glyphType = 'panel-frame';
+        glyphType = 'button-standard';
     }
     
     return this.hermonaFont.getGlyphChar(glyphType);
