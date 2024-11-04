@@ -1,21 +1,24 @@
 /* src/styles/_fonts.scss */
-@font-face {
-    font-family: 'Hermona';
-    src: url('../assets/fonts/Hermona.woff2') format('woff2'),
-         url('../assets/fonts/Hermona.woff') format('woff'),
-         url('../assets/fonts/Hermona.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap; // Optimize font loading
-  }
+@forward 'variables';
 
-  @font-face {
-    font-family: 'Hermona-Extras';
-    src: url('../assets/fonts/Hermona-Extras.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-    font-display: block;
-  }
+@font-face {
+  font-family: 'Hermona';
+  src: url('../assets/fonts/Hermona.woff2') format('woff2'),
+       url('../assets/fonts/Hermona.woff') format('woff'),
+       url('../assets/fonts/Hermona.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Hermona-Extras';
+  src: url('../assets/fonts/Hermona-Extras.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
   
   @mixin font-hermona {
     font-family: 'Hermona', sans-serif;

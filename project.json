@@ -25,12 +25,11 @@
           }
         ],
         "styles": [
-          "src/styles.scss",
-          "src/styles/_typography.scss"
+          "src/styles.scss"
         ],
         "stylePreprocessorOptions": {
           "includePaths": [
-            "src"
+            "src/styles"
           ]
         },
         "scripts": [],

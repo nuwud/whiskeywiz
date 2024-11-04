@@ -1,36 +1,41 @@
 @use 'styles/variables' as *;
-@use 'styles/fonts' as *;
+@use 'styles/fonts';
+@use 'styles/typography';
 
 /* General styles for both admin and player pages */
 
 @import 'styles/hermona';
 
 body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    font-family: Helvetica, Arial, sans-serif;
-    color: #333;
-    margin: 0;
-    padding: 20px;
-    background-color: var(--color-dark);
-
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 20px;
+  background-color: var(--color-dark);
+  color: var(--color-dark-gray);
 }
 
-h1, h2 {
-    color: #ffdb58;
-    text-align: center;
-    margin-bottom: 20px;
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  color: #ffdb58;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .font-hermona {
-    @include font-hermona;
-    font-family: 'Hermona', sans-serif;
+    font-family: var(--font-display);
     font-size: 1.2rem; /* Adjust base size */
     line-height: 1.5;
     
-    &h1, h1& { font-size: 2.5rem; }
-    &h2, h2& { font-size: 2rem; }
-    &h3, h3& { font-size: 1.75rem; }
+    h1&, &.h1 { font-size: 2.5rem; }
+    h2&, &.h2 { font-size: 2rem; }
+    h3&, &.h3 { font-size: 1.75rem; }
+  }
+
+  .font-hermona-extras {
+    font-family: 'Hermona-Extras', sans-serif;
   }
 
 label {

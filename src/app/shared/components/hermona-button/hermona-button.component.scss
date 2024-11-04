@@ -1,3 +1,7 @@
+@use 'variables' as *;
+@use 'fonts';
+
+/* src/app/shared/components/hermona-button/hermona-button.component.scss */
 
 @keyframes pulse {
   0% { transform: scale(1); }
