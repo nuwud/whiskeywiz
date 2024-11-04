@@ -73,19 +73,22 @@ p {
 }
 
 .standard-button {
-  background: none;
-  border: 2px solid #FFD700;
-  color: #FFD700;
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.standard-button:hover {
-  background: #FFD700;
-  color: #1A1A1A;
-}
+    background: none;
+    border: 2px solid #FFD700;
+    color: #FFD700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-family: 'Hermona', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 0 0.5rem;
+  }
+  
+  .standard-button:hover {
+    background: #FFD700;
+    color: #1A1A1A;
+    transform: scale(1.05);
+  }
 
 .secondary {
   border-color: #ffffff;
@@ -113,3 +116,4 @@ p {
     margin: 0.5rem 0;
   }
 }
+

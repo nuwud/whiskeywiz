@@ -8,6 +8,10 @@
 
   <div class="results-grid">
     <div class="result-card" *ngFor="let num of [1,2,3,4]">
+      <div class="score-display">
+        Score: {{ scores['sample' + num] }}
+        {{ getEmojiScore(scores['sample' + num]) }} 
+      </div>
       <h4>Sample {{ num }}</h4>
       <div class="score-display">
         Score: {{ scores['sample' + num] }}
