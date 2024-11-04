@@ -17,6 +17,12 @@
     font-display: block;
   }
   
+  @mixin font-hermona {
+    font-family: 'Hermona', sans-serif;
+    font-size: 1.2rem;
+    line-height: 1.5;
+  }
+
   /* Font Variables */
   :root {
     --font-primary: Helvetica, Arial, sans-serif;
