@@ -17,44 +17,33 @@
     border: none;
     padding: 0;
     cursor: pointer;
-    transition: all 0.3s ease;
-  
-    &.animate {
-      &:hover .hermona-icon {
-        animation: pulse 1s infinite;
-      }
-  
-      &:active .hermona-icon {
-        animation: press 0.2s ease;
-      }
-    }
-  
-    &.disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      
-      &:hover .hermona-icon {
-        animation: none;
-      }
-    }
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
-  
-  .hermona-icon {
+
+  .glyph-background {
     font-family: 'Hermona-Extras';
-    font-size: 48px;
+    font-size: 3rem;
     color: #FFD700;
-    display: block;
-    transition: transform 0.2s ease;
-  }
-  
-  .button-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #FFD700;
-    font-size: 1.2rem;
-    white-space: nowrap;
-    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
   }
-  
+
+  .button-text {
+    position: relative;
+    z-index: 1;
+    color: #FFD700;
+    font-family: 'Hermona', sans-serif;
+    font-size: 1.2rem;
+  }
+
+  .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }

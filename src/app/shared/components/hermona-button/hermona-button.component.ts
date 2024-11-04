@@ -14,6 +14,7 @@ export class HermonaButtonComponent {
   @Input() disabled: boolean = false;
   @Input() animate: boolean = true;
   @Output() click = new EventEmitter<void>();
+backgroundGlyph: any;
 
   constructor(private hermonaFont: HermonaFontService) {}
 
