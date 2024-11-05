@@ -19,6 +19,10 @@ interface Guess {
   styleUrls: ['./game.component.scss']
 })
 export class GameComponent implements OnInit {
+isLoggedIn: any;
+logout() {
+throw new Error('Method not implemented.');
+}
   @Input() set quarterId(value: string) {
     if (value) {
       this._quarterId = value;

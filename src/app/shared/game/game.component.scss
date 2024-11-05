@@ -1,5 +1,5 @@
-@use 'variables' as *;
-@use 'fonts';
+@use '../../../styles/variables';
+@use '../../../styles/fonts';
 /* game.component.scss */
 
 @import '../../../styles/variables';
@@ -34,9 +34,32 @@
   margin-bottom: 2rem;
 }
 
-.logo-header .logo {
+.logo-header {
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.logo {
   max-width: 200px;
   height: auto;
+}
+
+.logout-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-gold);
+}
+
+.glyph {
+  font-size: 2rem;
 }
 
 /* Navigation Controls */
@@ -85,7 +108,10 @@
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  h3 {
+    margin-bottom: 1rem;
+  }
 }
 
 .form-group label {
@@ -98,7 +124,8 @@
 /* Custom Slider */
 .slider-container {
   position: relative;
-  padding: 1rem 0;
+  z-index: 2;
+  margin-top: -20px;
 }
 
 .custom-slider {
@@ -114,39 +141,36 @@
 
 .custom-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 40px;
-  height: 40px;
+  width: 100px;
+  height: 100px;
   background: url('/assets/images/dial_x.png') no-repeat center center;
   background-size: contain;
   cursor: pointer;
   position: relative;
-  top: -20px;
+  top: -15px;
 }
 
 .custom-slider::-moz-range-thumb {
-  width: 40px;
-  height: 40px;
+  width: 100px;
+  height: 100px;
   background: url('/assets/images/dial_x.png') no-repeat center center;
   background-size: contain;
   cursor: pointer;
   border: none;
   position: relative;
-  top: -20px;
+  top: -15px;
 }
 
 .slider-value {
   text-align: center;
-  margin-top: 0.5rem;
-  color: var(--color-gold);
-  @include font-hermona('lg');
+  margin-top: 1rem;
 }
 
 /* Mashbill Radio Buttons */
 .mashbill-options {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 0.5rem;
+  align-items: center;
+  cursor: pointer;
 }
 
 .mashbill-option {
@@ -164,7 +188,7 @@
   height: 24px;
   border: 2px solid var(--color-gold);
   border-radius: 50%;
-  margin-right: 0.5rem;
+  margin-right: 1rem;
   position: relative;
 }
 
@@ -177,17 +201,70 @@
   border-radius: 50%;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  transition: transform 0.2s;
+  transform: translate(-50%, -50%);
 }
 
-.mashbill-option input[type="radio"]:checked + .radio-custom:after {
-  transform: translate(-50%, -50%) scale(1);
+.label-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  
+  h3 {
+    margin: 0;
+    color: var(--color-gold);
+  }
+  
+  .value {
+    color: var(--color-gold);
+  }
 }
 
-.label-text {
-  color: var(--color-gold);
-  font-size: 1rem;
+.mashbill-options {
+  margin-top: 2rem;
+}
+
+.mashbill-row {
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+  padding: 1rem 0;
+}
+
+.mashbill-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  input[type="radio"] {
+    display: none;
+  }
+
+  .radio-unchecked {
+    display: block;
+    width: 30px;
+    height: 30px;
+  }
+
+  .radio-checked {
+    display: none;
+    width: 30px;
+    height: 30px;
+  }
+
+  input[type="radio"]:checked ~ .radio-unchecked {
+    display: none;
+  }
+
+  input[type="radio"]:checked ~ .radio-checked {
+    display: block;
+  }
+
+
+  .label-text {
+    color: var(--color-gold);
+    font-size: 1rem;
+  }
 }
 
 /* Sample Navigation */
@@ -199,7 +276,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 .sample-indicator {

@@ -1,95 +1,103 @@
-// game.component.html
 <div class="game-container" [style.backgroundImage]="'url(assets/images/blackbackground.png)'">
-  <div class="logo-header">
-    <img src="assets/images/BlindBarrels.png" alt="Blind Barrels Logo" class="logo">
+  <div class="header-container">
+    <div class="logo-header">
+      <img src="assets/images/BlindBarrels.png" alt="Blind Barrels Logo" class="logo">
+    </div>
+    <button *ngIf="isLoggedIn" class="logout-button" (click)="logout()">
+      <span class="font-hermona-extras glyph">I</span>
+      <span class="font-hermona-lg">Logout</span>
+    </button>
   </div>
 
   <div class="game-content" *ngIf="!gameCompleted">
     <div class="navigation-controls">
-      <button class="nav-button" (click)="changeSample(-1)" [disabled]="currentSample === 1">
-        <img src="assets/images/Previous_Sample.png" alt="Previous Sample">
-      </button>
+      <img src="assets/images/Previous_Sample_Button.png" 
+           (click)="changeSample(-1)" 
+           [class.disabled]="currentSample === 1"
+           alt="Previous Sample">
 
-      <h2 class="sample-title font-hermona">
-        Sample {{ getSampleLetter(currentSample) }}
-      </h2>
+      <h2 class="sample-title font-hermona-3xl">Sample {{ getSampleLetter(currentSample) }}</h2>
 
-      <button class="nav-button" (click)="changeSample(1)" [disabled]="currentSample === 4">
-        <img src="assets/images/Next_Sample.png" alt="Next Sample">
-      </button>
+      <img src="assets/images/Next_Sample_Button.png"
+           (click)="changeSample(1)"
+           [class.disabled]="currentSample === 4"
+           alt="Next Sample">
     </div>
 
     <div class="guess-form">
       <div class="form-group">
-        <label>Age Statement:</label>
+        <div class="label-group">
+          <h3 class="font-hermona-xl">Age Statement:</h3>
+          <span class="value font-hermona-xl">{{ guesses['sample' + currentSample].age }} Years</span>
+        </div>
         <div class="slider-container">
-          <input type="range" 
+          <div class="slider-decoration"></div>
+          <input type="range"
                  class="custom-slider"
-                 min="1" 
-                 max="30" 
-                 [(ngModel)]="guesses['sample' + currentSample].age"
-                 (ngModelChange)="updateGuess(currentSample, 'age', $event)">
-          <div class="slider-value font-hermona">
-            {{ guesses['sample' + currentSample].age }} Years
-          </div>
+                 min="1"
+                 max="30"
+                 [(ngModel)]="guesses['sample' + currentSample].age">
         </div>
       </div>
 
       <div class="form-group">
-        <label>Proof:</label>
+        <div class="label-group">
+          <h3 class="font-hermona-xl">Proof:</h3>
+          <span class="value font-hermona-xl">{{ guesses['sample' + currentSample].proof }} Proof</span>
+        </div>
         <div class="slider-container">
-          <input type="range" 
+          <div class="slider-decoration"></div>
+          <input type="range"
                  class="custom-slider"
-                 min="80" 
-                 max="160" 
-                 [(ngModel)]="guesses['sample' + currentSample].proof"
-                 (ngModelChange)="updateGuess(currentSample, 'proof', $event)">
-          <div class="slider-value font-hermona">
-            {{ guesses['sample' + currentSample].proof }} Proof
-          </div>
+                 min="80"
+                 max="160"
+                 [(ngModel)]="guesses['sample' + currentSample].proof">
         </div>
       </div>
 
       <div class="form-group">
-        <label>Mashbill:</label>
+        <h3 class="font-hermona-xl">Mashbill:</h3>
         <div class="mashbill-options">
-          <label class="mashbill-option" *ngFor="let type of mashbillTypes">
-            <input type="radio" 
-                   [value]="type"
-                   [(ngModel)]="guesses['sample' + currentSample].mashbill"
-                   (ngModelChange)="updateGuess(currentSample, 'mashbill', $event)"
-                   name="mashbill{{currentSample}}">
-            <span class="radio-custom"></span>
-            <span class="label-text font-hermona">{{ type }}</span>
-          </label>
+          <div class="mashbill-row">
+            <label class="mashbill-option" *ngFor="let type of mashbillTypes">
+              <input type="radio"
+                     [value]="type"
+                     [(ngModel)]="guesses['sample' + currentSample].mashbill"
+                     name="mashbill{{currentSample}}">
+              <img [src]="'assets/images/Ellipse W.png'" class="radio-unchecked" alt="unchecked">
+              <img [src]="'assets/images/Ellipse B.png'" class="radio-checked" alt="checked">
+              <span class="label-text font-hermona-lg">{{ type }}</span>
+            </label>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="sample-navigation">
-      <div class="sample-indicators">
-        <div *ngFor="let num of [1,2,3,4]" 
+      <div class="samples-row">
+        <img *ngFor="let num of [1,2,3,4]"
+             [src]="'assets/images/Sample_' + getSampleLetter(num) + 
+                    (currentSample === num ? '_active' : '') + '.png'"
              class="sample-indicator"
              [class.active]="currentSample === num"
-             (click)="currentSample = num">
-          <img [src]="'assets/images/Sample_' + getSampleLetter(num) + '.png'" 
-               [alt]="'Sample ' + getSampleLetter(num)">
-        </div>
+             (click)="currentSample = num"
+             [alt]="'Sample ' + getSampleLetter(num)">
       </div>
     </div>
 
-    <button class="submit-button" (click)="submitGuesses()">
-      <img src="assets/images/Submit_All_Guesses.png" alt="Submit All Guesses">
-    </button>
+    <img src="assets/images/Submit_All_Guesses.png" 
+         class="submit-button" 
+         (click)="submitGuesses()"
+         alt="Submit All Guesses">
   </div>
 
-  <app-results *ngIf="gameCompleted"
-  [quarterData]="quarterData"
-  [guesses]="guesses"
-  [scores]="scores"
-  [totalScore]="totalScore"
-  (playAgain)="playAgain()"
-  (shareResults)="share()"
-  (submitScore)="submitScore()"
-></app-results>
+  <app-results
+    *ngIf="gameCompleted"
+    [quarterData]="quarterData"
+    [guesses]="guesses"
+    [scores]="scores"
+    [totalScore]="totalScore"
+    (playAgain)="playAgain()"
+    (shareResults)="share()">
+  </app-results>
 </div>
