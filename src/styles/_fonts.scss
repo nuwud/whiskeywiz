@@ -20,11 +20,25 @@
 }
 
   
-  @mixin font-hermona {
-    font-family: 'Hermona', sans-serif;
+@mixin font-hermona($size) {
+  font-family: 'Hermona', sans-serif;
+  @if $size == 'base' {
     font-size: 1.2rem;
-    line-height: 1.5;
+  } @else if $size == 'sm' {
+    font-size: 0.875rem;
+  } @else if $size == 'lg' {
+    font-size: 1.5rem;
+  } @else if $size == 'xl' {
+    font-size: 1.875rem;
+  } @else if $size == '2xl' {
+    font-size: 2.25rem;
+  } @else if $size == '3xl' {
+    font-size: 3rem;
+  } @else if $size == '4xl' {
+    font-size: 3.75rem;
   }
+  line-height: 1.5;
+}
 
   /* Font Variables */
   :root {
@@ -44,7 +58,31 @@
   
   /* Utility Classes */
   .font-hermona {
-    font-family: var(--font-headings) !important;
+    @include font-hermona('base');
+  }
+  
+  .font-hermona-sm {
+    @include font-hermona('sm');
+  }
+  
+  .font-hermona-lg {
+    @include font-hermona('lg');
+  }
+  
+  .font-hermona-xl {
+    @include font-hermona('xl');
+  }
+  
+  .font-hermona-2xl {
+    @include font-hermona('2xl');
+  }
+  
+  .font-hermona-3xl {
+    @include font-hermona('3xl');
+  }
+  
+  .font-hermona-4xl {
+    @include font-hermona('4xl');
   }
   
   .font-helvetica {
