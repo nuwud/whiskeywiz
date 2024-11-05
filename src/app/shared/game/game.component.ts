@@ -21,7 +21,11 @@ interface Guess {
 export class GameComponent implements OnInit {
 isLoggedIn: any;
 logout() {
-throw new Error('Method not implemented.');
+  this.authService.signOut().then(() => {
+    // Handle any post-logout navigation or UI updates
+  }).catch(error => {
+    console.error('Error logging out:', error);
+  });
 }
   @Input() set quarterId(value: string) {
     if (value) {

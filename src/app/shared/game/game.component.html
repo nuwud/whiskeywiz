@@ -1,3 +1,4 @@
+<!-- game.component.html -->
 <div class="game-container" [style.backgroundImage]="'url(assets/images/blackbackground.png)'">
   <div class="header-container">
     <div class="logo-header">
@@ -16,7 +17,9 @@
            [class.disabled]="currentSample === 1"
            alt="Previous Sample">
 
-      <h2 class="sample-title font-hermona-3xl">Sample {{ getSampleLetter(currentSample) }}</h2>
+      <h2 class="sample-title font-hermona-3xl">
+        Sample {{ getSampleLetter(currentSample) }}
+      </h2>
 
       <img src="assets/images/Next_Sample_Button.png"
            (click)="changeSample(1)"
@@ -28,10 +31,11 @@
       <div class="form-group">
         <div class="label-group">
           <h3 class="font-hermona-xl">Age Statement:</h3>
-          <span class="value font-hermona-xl">{{ guesses['sample' + currentSample].age }} Years</span>
+          <span class="value font-hermona-xl">
+            {{ guesses['sample' + currentSample].age }} Years
+          </span>
         </div>
         <div class="slider-container">
-          <div class="slider-decoration"></div>
           <input type="range"
                  class="custom-slider"
                  min="1"
@@ -43,10 +47,11 @@
       <div class="form-group">
         <div class="label-group">
           <h3 class="font-hermona-xl">Proof:</h3>
-          <span class="value font-hermona-xl">{{ guesses['sample' + currentSample].proof }} Proof</span>
+          <span class="value font-hermona-xl">
+            {{ guesses['sample' + currentSample].proof }} Proof
+          </span>
         </div>
         <div class="slider-container">
-          <div class="slider-decoration"></div>
           <input type="range"
                  class="custom-slider"
                  min="80"
@@ -59,13 +64,13 @@
         <h3 class="font-hermona-xl">Mashbill:</h3>
         <div class="mashbill-options">
           <div class="mashbill-row">
-            <label class="mashbill-option" *ngFor="let type of mashbillTypes">
+            <label *ngFor="let type of mashbillTypes" class="mashbill-option">
               <input type="radio"
                      [value]="type"
                      [(ngModel)]="guesses['sample' + currentSample].mashbill"
                      name="mashbill{{currentSample}}">
-              <img [src]="'assets/images/Ellipse W.png'" class="radio-unchecked" alt="unchecked">
-              <img [src]="'assets/images/Ellipse B.png'" class="radio-checked" alt="checked">
+              <img src="assets/images/Ellipse_W.png" class="radio-unchecked" alt="unchecked">
+              <img src="assets/images/Ellipse_B.png" class="radio-checked" alt="checked">
               <span class="label-text font-hermona-lg">{{ type }}</span>
             </label>
           </div>
@@ -77,7 +82,7 @@
       <div class="samples-row">
         <img *ngFor="let num of [1,2,3,4]"
              [src]="'assets/images/Sample_' + getSampleLetter(num) + 
-                    (currentSample === num ? '_active' : '') + '.png'"
+                    (currentSample === num ? '_hover' : '') + '.png'"
              class="sample-indicator"
              [class.active]="currentSample === num"
              (click)="currentSample = num"
