@@ -4,6 +4,7 @@
 
 export const environment = {
     production: false,
+    enableImageDebugging: true,
     buildTimestamp: Date.now(),
     firebase: {
       apiKey: "AIzaSyCqZMaGpJGf5veYgTXmytg1bLerva-of0U",

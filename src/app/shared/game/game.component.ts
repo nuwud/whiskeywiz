@@ -5,6 +5,7 @@ import { Quarter, PlayerScore } from '../../shared/models/quarter.model';
 import { GameService } from '../../services/game.service';
 import { AuthService } from '../../services/auth.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
+import { environment } from '../../../environments/environment';
 
 // Type definitions
 type Mashbill = 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt' | 'Specialty';
@@ -90,8 +91,10 @@ export class GameComponent implements OnInit {
   }
 
   // Private properties
+  private readonly BASE_IMAGE_PATH = 'assets/images/';
   private _quarterId: string = '';
   private readonly ANIMATION_DELAY = 200;
+  private readonly DEBUG_PATHS = !environment.production;
 
   // Public properties
   isLoggedIn: boolean = false;
@@ -138,6 +141,33 @@ export class GameComponent implements OnInit {
       this.isGuest = id.startsWith('guest_');
     });
   }
+
+    // Helper method for image paths
+    getImagePath(filename: string): string {
+      const fullPath = `${this.BASE_IMAGE_PATH}${filename}`;
+      if (this.DEBUG_PATHS) {
+        console.log(`Loading image: ${fullPath}`);
+      }
+      return fullPath;
+    }
+  
+    // Helper for button images
+    getButtonImage(type: string, state: string = ''): string {
+      const filename = `${type}${state}.png`;
+      const path = this.getImagePath(filename);
+      if (this.DEBUG_PATHS) {
+        console.log(`Button image request - Type: ${type}, State: ${state}, Path: ${path}`);
+      }
+      return path;
+    }
+  
+    // Sample indicator image helper
+    getSampleIndicatorImage(num: number): string {
+      const letter = this.getSampleLetter(num);
+      const isActive = this.currentSample === num;
+      const filename = `Sample_${letter}${isActive ? '_hover' : ''}.png`;
+      return this.getImagePath(filename);
+    }
 
   ngOnInit() {
     // Handle route parameters for direct navigation
@@ -450,32 +480,6 @@ export class GameComponent implements OnInit {
     }
   }
 
-  // Helper methods for button image paths
-  getButtonImage(type: string): string {
-    const state = this.getButtonState(type);
-    const isHovered = state === 'hovered' || state === 'pressed';
-    
-    switch (type) {
-      case 'previous':
-        return `assets/images/Previous_Sample_Button${isHovered ? '_Hover' : ''}.png`;
-      case 'next':
-        return `assets/images/Next_Sample_Button${isHovered ? '_Hover' : ''}.png`;
-      case 'submit':
-        return `assets/images/Submit_All_Guesses${isHovered ? '_Hover' : ''}.png`;
-      default:
-        return '';
-    }
-  }
-
-  // Get sample indicator image
-  getSampleIndicatorImage(sampleNum: number): string {
-    const letter = this.getSampleLetter(sampleNum);
-    const isActive = this.currentSample === sampleNum;
-    const isHovered = this.sampleStates[sampleNum].hover;
-    
-    return `assets/images/Sample_${letter}${isActive || isHovered ? '_hover' : ''}.png`;
-  }
-
   // Panel background handling
   getPanelBackground(position: 'left' | 'middle' | 'right'): string {
     return `assets/images/large-panel-${position}.png`;
@@ -522,9 +526,41 @@ export class GameComponent implements OnInit {
     }
   }
 
-  // Error handling helper
-  handleError(error: any, context: string) {
-    console.error(`Error in ${context}:`, error);
-    this.error = `Failed to ${context.toLowerCase()}`;
+   // Image path verification
+   private verifyImagePaths() {
+    const requiredImages = [
+      'blackbackground.png',
+      'BlindBarrels.png',
+      'Previous_Sample_Button.png',
+      'Next_Sample_Button.png',
+      'Track.png',
+      'Ellipse_W.png',
+      'Ellipse_B.png',
+      'Submit_All_Guesses.png',
+      'dial_x.png'
+    ];
+
+    requiredImages.forEach(img => {
+      const path = this.getImagePath(img);
+      this.verifyImageExists(path);
+    });
   }
+
+  private verifyImageExists(path: string) {
+    const img = new Image();
+    img.onload = () => {
+      console.log(`✅ Image loaded successfully: ${path}`);
+    };
+    img.onerror = () => {
+      console.error(`❌ Failed to load image: ${path}`);
+    };
+    img.src = path;
+  }
+
+    // Error handling helper
+    handleError(error: any, context: string) {
+      console.error(`Error in ${context}:`, error);
+      this.error = `Failed to ${context.toLowerCase()}`;
+    }
+
 }

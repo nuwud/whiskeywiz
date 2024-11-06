@@ -2,7 +2,7 @@
   <!-- Header Section -->
   <div class="header-container">
     <div class="logo-header">
-      <img src="assets/images/BlindBarrels.png" alt="Blind Barrels Logo" class="logo">
+      <img [src]="getImagePath('BlindBarrels.png')" alt="Blind Barrels Logo" class="logo">
     </div>
     <button *ngIf="isLoggedIn" class="logout-button" (click)="logout()">
       <span class="font-hermona-extras glyph">I</span>
@@ -15,7 +15,7 @@
     <!-- Navigation Controls with Panel Background -->
     <div class="navigation-controls">
       <div class="nav-button-container">
-        <img [src]="'assets/images/Previous_Sample_Button' + (currentSample === 1 ? '' : '_Hover') + '.png'"
+        <img [src]="getButtonImage('Previous_Sample_Button', currentSample === 1 ? '' : '_Hover')"
              (click)="changeSample(-1)"
              [class.disabled]="currentSample === 1"
              alt="Previous Sample">
