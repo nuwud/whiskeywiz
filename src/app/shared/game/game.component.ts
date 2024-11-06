@@ -403,6 +403,10 @@ export class GameComponent implements OnInit {
     }
   }
 
+  showSubmitAllButton(): boolean {
+    return this.currentSample === 4 && this.areAllGuessesFilled();
+  }
+
   submitScore() {
     if (!this.playerName) {
       this.error = 'Please enter your name';

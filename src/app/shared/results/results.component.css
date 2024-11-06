@@ -1,9 +1,6 @@
 /* src/app/shared/results/results.component.css */
 .results-container {
-  background: rgba(51, 51, 51, 0.8);
-  border-radius: 8px;
-  padding: 2rem;
-  margin: 1rem;
+  position: relative;
 }
 
 .results-header {
@@ -30,9 +27,24 @@
   margin-bottom: 2rem;
 }
 
+.panel-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+}
+
 .result-card {
-  background: rgba(51, 51, 51, 0.9);
-  border-radius: 8px;
+  position: relative;
+  margin: 1rem;
   padding: 1.5rem;
 }
 

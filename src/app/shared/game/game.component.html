@@ -27,10 +27,14 @@
       </h2>
 
       <div class="nav-button-container">
-        <img [src]="'assets/images/Next_Sample_Button' + (currentSample === 4 ? '' : '_Hover') + '.png'"
-             (click)="changeSample(1)"
-             [class.disabled]="currentSample === 4"
-             alt="Next Sample">
+        <img *ngIf="!showSubmitAllButton()" 
+              [src]="getButtonImage('Next_Sample_Button')" 
+              (click)="changeSample(1)"
+              class="nav-button">
+        <img *ngIf="showSubmitAllButton()" 
+              src="assets/images/Submit_All_Guesses_Button.png" 
+              (click)="submitGuesses()"
+              class="submit-button">
       </div>
     </div>
 
@@ -45,10 +49,10 @@
         <!-- Age Statement -->
         <div class="form-group">
           <div class="label-group">
-            <h3 class="font-hermona-xl">Age Statement:</h3>
+            <h3 class="font-hermona-xl">Age Statement:
             <span class="value font-hermona-xl">
               {{ getGuessValue(currentSample, 'age') }} Years
-            </span>
+            </span></h3>
           </div>
           <div class="slider-container">
             <img src="assets/images/Track.png" class="slider-track" alt="track">
@@ -63,10 +67,10 @@
         <!-- Proof -->
         <div class="form-group">
           <div class="label-group">
-            <h3 class="font-hermona-xl">Proof:</h3>
+            <h3 class="font-hermona-xl">Proof:
             <span class="value font-hermona-xl">
               {{ getGuessValue(currentSample, 'proof') }} Proof
-            </span>
+            </span></h3>
           </div>
           <div class="slider-container">
             <img src="assets/images/Track.png" class="slider-track" alt="track">
@@ -119,6 +123,7 @@
            (mouseleave)="buttonHover('submit', false)"
            alt="Submit All Guesses">
     </div>
+  </div>
  
   <!-- Results Component -->
   <app-results 
