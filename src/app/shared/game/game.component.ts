@@ -237,6 +237,14 @@ export class GameComponent implements OnInit {
     return 'normal';
   }
 
+   // Add safe navigation for guesses
+   getGuessValue(sampleNum: number, property: keyof Guess): any {
+    const sampleKey = `sample${sampleNum}`;
+    return this.guesses[sampleKey]?.[property] ?? 
+           (property === 'age' ? 5 : 
+            property === 'proof' ? 100 : null);
+  }
+
   onSampleHover(sampleNum: number, isHovered: boolean): void {
     this.sampleStates[sampleNum].hover = isHovered;
   }
@@ -283,14 +291,17 @@ export class GameComponent implements OnInit {
 
   // Game state management
   initializeGuesses() {
+    this.guesses = {};
     for (let i = 1; i <= 4; i++) {
-      this.guesses[`sample${i}`] = {
+      const sampleKey = `sample${i}`;
+      this.guesses[sampleKey] = {
         age: 5,
         proof: 100,
         mashbill: null
       };
-      this.scores[`sample${i}`] = 0;
+      this.scores[sampleKey] = 0;
     }
+    console.log('Guesses initialized:', this.guesses); // Debug log
   }
 
   updateGuess(sampleNum: number, field: keyof Guess, value: any) {
@@ -313,47 +324,61 @@ export class GameComponent implements OnInit {
 
   // Score calculation and submission
   submitGuesses() {
-    if (!this.areAllGuessesFilled()) {
-      this.error = 'Please fill in all guesses';
-      return;
+    try {
+      if (!this.areAllGuessesFilled()) {
+        this.error = 'Please fill in all guesses';
+        return;
+      }
+
+      this.totalScore = 0;
+      for (let i = 1; i <= 4; i++) {
+        const sampleKey = `sample${i}`;
+        const actualSample = this.quarterData?.samples[sampleKey];
+        const guess = this.guesses[sampleKey];
+
+        if (!actualSample || !guess?.mashbill) {
+          console.warn(`Missing data for ${sampleKey}`, { actualSample, guess });
+          continue;
+        }
+
+        let score = 0;
+
+        // Age scoring
+        const ageDiff = Math.abs(actualSample.age - (guess.age || 0));
+        if (ageDiff === 0) {
+          score += 30;
+        } else {
+          score += Math.max(0, 20 - (ageDiff * 4));
+        }
+
+        // Proof scoring
+        const proofDiff = Math.abs(actualSample.proof - (guess.proof || 0));
+        if (proofDiff === 0) {
+          score += 30;
+        } else {
+          score += Math.max(0, 20 - (proofDiff * 2));
+        }
+
+        // Mashbill scoring
+        if (guess.mashbill === actualSample.mashbill) {
+          score += 10;
+        }
+
+        this.scores[sampleKey] = score;
+        this.totalScore += score;
+      }
+
+      console.log('Game completed', { 
+        scores: this.scores, 
+        totalScore: this.totalScore 
+      });
+      
+      this.gameCompleted = true;
+      
+    } catch (error) {
+      console.error('Error in submitGuesses:', error);
+      this.error = 'An error occurred while submitting guesses';
     }
-
-    this.totalScore = 0;
-    for (let i = 1; i <= 4; i++) {
-      const sampleKey = `sample${i}`;
-      const actualSample = this.quarterData?.samples[sampleKey];
-      const guess = this.guesses[sampleKey];
-
-      if (!actualSample || !guess.mashbill) continue;
-
-      let score = 0;
-
-      // Age scoring
-      const ageDiff = Math.abs(actualSample.age - guess.age);
-      if (ageDiff === 0) {
-        score += 30; // 20 points + 10 bonus
-      } else {
-        score += Math.max(0, 20 - (ageDiff * 4));
-      }
-
-      // Proof scoring
-      const proofDiff = Math.abs(actualSample.proof - guess.proof);
-      if (proofDiff === 0) {
-        score += 30; // 20 points + 10 bonus
-      } else {
-        score += Math.max(0, 20 - (proofDiff * 2));
-      }
-
-      // Mashbill scoring
-      if (guess.mashbill === actualSample.mashbill) {
-        score += 10;
-      }
-
-      this.scores[sampleKey] = score;
-      this.totalScore += score;
-    }
-
-    this.gameCompleted = true;
   }
 
   submitScore() {

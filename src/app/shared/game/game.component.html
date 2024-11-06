@@ -47,7 +47,7 @@
           <div class="label-group">
             <h3 class="font-hermona-xl">Age Statement:</h3>
             <span class="value font-hermona-xl">
-              {{ guesses['sample' + currentSample].age }} Years
+              {{ getGuessValue(currentSample, 'age') }} Years
             </span>
           </div>
           <div class="slider-container">
@@ -65,7 +65,7 @@
           <div class="label-group">
             <h3 class="font-hermona-xl">Proof:</h3>
             <span class="value font-hermona-xl">
-              {{ guesses['sample' + currentSample].proof }} Proof
+              {{ getGuessValue(currentSample, 'proof') }} Proof
             </span>
           </div>
           <div class="slider-container">
@@ -112,7 +112,7 @@
 
     <!-- Submit Button -->
     <div class="submit-button-container">
-      <img src="assets/images/Submit_All_Guesses.png" 
+      <img src="assets/images/Submit_All_Guesses_Button.png" 
            class="submit-button"
            (click)="submitGuesses()"
            (mouseenter)="buttonHover('submit', true)"
@@ -121,13 +121,19 @@
     </div>
  
   <!-- Results Component -->
-  <app-results
-    *ngIf="gameCompleted"
-    [quarterData]="quarterData"
-    [guesses]="guesses"
-    [scores]="scores"
-    [totalScore]="totalScore"
-    (playAgain)="playAgain()"
-    (shareResults)="share()">
-  </app-results>
+  <ng-container *ngIf="gameCompleted">
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+    
+    <app-results
+      *ngIf="!error"
+      [quarterData]="quarterData"
+      [guesses]="guesses"
+      [scores]="scores"
+      [totalScore]="totalScore"
+      (playAgain)="playAgain()"
+      (shareResults)="share()">
+    </app-results>
+  </ng-container>
 </div>
