@@ -13,8 +13,18 @@
 
 @font-face {
   font-family: 'Helvetica';
-  src: url('../assets/fonts/Helvetica.woff2') format('woff2'),
-       url('../assets/fonts/Helvetica.woff') format('woff');
+  src: url('../assets/fonts/HELVETICA.woff2') format('woff2'),
+       url('../assets/fonts/HELVETICA.woff') format('woff'),
+       url('../assets/fonts/HELVETICA-BOLD.woff2') format('woff2'),
+       url('../assets/fonts/HELVETICA-BOLD.woff') format('woff'),
+       url('../assets/fonts/HELVETICA-BOLDOBLIQUE.woff2') format('woff2'),
+       url('../assets/fonts/HELVETICA-BOLDOBLIQUE.woff') format('woff'),
+       url('../assets/fonts/HELVETICA-COMPRESSED-5871D14B6903A.woff2') format('woff2'),
+       url('../assets/fonts/HELVETICA-COMPRESSED-5871D14B6903A.woff') format('woff'),
+       url('../assets/fonts/HELVETICA-LIGHT-587EBE5A59211.woff2') format('woff2'),
+       url('../assets/fonts/HELVETICA-LIGHT-587EBE5A59211.woff') format('woff'),
+       url('../assets/fonts/HELVETICA-OBLIQUE.woff2') format('woff2'),
+       url('../assets/fonts/HELVETICA-OBLIQUE.woff') format('woff');
 }
 
 @font-face {
@@ -97,4 +107,9 @@
 
   .font-hermona-extras {
     font-family: 'Hermona-Extras', sans-serif;
+  }
+
+  .helvetica-text {
+    font-family: Helvetica, Arial, sans-serif;
+    color: white;
   }
