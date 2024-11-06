@@ -1,4 +1,3 @@
-// src/app/shared/results/results.component.ts
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Quarter } from '../models/quarter.model';
 
