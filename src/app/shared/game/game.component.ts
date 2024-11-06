@@ -324,6 +324,7 @@ export class GameComponent implements OnInit {
 
   // Score calculation and submission
   submitGuesses() {
+    console.log('Submitting guesses...');
     try {
       if (!this.areAllGuessesFilled()) {
         this.error = 'Please fill in all guesses';
@@ -368,12 +369,19 @@ export class GameComponent implements OnInit {
         this.totalScore += score;
       }
 
-      console.log('Game completed', { 
-        scores: this.scores, 
-        totalScore: this.totalScore 
+      console.log('Game completed:', { // Debug log
+        quarterData: this.quarterData,
+        guesses: this.guesses,
+        scores: this.scores,
+        totalScore: this.totalScore
       });
+
+      if (!this.quarterData || !this.guesses || !this.scores) {
+        throw new Error('Missing required data for game completion');
+      }
       
       this.gameCompleted = true;
+      console.log('gameCompleted set to:', this.gameCompleted); // Debug log
       
     } catch (error) {
       console.error('Error in submitGuesses:', error);

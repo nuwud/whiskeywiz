@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Quarter } from '../models/quarter.model';
+import { GameGuess } from '../models/game.model';
 
 @Component({
   selector: 'app-results',
@@ -35,6 +36,7 @@ export class ResultsComponent {
   }
 
   getScoreQuip(score: number): string {
+    if (!score) return "🌱 Keep Tasting!";
     if (score >= 240) return "🌟 Master Distiller Status!";
     if (score >= 200) return "🥃 Whiskey Connoisseur!";
     if (score >= 160) return "👍 Solid Palate!";

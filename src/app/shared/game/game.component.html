@@ -126,14 +126,15 @@
       {{ error }}
     </div>
     
-    <app-results
-      *ngIf="!error"
+    <app-results 
+      *ngIf="gameCompleted"
       [quarterData]="quarterData"
       [guesses]="guesses"
       [scores]="scores"
       [totalScore]="totalScore"
       (playAgain)="playAgain()"
-      (shareResults)="share()">
+      (shareResults)="share()"
+      (submitScore)="submitScore()">
     </app-results>
   </ng-container>
 </div>
