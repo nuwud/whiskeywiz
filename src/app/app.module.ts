@@ -1,4 +1,4 @@
-import { NgModule, Injector, DoBootstrap, ApplicationRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule, Injector, DoBootstrap, ApplicationRef, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -26,7 +26,6 @@ import { AdminComponent } from './admin/admin.component';
 import { AdminNavComponent } from './admin-nav/admin-nav.component';
 import { PlayerComponent } from './player/player.component';
 import { LoginComponent } from './auth/login/login.component';
-import { GameComponent } from './shared/game/game.component';
 import { GameService } from './services/game.service';
 import { FirebaseService } from './services/firebase.service';
 import { FIREBASE_OPTIONS } from '@angular/fire/compat';
@@ -89,13 +88,13 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
     Q1225Component
   ],
   imports: [
+    BrowserModule,
+    CommonModule,
+    RouterModule,
+    AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    BrowserModule,
-    AppRoutingModule,
-    RouterModule,
     SharedModule,
-    CommonModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
@@ -143,7 +142,6 @@ export class AppModule implements DoBootstrap {
     //customElements.define('whiskey-wiz-app', appElement);
     // Define all components that will be used as web components
     const webComponents = [
-      { name: 'whiskey-wiz-game', component: GameComponent },
       { name: 'whiskey-wiz-admin', component: AdminComponent },
       { name: 'whiskey-wiz-0122', component: Q0122Component },
       { name: 'whiskey-wiz-0322', component: Q0322Component },

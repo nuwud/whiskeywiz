@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FirebaseService } from '../../services/firebase.service';
 import { Quarter, PlayerScore } from '../../shared/models/quarter.model';
@@ -133,7 +133,8 @@ export class GameComponent implements OnInit {
     private route: ActivatedRoute,
     private firebaseService: FirebaseService,
     private gameService: GameService,
-    private authService: AuthService
+    private authService: AuthService,
+    private changeDetectorRef: ChangeDetectorRef
   ) {
     // Initialize auth state
     this.authService.getPlayerId().subscribe(id => {
@@ -369,12 +370,25 @@ export class GameComponent implements OnInit {
         this.totalScore += score;
       }
 
-      console.log('Game completed:', { // Debug log
+      console.log('Game completed:', {
         quarterData: this.quarterData,
         guesses: this.guesses,
         scores: this.scores,
         totalScore: this.totalScore
       });
+
+       // Debug logs
+      console.log('Final scores:', this.scores);
+      console.log('Total score:', this.totalScore);
+
+    // Force change detection
+    this.changeDetectorRef.detectChanges();
+    
+    // Set game completed and ensure view updates
+    setTimeout(() => {
+      this.gameCompleted = true;
+      this.changeDetectorRef.detectChanges();
+    }, 0);
 
       if (!this.quarterData || !this.guesses || !this.scores) {
         throw new Error('Missing required data for game completion');

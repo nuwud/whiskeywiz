@@ -121,20 +121,14 @@
     </div>
  
   <!-- Results Component -->
-  <ng-container *ngIf="gameCompleted">
-    <div *ngIf="error" class="error-message">
-      {{ error }}
-    </div>
-    
-    <app-results 
-      *ngIf="gameCompleted"
-      [quarterData]="quarterData"
-      [guesses]="guesses"
-      [scores]="scores"
-      [totalScore]="totalScore"
-      (playAgain)="playAgain()"
-      (shareResults)="share()"
-      (submitScore)="submitScore()">
-    </app-results>
-  </ng-container>
+  <app-results 
+    *ngIf="gameCompleted"
+    [quarterData]="quarterData"
+    [guesses]="guesses"
+    [scores]="scores"
+    [totalScore]="totalScore"
+    (playAgain)="playAgain()"
+    (shareResults)="share()"
+    (submitScore)="submitScore()">
+  </app-results>
 </div>
