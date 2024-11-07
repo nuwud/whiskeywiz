@@ -85,15 +85,15 @@
         <!-- Mashbill -->
         <div class="form-group">
           <h3 class="font-hermona-xl">Mashbill:</h3>
-          <div class="mashbill-options">
-            <label *ngFor="let type of mashbillTypes" class="mashbill-option">
+          <div *ngFor="let type of mashbillTypes" class="mashbill-option">
+            <label class="helvetica-text">
               <input type="radio"
                      [value]="type"
                      [(ngModel)]="guesses['sample' + currentSample].mashbill"
                      name="mashbill{{currentSample}}">
               <img src="assets/images/Ellipse_W.png" class="radio-unchecked" alt="unchecked">
               <img src="assets/images/Ellipse_B.png" class="radio-checked" alt="checked">
-              <span class="label-text font-hermona-lg">{{ type }}</span>
+              {{ type }}
             </label>
           </div>
         </div>
