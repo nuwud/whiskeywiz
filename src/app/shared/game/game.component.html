@@ -12,6 +12,7 @@
 
   <!-- Game Content -->
   <div class="game-content" *ngIf="!gameCompleted">
+
     <!-- Navigation Controls with Panel Background -->
     <div class="navigation-controls">
       <div class="nav-button-container">
@@ -20,7 +21,6 @@
              [class.disabled]="currentSample === 1"
              alt="Previous Sample">
       </div>
-
 
       <h2 class="sample-title font-hermona-3xl">
         Sample {{ getSampleLetter(currentSample) }}
