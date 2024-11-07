@@ -1,4 +1,4 @@
-<div class="game-container" [style.backgroundImage]="'url(assets/images/blackbackground.png)'">
+<div class="game-container">
   <!-- Header Section -->
   <div class="header-container">
     <div class="logo-header">
@@ -85,18 +85,19 @@
         <!-- Mashbill -->
         <div class="form-group">
           <h3 class="font-hermona-xl">Mashbill:</h3>
-          <div *ngFor="let type of mashbillTypes" class="mashbill-option">
-            <label class="helvetica-text">
-              <input type="radio"
-                     [value]="type"
-                     [(ngModel)]="guesses['sample' + currentSample].mashbill"
-                     name="mashbill{{currentSample}}">
-              <img src="assets/images/Ellipse_W.png" class="radio-unchecked" alt="unchecked">
-              <img src="assets/images/Ellipse_B.png" class="radio-checked" alt="checked">
-              {{ type }}
-            </label>
+          <div class="mashbill-options">
+            <div *ngFor="let type of mashbillTypes" class="mashbill-option">
+              <label class="helvetica-text">
+                <input type="radio" [value]="type" [(ngModel)]="guesses['sample' + currentSample].mashbill"
+                  name="mashbill{{currentSample}}">
+                <img src="assets/images/Ellipse_W.png" class="radio-unchecked" alt="unchecked">
+                <img src="assets/images/Ellipse_B.png" class="radio-checked" alt="checked">
+                {{ type }}
+              </label>
+            </div>
           </div>
         </div>
+        
       </div>
     </div>
 

@@ -66,7 +66,7 @@
     transition: transform 0.2s ease;
 
     img {
-      height: 40px;
+      height: auto;
 
       &.disabled {
         opacity: 0.5;
@@ -101,7 +101,7 @@
 /* Guess Form */
 .guess-form {
   position: relative;
-  padding: 2rem;
+  padding: 6rem;
   margin-bottom: 2rem;
 
   .panel-background {
@@ -120,12 +120,13 @@
       object-fit: contain;
       border-radius: 8px; 
     }
+
+    .form-content {
+      position: relative;
+      z-index: 1;
+    }
   }
 
-  .form-content {
-    position: relative;
-    z-index: 1;
-  }
 }
 
 /* Form Groups */
@@ -201,61 +202,87 @@
     }
   }
 }
-
 /* Mashbill Options */
 .mashbill-options {
-  label {
-    font-family: 'Helvetica', sans-serif;
-    font-size: 1.25rem; 
-    color: white;
-    margin: 0.5rem 0;
-  }
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 2rem;
   margin-top: 1rem;
+  width: 100%; // Ensure full width
+  padding: 0 1rem; // Add some padding
 }
 
 .mashbill-option {
   display: flex;
   align-items: center;
   cursor: pointer;
+  position: relative; // For absolute positioning of radio buttons if needed
+  
   label {
-    font-size: 1.25rem;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 1.5rem; // Increased size
+    font-weight: normal;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem; // Increased gap
+    color: white;
+    width: 100%;
+    padding: 0.5rem 0;
+    
+    &:hover {
+      opacity: 0.9;
+    }
   }
-
 
   input[type="radio"] {
     display: none;
+    
+    &:checked + label {
+      .radio-unchecked {
+        display: none;
+      }
+      .radio-checked {
+        display: block;
+      }
+      .label-text {
+        color: var(--color-gold);
+      }
+    }
   }
 
   .radio-unchecked,
   .radio-checked {
-    width: 30px;
-    height: 30px;
-    margin-right: 0.5rem;
+    width: 35px; // Slightly larger
+    height: 35px;
+    margin-right: 1rem;
+    transition: all 0.2s ease;
   }
 
   .radio-checked {
     display: none;
   }
 
-  input[type="radio"]:checked ~ .radio-unchecked {
-    display: none;
+  .label-text {
+    color: white;
+    font-size: 1.5rem; // Match label font size
+    transition: color 0.2s ease;
+    
+    &:hover {
+      color: var(--color-gold);
+    }
   }
+}
 
-  input[type="radio"]:checked ~ .radio-checked {
-    display: block;
+// Add hover effects
+.mashbill-option:hover {
+  .radio-unchecked {
+    transform: scale(1.05);
   }
-
+  
   .label-text {
     color: var(--color-gold);
-    font-size: 1.2rem;
   }
 }
 
