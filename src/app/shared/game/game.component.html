@@ -87,17 +87,20 @@
           <h3 class="font-hermona-xl">Mashbill:</h3>
           <div class="mashbill-options">
             <div *ngFor="let type of mashbillTypes" class="mashbill-option">
-              <label class="helvetica-text">
-                <input type="radio" [value]="type" [(ngModel)]="guesses['sample' + currentSample].mashbill"
-                  name="mashbill{{currentSample}}">
+              <input type="radio" 
+                [id]="'mashbill-' + type"
+                [value]="type" 
+                [(ngModel)]="guesses['sample' + currentSample].mashbill"
+                name="mashbill{{currentSample}}">
+              <label [for]="'mashbill-' + type" class="helvetica-text">
                 <img src="assets/images/Ellipse_W.png" class="radio-unchecked" alt="unchecked">
                 <img src="assets/images/Ellipse_B.png" class="radio-checked" alt="checked">
-                {{ type }}
+                <span class="label-text">{{ type }}</span>
               </label>
             </div>
           </div>
         </div>
-        
+
       </div>
     </div>
 
