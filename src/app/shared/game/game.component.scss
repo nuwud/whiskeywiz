@@ -187,7 +187,7 @@
       background-size: contain;
       cursor: pointer;
       position: relative;
-      top: -21px;
+      top: -19px;
     }
 
     &::-moz-range-thumb {
@@ -198,7 +198,7 @@
       cursor: pointer;
       border: none;
       position: relative;
-      top: -21px;
+      top: -19px;
     }
   }
 }
@@ -319,6 +319,8 @@
   display: flex;
   justify-content: center;
   margin-top: 2rem;
+  max-width: 250px;
+  height: auto;
 
   .submit-button {
     cursor: pointer;

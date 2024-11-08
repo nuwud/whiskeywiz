@@ -22,7 +22,7 @@
              alt="Previous Sample">
       </div>
 
-      <h2 class="sample-title font-hermona-3xl">
+      <h2 class="sample-title font-hermona-4xl">
         Sample {{ getSampleLetter(currentSample) }}
       </h2>
 
@@ -50,7 +50,7 @@
         <div class="form-group">
           <div class="label-group">
             <h3 class="font-hermona-xl">Age Statement:
-            <span class="value font-hermona-xl">
+            <span class="value font-hermona-2xl">
               {{ getGuessValue(currentSample, 'age') }} Years
             </span></h3>
           </div>
@@ -67,7 +67,7 @@
         <!-- Proof -->
         <div class="form-group">
           <div class="label-group">
-            <h3 class="font-hermona-xl">Proof:
+            <h3 class="font-hermona-2xl">Proof:
             <span class="value font-hermona-xl">
               {{ getGuessValue(currentSample, 'proof') }} Proof
             </span></h3>
@@ -84,7 +84,7 @@
 
         <!-- Mashbill -->
         <div class="form-group">
-          <h3 class="font-hermona-xl">Mashbill:</h3>
+          <h3 class="font-hermona-2xl">Mashbill:</h3>
           <div class="mashbill-options">
             <div *ngFor="let type of mashbillTypes" class="mashbill-option">
               <input type="radio" 
