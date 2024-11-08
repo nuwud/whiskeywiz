@@ -292,6 +292,8 @@
 
   .samples-row {
     display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     justify-content: center;
     gap: 2rem;
   }
@@ -319,11 +321,11 @@
   display: flex;
   justify-content: center;
   margin-top: 2rem;
-  max-width: 250px;
-  height: auto;
 
   .submit-button {
     cursor: pointer;
+    max-width: 250px;
+    height: auto;
     transition: transform 0.2s ease;
 
     &:hover {

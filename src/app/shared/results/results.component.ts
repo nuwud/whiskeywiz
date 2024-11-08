@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Quarter } from '../models/quarter.model';
 import { GameGuess } from '../models/game.model';
 
@@ -15,6 +15,29 @@ export class ResultsComponent {
   @Output() playAgain = new EventEmitter<void>();
   @Output() shareResults = new EventEmitter<void>();
   @Output() submitScore = new EventEmitter<void>();
+
+  submitHovered = false;
+  shareHovered = false;
+  playAgainHovered = false;
+
+  getButtonImage(baseName: string, isHovered: boolean): string {
+    const suffix = isHovered ? '_Hover' : '';
+    return `assets/images/${baseName}${suffix}.png`;
+  }
+
+  getResultPanelImage(): string {
+    return window.innerWidth <= 768 
+      ? 'assets/images/result-panel-mobile.png'
+      : 'assets/images/result-panel.png';
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    // Force re-evaluation of panel image on resize
+    this.changeDetectorRef.detectChanges();
+  }
+
+  constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
   handleShare() {
     this.shareResults.emit();

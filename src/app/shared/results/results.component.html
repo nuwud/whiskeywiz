@@ -1,33 +1,38 @@
 <div class="results-container">
-  <div class="results-header">
-    <img src="assets/images/header-panel.png" class="panel-background">
-    <div class="content">
-      <h3>Game Completed!</h3>
-      <div class="total-score">
+    <div class="results-header">
+      <img src="assets/images/header-panel.png" class="panel-background">
+      <div class="content">
+        <h3 class="font-hermona-2xl">Game Completed!</h3>
+        <div class="total-score font-hermona-4xl">
           Total Score: {{ totalScore }}
-      </div>
-      <div class="score-quip">
+        </div>
+        <div class="score-quip">
           {{ getScoreQuip(totalScore) }}
+        </div>
       </div>
     </div>
+  
 
     <div class="results-grid">
         <div class="result-card" *ngFor="let num of [1,2,3,4]">
-            <img src="assets/images/result-panel.png" class="panel-background">
+            <img [src]="getResultPanelImage()" class="results-panel-background">
             <div class="content">
                 <div class="score-display">
                     Score: {{ scores['sample' + num] }} {{ getEmojiScore(scores['sample' + num]) }}
                 </div>
-                <h4>Sample {{ num }}</h4>
+
+                <h4  class="sample-result-header font-hermona-2xl">Sample {{ num }}</h4>
+
                 <div class="comparison-grid">
                     <div class="guess-column">
-                        <h5>Your Guess</h5>
+                        <h5 class="font-hermona">Your Guess</h5>
                         <p>Age: {{ guesses['sample' + num]?.age || 0 }} years</p>
                         <p>Proof: {{ guesses['sample' + num]?.proof || 0 }}</p>
                         <p>Type: {{ guesses['sample' + num]?.mashbill || 'None' }}</p>
                     </div>
+
                     <div class="actual-column">
-                        <h5>Actual</h5>
+                        <h5 class="font-hermona">Actual</h5>
                         <p>Age: {{ quarterData?.samples['sample' + num]?.age || 0 }} years</p>
                         <p>Proof: {{ quarterData?.samples['sample' + num]?.proof || 0 }}</p>
                         <p>Type: {{ quarterData?.samples['sample' + num]?.mashbill || 'None' }}</p>
@@ -38,9 +43,28 @@
     </div>
 
     <div class="results-actions">
-        <button (click)="handleSubmitScore()">Submit Score</button>
-        <button (click)="handleShare()">Share Results</button>
-        <button (click)="handlePlayAgain()">Play Again</button>
-    </div>
-    </div>
+        <div class="button-container">
+          <img [src]="getButtonImage('Submit_Score_Button', submitHovered)" 
+               (mouseenter)="submitHovered = true"
+               (mouseleave)="submitHovered = false"
+               (click)="handleSubmitScore()"
+               class="action-button">
+        </div>
+        
+        <div class="button-container">
+          <img [src]="getButtonImage('Share_Score_Button', shareHovered)"
+               (mouseenter)="shareHovered = true"
+               (mouseleave)="shareHovered = false"
+               (click)="handleShare()"
+               class="action-button">
+        </div>
+        
+        <div class="button-container">
+          <img [src]="getButtonImage('Play_Again_Button', playAgainHovered)"
+               (mouseenter)="playAgainHovered = true"
+               (mouseleave)="playAgainHovered = false"
+               (click)="handlePlayAgain()"
+               class="action-button">
+        </div>
+      </div>
 </div>
