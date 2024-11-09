@@ -46,6 +46,7 @@
 
       <!-- Form Content -->
       <div class="form-content">
+
         <!-- Age Statement -->
         <div class="form-group">
           <div class="label-group">
@@ -97,6 +98,23 @@
                 <img src="assets/images/Ellipse_B.png" class="radio-checked" alt="checked">
                 <span class="label-text">{{ type }}</span>
               </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Star-Rating -->
+        <div class="form-group">
+          <h3 class="font-hermona-2xl">Rating:</h3>
+          <div class="star-rating-container">
+            <div *ngFor="let star of [1,2,3,4,5,6,7,8,9,10]"
+                 class="star-container"
+                 (click)="updateStarRating(currentSample, star)"
+                 (mouseenter)="buttonHover('star'+star, true)"
+                 (mouseleave)="buttonHover('star'+star, false)">
+              <div class="star-svg" 
+                   [innerHTML]="getSafeStarHtml(star <= starRatings['sample'+currentSample])"
+                   [class.active]="star <= starRatings['sample'+currentSample]">
+              </div>
             </div>
           </div>
         </div>

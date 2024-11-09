@@ -3,6 +3,7 @@ export interface GameGuess {
     age: number;
     proof: number;
     mashbill: string | null;
+    rating: number;
   }
   
   export interface GameState {

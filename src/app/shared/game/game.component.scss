@@ -338,6 +338,31 @@
   }
 }
 
+.star-rating-container {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+  gap: 0.5rem;
+  
+  .star-container {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    
+    &:hover {
+      transform: scale(1.1);
+    }
+    
+    .star-image {
+      width: 24px;
+      height: 24px;
+      
+      &.active {
+        filter: brightness(1.2);
+      }
+    }
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .game-container {

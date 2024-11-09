@@ -6,10 +6,12 @@ import { GameComponent } from './game/game.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { ResultsComponent } from './results/results.component';
 import { HermonaButtonComponent } from './components/hermona-button/hermona-button.component';
+import { GameBannerComponent } from './components/game-banner/game-banner.component';
 
 @NgModule({
   declarations: [
     GameComponent,
+    GameBannerComponent,
     LeaderboardComponent,
     HermonaButtonComponent,
     ResultsComponent
@@ -21,6 +23,7 @@ import { HermonaButtonComponent } from './components/hermona-button/hermona-butt
   ],
   exports: [
     GameComponent,
+    GameBannerComponent,
     LeaderboardComponent,
     ResultsComponent,
     FormsModule,

@@ -2,7 +2,8 @@
 export interface Sample {
   age: number;
   proof: number;
-  mashbill: 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt' | 'Specialty'; // Make this a union type for better type safety
+  mashbill: 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt' | 'Specialty'; 
+  rating?: number;
 }
 
 export interface QuarterSamples {

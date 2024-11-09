@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Quarter } from '../models/quarter.model';
 import { GameGuess } from '../models/game.model';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-results',
