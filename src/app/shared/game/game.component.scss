@@ -346,6 +346,9 @@
   justify-content: center;
   margin: 1rem 0;
   gap: 0.5rem;
+  flex-direction: row;
+  flex-wrap: wrap;
+
   
   .star-container {
     cursor: pointer;
