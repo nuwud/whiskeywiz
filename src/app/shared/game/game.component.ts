@@ -390,12 +390,11 @@ export class GameComponent implements OnInit {
       this.changeDetectorRef.detectChanges();
     }, 0);
 
-      if (!this.quarterData || !this.guesses || !this.scores) {
-        throw new Error('Missing required data for game completion');
-      }
+    if (!this.quarterData || !this.guesses || !this.scores) {
+      throw new Error('Missing required data for game completion');
+    }
       
-      this.gameCompleted = true;
-      console.log('gameCompleted set to:', this.gameCompleted); // Debug log
+    console.log('gameCompleted set to:', this.gameCompleted); // Debug log
       
     } catch (error) {
       console.error('Error in submitGuesses:', error);

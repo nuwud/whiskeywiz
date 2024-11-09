@@ -3,15 +3,10 @@
       <img src="assets/images/header-panel.png" class="panel-background">
       <div class="content">
         <h3 class="font-hermona-2xl">Game Completed!</h3>
-        <div class="total-score font-hermona-4xl">
-          Total Score: {{ totalScore }}
-        </div>
-        <div class="score-quip">
-          {{ getScoreQuip(totalScore) }}
-        </div>
+        <div class="total-score font-hermona-4xl">Total Score: {{ totalScore }}</div>
+        <div class="score-quip">{{ getScoreQuip(totalScore) }}</div>
       </div>
     </div>
-  
 
     <div class="results-grid">
         <div class="result-card" *ngFor="let num of [1,2,3,4]">
