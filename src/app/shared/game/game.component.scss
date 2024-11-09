@@ -213,6 +213,7 @@
   padding: 0 1rem; // Add some padding
 }
 
+/* Mashbill Option */
 .mashbill-option {
   display: flex;
   align-items: center;
@@ -298,6 +299,7 @@
     gap: 2rem;
   }
 
+  /* Sample Indicator */
   .sample-indicator {
     cursor: pointer;
     transition: transform 0.2s ease;
@@ -338,6 +340,7 @@
   }
 }
 
+/* Star Rating */
 .star-rating-container {
   display: flex;
   justify-content: center;
@@ -352,15 +355,28 @@
       transform: scale(1.1);
     }
     
-    .star-image {
+    .star-svg {
       width: 24px;
       height: 24px;
       
-      &.active {
+      svg {
+        transition: all 0.2s ease;
+        
+        &:hover {
+          filter: brightness(1.2);
+        }
+      }
+      
+      &.active svg {
         filter: brightness(1.2);
       }
     }
   }
+}
+
+/* Star Rating Hover Effect */
+.star-container:hover ~ .star-container .star-svg {
+  opacity: 0.5;
 }
 
 /* Responsive Design */

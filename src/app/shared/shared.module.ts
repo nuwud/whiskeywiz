@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { GameComponent } from './game/game.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { ResultsComponent } from './results/results.component';
+import { StarRatingComponent } from './components/star-rating/star-rating.component';
 import { HermonaButtonComponent } from './components/hermona-button/hermona-button.component';
 import { GameBannerComponent } from './components/game-banner/game-banner.component';
 
@@ -14,6 +15,7 @@ import { GameBannerComponent } from './components/game-banner/game-banner.compon
     GameBannerComponent,
     LeaderboardComponent,
     HermonaButtonComponent,
+    StarRatingComponent,
     ResultsComponent
   ],
   imports: [
@@ -28,7 +30,8 @@ import { GameBannerComponent } from './components/game-banner/game-banner.compon
     ResultsComponent,
     FormsModule,
     CommonModule,
-    HermonaButtonComponent
+    HermonaButtonComponent,
+    StarRatingComponent
   ]
 })
 export class SharedModule { }

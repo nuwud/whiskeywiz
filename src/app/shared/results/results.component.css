@@ -200,3 +200,15 @@ p {
   }
 }
 
+.rating-display {
+  margin-top: 1rem;
+  color: #FFD700;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rating-display app-star-rating {
+  transform: scale(0.5); /* Make stars slightly smaller in results view */
+}

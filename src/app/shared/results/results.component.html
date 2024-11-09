@@ -20,10 +20,14 @@
 
                 <div class="comparison-grid">
                     <div class="guess-column">
-                        <h5 class="font-hermona">Your Guess</h5>
+                        <h5 class="#your-guess font-hermona">Your Guess</h5>
                         <p>Age: {{ guesses['sample' + num]?.age || 0 }} years</p>
                         <p>Proof: {{ guesses['sample' + num]?.proof || 0 }}</p>
                         <p>Type: {{ guesses['sample' + num]?.mashbill || 'None' }}</p>
+                        <app-star-rating 
+                            [rating]="guesses['sample' + num]?.rating || 0" 
+                            [readonly]="true">
+                        </app-star-rating>
                     </div>
 
                     <div class="actual-column">
