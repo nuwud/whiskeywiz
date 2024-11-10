@@ -16,8 +16,7 @@ import { SharedModule } from '../shared/shared.module';
   `
 })
 export class BaseQuarterComponent implements OnInit {
-  @Input()
-  quarterId!: string;
+  @Input() quarterId!: string;
   quarterData: Quarter | null = null;
   gameCompleted = false;
   playerScore: number = 0;

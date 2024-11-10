@@ -1,4 +1,4 @@
-// 1222.component.ts
+﻿// 1222.component.ts
 /** 
  * Whiskey Wiz Quarter Component - Q4 2022 
  * 
@@ -85,5 +85,4 @@ export class Q1222Component extends BaseQuarterComponent {
     }
   }
 }
-
 

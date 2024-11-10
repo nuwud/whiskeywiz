@@ -1,4 +1,4 @@
-// 0925.component.ts
+﻿// 0925.component.ts
 /** 
  * Whiskey Wiz Quarter Component - Q3 2025 
  * 
@@ -85,5 +85,4 @@ export class Q0925Component extends BaseQuarterComponent {
     }
   }
 }
-
 
