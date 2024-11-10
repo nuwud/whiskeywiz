@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { environment } from '../../../environments/environment';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { StarRatingComponent } from '../components/star-rating/star-rating.component';
 
 // Type definitions
 type Mashbill = 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt' | 'Specialty';
@@ -104,6 +105,12 @@ export class GameComponent implements OnInit {
   private _quarterId: string = '';
   private readonly ANIMATION_DELAY = 200;
   private readonly DEBUG_PATHS = !environment.production;
+  private _starRatings: { [key: string]: number } = {
+    'sample1': 0,
+    'sample2': 0,
+    'sample3': 0,
+    'sample4': 0
+  };
 
   // Public properties
   isLoggedIn: boolean = false;
@@ -136,12 +143,7 @@ export class GameComponent implements OnInit {
   };
 
   // Star ratings
-  starRatings: { [key: string]: number } = {
-    'sample1': 0,
-    'sample2': 0,
-    'sample3': 0,
-    'sample4': 0
-  };
+
 
   // Game options
   mashbillCategories: Mashbill[] = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
@@ -154,7 +156,7 @@ export class GameComponent implements OnInit {
     private gameService: GameService,
     private authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer    
   ) {
     // Initialize auth state
     this.authService.getPlayerId().subscribe(id => {
@@ -199,6 +201,8 @@ export class GameComponent implements OnInit {
         this.quarterId = quarterId;
       }
     });
+    // Initialize ratings
+    this.initializeRatings();
   }
 
   // Button state management
@@ -280,9 +284,18 @@ export class GameComponent implements OnInit {
             property === 'rating' ? 0 : null);
   }
 
+  get starRatings(): { [key: string]: number } {
+    return this._starRatings;
+  }
+
   // Star rating management
   updateStarRating(sampleNum: number, rating: number) {
+    console.log('Updating rating:', { sampleNum, rating }); // Debug log
+
+    // Ensure rating is within 1-10 range
     const sampleKey = `sample${sampleNum}`;
+    // Ensure star ratings object exists
+    this.starRatings[sampleKey] = rating;
     
     // Ensure guesses object exists
     if (!this.guesses[sampleKey]) {
@@ -292,13 +305,20 @@ export class GameComponent implements OnInit {
         mashbill: null,
         rating: 0
       };
+    } else {
+      this.guesses[sampleKey].rating = rating; // Update rating in guesses
     }
+
+    // Force change detection
+    this.changeDetectorRef.detectChanges();
     
-    // Update
-    this.starRatings[sampleKey] = rating;
-    this.guesses[sampleKey].rating = rating;
+    this.updateSampleCompletion();
+
     // Log the updated rating
-    console.log(`Updated rating for ${sampleKey}:`, rating); // Debug log
+    console.log('Updated ratings:', { 
+      starRatings: this._starRatings,
+      currentGuess: this.guesses[sampleKey]
+    }); // Debug log
   }
   
   // Star rating SVG generation
@@ -382,9 +402,23 @@ export class GameComponent implements OnInit {
       && 'samples' in quarter;
   }
 
+  // Star rating initialization
+  private initializeRatings() {
+    for (let i = 1; i <= 4; i++) {
+      const sampleKey = `sample${i}`;
+      this._starRatings[sampleKey] = 0;
+      if (this.guesses[sampleKey]) {
+        this.guesses[sampleKey].rating = 0;
+      }
+    }
+    console.log('Ratings initialized:', this._starRatings);
+  }
+
   // Game state management
   initializeGuesses() {
     this.guesses = {};
+    this._starRatings = {}; // Reset star ratings
+
     for (let i = 1; i <= 4; i++) {
       const sampleKey = `sample${i}`;
       this.guesses[sampleKey] = {
@@ -396,7 +430,12 @@ export class GameComponent implements OnInit {
       this.scores[sampleKey] = 0;
       this.starRatings[sampleKey] = 0;      
     }
-    console.log('Guesses initialized:', this.guesses); // Debug log
+
+    this.changeDetectorRef.detectChanges();
+    console.log('Guesses and Ratings initialized:', {
+      guesses: this.guesses,
+      ratings: this.starRatings
+    }); // Debug log
   }
 
   // Guess update methods

@@ -212,3 +212,16 @@ p {
 .rating-display app-star-rating {
   transform: scale(0.5); /* Make stars slightly smaller in results view */
 }
+
+.rating-container {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #FFD700;
+}
+
+/* Make stars slightly smaller in results view */
+.rating-container app-star-rating {
+  transform: scale(0.8);
+}

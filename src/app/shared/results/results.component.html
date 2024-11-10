@@ -24,10 +24,12 @@
                         <p>Age: {{ guesses['sample' + num]?.age || 0 }} years</p>
                         <p>Proof: {{ guesses['sample' + num]?.proof || 0 }}</p>
                         <p>Type: {{ guesses['sample' + num]?.mashbill || 'None' }}</p>
-                        <app-star-rating 
-                            [rating]="guesses['sample' + num]?.rating || 0" 
-                            [readonly]="true">
-                        </app-star-rating>
+                        <div class="rating-container">
+                            <app-star-rating 
+                                [rating]="guesses['sample' + num]?.rating || 0" 
+                                [readonly]="true">
+                            </app-star-rating>
+                        </div>
                     </div>
 
                     <div class="actual-column">

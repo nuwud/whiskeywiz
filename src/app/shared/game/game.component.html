@@ -51,9 +51,9 @@
         <div class="form-group">
           <div class="label-group">
             <h3 class="font-hermona-2xl">Age Statement:
-              <div class="value font-hermona-2xl">
+              <span class="value font-hermona-2xl">
                 {{ getSampleData(currentSample)?.age || 5 }} Years
-              </div></h3>
+              </span></h3>
           </div>
           <div class="slider-container">
             <img src="assets/images/Track.png" class="slider-track" alt="track">
@@ -69,9 +69,9 @@
         <div class="form-group">
           <div class="label-group">
             <h3 class="font-hermona-2xl">Proof:
-              <div class="value font-hermona-2xl">
+              <span class="value font-hermona-2xl">
                 {{ getSampleData(currentSample)?.proof || 100 }} Proof
-              </div></h3>
+              </span></h3>
           </div>
           <div class="slider-container">
             <img src="assets/images/Track.png" class="slider-track" alt="track">
@@ -105,17 +105,10 @@
         <!-- Star-Rating -->
         <div class="form-group">
           <h3 class="font-hermona-2xl">Rating:</h3>
-          <div class="star-rating-container">
-            <div *ngFor="let star of [1,2,3,4,5,6,7,8,9,10]"
-                 class="star-container"
-                 (click)="updateStarRating(currentSample, star)"
-                 (mouseenter)="buttonHover('star'+star, true)"
-                 (mouseleave)="buttonHover('star'+star, false)">
-              <div class="star-svg" [innerHTML]="getSafeStarHtml(star <= (starRatings['sample'+currentSample] || 0))"
-                   [class.active]="star <= (starRatings['sample'+currentSample] || 0)">
-              </div>
-            </div>
-          </div>
+          <app-star-rating 
+            [rating]="starRatings['sample'+currentSample]"
+            (ratingChange)="updateStarRating(currentSample, $event)">
+          </app-star-rating>
         </div>
 
       </div>
