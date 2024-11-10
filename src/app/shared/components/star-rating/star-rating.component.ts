@@ -23,7 +23,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
       display: flex;
       justify-content: center;
       margin: 1rem 0;
-      gap: 0.5rem;
+      gap: 0;
+     flex-wrap: wrap;
     }
     
     .star-container {
