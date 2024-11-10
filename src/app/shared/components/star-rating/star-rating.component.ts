@@ -1,7 +1,11 @@
 // src/app/shared/components/star-rating/star-rating.component.ts
-import { Component, Input, Output, EventEmitter, ChangeDetectorRef, Inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectorRef, Inject, OnInit } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
+export interface StarRatingProps {
+  rating: number;
+  readonly?: boolean;
+}
 @Component({
   selector: 'app-star-rating',
   template: `
@@ -11,7 +15,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
            [class.filled]="star <= (hoverRating || rating)"
            (mouseenter)="setHoverState(star)"
            (mouseleave)="clearHoverState()"
-           (click)="!readonly && onRatingChange(star)">
+           (click)="onRatingChange(star)"
+           [attr.data-rating]="star">
         <svg xmlns="http://www.w3.org/2000/svg" 
              viewBox="0 0 24 24" 
              width="24" 
@@ -29,13 +34,21 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
       display: flex;
       justify-content: center;
       margin: 0.25rem 0;
-      gap: 0;
+      gap: 0.25rem;
+      padding: 0.25rem;
     }
     
     .star-container {
       cursor: pointer;
-      transition: transform 0.2s ease;
-      padding: 0.25rem;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        transform: scale(1.2);
+      }
+      
+      &.filled svg {
+        filter: drop-shadow(0 0 2px #FFD700);
+      }
     }
     
     .star-container:hover {
@@ -83,15 +96,39 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     }
   `]
 })
-export class StarRatingComponent {
-  @Input() rating: number = 0;
+export class StarRatingComponent implements OnInit {
+  private _rating: number = 0;
+
+  @Input() 
+  set rating(value: number) {
+    console.log('Rating value received:', value);
+    this._rating = value || 0;
+    this.cdr.detectChanges();
+  }
+  get rating(): number {
+    return this._rating;
+  }
+
   @Input() readonly: boolean = false;
   @Output() ratingChange = new EventEmitter<number>();
 
   hoverRating: number | null = null;
 
   ngOnInit() {
-    console.log('StarRating initialized with:', this.rating);
+    console.log('StarRating initialized with:', {
+      rating: this.rating,
+      readonly: this.readonly
+    });
+  }
+
+  onRatingChange(value: number): void {
+    console.log('Rating change:', value);
+    if (this.readonly) return;
+
+    console.log('Rating changed to:', value);
+    this.rating = value;
+    this.ratingChange.emit(value);
+    this.cdr.detectChanges();
   }
 
   constructor(private sanitizer: DomSanitizer,
@@ -117,15 +154,6 @@ export class StarRatingComponent {
 
   getSafeStarHtml(filled: boolean): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(this.getSvgStar(filled));
-  }
-
-  onRatingChange(value: number): void {
-    if (this.readonly) return;
-
-    console.log('Rating changed to:', value);
-    this.rating = value;
-    this.ratingChange.emit(value);
-    this.cdr.detectChanges();
   }
 
   setHoverState(value: number): void {

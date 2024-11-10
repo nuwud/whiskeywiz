@@ -142,9 +142,6 @@ export class GameComponent implements OnInit {
     4: { active: false, hover: false, completed: false }
   };
 
-  // Star ratings
-
-
   // Game options
   mashbillCategories: Mashbill[] = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
   mashbillTypes = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
@@ -299,6 +296,7 @@ export class GameComponent implements OnInit {
     
     // Ensure guesses object exists
     if (!this.guesses[sampleKey]) {
+      console.log('Creating new guess for:', sampleKey);
       this.guesses[sampleKey] = {
         age: 5,
         proof: 100,
@@ -306,19 +304,21 @@ export class GameComponent implements OnInit {
         rating: 0
       };
     } else {
+      console.log('Updating existing guess for:', sampleKey);
       this.guesses[sampleKey].rating = rating; // Update rating in guesses
     }
 
-    // Force change detection
-    this.changeDetectorRef.detectChanges();
-    
-    this.updateSampleCompletion();
-
     // Log the updated rating
-    console.log('Updated ratings:', { 
+    console.log('Updated state:', { 
       starRatings: this._starRatings,
+      guesses: this.guesses,
       currentGuess: this.guesses[sampleKey]
     }); // Debug log
+
+    // Force change detection
+    this.changeDetectorRef.detectChanges(); // Update view
+    // Update sample completion status
+    // this.updateSampleCompletion(); 
   }
   
   // Star rating SVG generation

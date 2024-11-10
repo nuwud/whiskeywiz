@@ -49,38 +49,38 @@
 
         <!-- Age Statement -->
         <div class="form-group">
-          <div class="label-group">
+          <span class="label-group">
             <h3 class="font-hermona-2xl">Age Statement:
               <span class="value font-hermona-2xl">
                 {{ getSampleData(currentSample)?.age || 5 }} Years
               </span></h3>
-          </div>
-          <div class="slider-container">
+          </span>
+          <span class="slider-container">
             <img src="assets/images/Track.png" class="slider-track" alt="track">
             <input type="range"
                    class="custom-slider"
                    min="1"
                    max="10"
                    [(ngModel)]="guesses['sample' + currentSample].age">
-          </div>
+          </span>
         </div>
 
         <!-- Proof -->
         <div class="form-group">
-          <div class="label-group">
+          <span class="label-group">
             <h3 class="font-hermona-2xl">Proof:
               <span class="value font-hermona-2xl">
                 {{ getSampleData(currentSample)?.proof || 100 }} Proof
               </span></h3>
-          </div>
-          <div class="slider-container">
+          </span>
+          <span class="slider-container">
             <img src="assets/images/Track.png" class="slider-track" alt="track">
             <input type="range"
                    class="custom-slider"
                    min="80"
                    max="130"
                    [(ngModel)]="guesses['sample' + currentSample].proof">
-          </div>
+          </span>
         </div>
 
         <!-- Mashbill -->
@@ -104,40 +104,45 @@
 
         <!-- Star-Rating -->
         <div class="form-group">
-          <h3 class="font-hermona-2xl">Rating:</h3>
-          <app-star-rating 
-            [rating]="starRatings['sample'+currentSample]"
-            (ratingChange)="updateStarRating(currentSample, $event)">
-          </app-star-rating>
+          <span class="label-group">
+            <h3 class="font-hermona-2xl">Rating:
+              <span class="value font-hermona-2xl" *ngIf="starRatings['sample'+currentSample]">
+                {{ starRatings['sample'+currentSample] }}/10
+              </span>
+            </h3>
+          </span>
+          <div class="rating-container">
+            <app-star-rating 
+              [rating]="starRatings['sample'+currentSample]"
+              (ratingChange)="updateStarRating(currentSample, $event)">
+            </app-star-rating>
+          </div>
         </div>
 
-      </div>
-    </div>
+        <!-- Sample Navigation -->
+        <div class="sample-navigation">
+          <div class="samples-row">
+            <div *ngFor="let num of [1,2,3,4]" 
+                class="sample-indicator"
+                (click)="currentSample = num">
+              <img [src]="'assets/images/Sample_' + getSampleLetter(num) + 
+                          (currentSample === num ? '_hover' : '') + '.png'"
+                  [class.active]="currentSample === num"
+                  [alt]="'Sample ' + getSampleLetter(num)">
+            </div>
+          </div>
+        </div>
 
-    <!-- Sample Navigation -->
-    <div class="sample-navigation">
-      <div class="samples-row">
-        <div *ngFor="let num of [1,2,3,4]" 
-             class="sample-indicator"
-             (click)="currentSample = num">
-          <img [src]="'assets/images/Sample_' + getSampleLetter(num) + 
-                      (currentSample === num ? '_hover' : '') + '.png'"
-               [class.active]="currentSample === num"
-               [alt]="'Sample ' + getSampleLetter(num)">
+        <!-- Submit Button -->
+        <div class="submit-button-container">
+          <img src="assets/images/Submit_All_Guesses_Button.png" 
+              class="submit-button"
+              (click)="submitGuesses()"
+              (mouseenter)="buttonHover('submit', true)"
+              (mouseleave)="buttonHover('submit', false)"
+              alt="Submit All Guesses">
         </div>
       </div>
-    </div>
-
-    <!-- Submit Button -->
-    <div class="submit-button-container">
-      <img src="assets/images/Submit_All_Guesses_Button.png" 
-           class="submit-button"
-           (click)="submitGuesses()"
-           (mouseenter)="buttonHover('submit', true)"
-           (mouseleave)="buttonHover('submit', false)"
-           alt="Submit All Guesses">
-    </div>
-  </div>
  
   <!-- Results Component -->
   <app-results 
