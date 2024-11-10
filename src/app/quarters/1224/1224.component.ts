@@ -5,7 +5,7 @@
  * Integration:
  * <whiskey-wiz-1224></whiskey-wiz-1224> 
  */
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { BaseQuarterComponent } from '../base-quarter.component';
 import { AuthService } from '../../services/auth.service';
 import { FirebaseService } from '../../services/firebase.service';
@@ -14,6 +14,10 @@ import { NgForm } from '@angular/forms';
 @Component({
   selector: 'app-quarter-1224',
   template: `
+    <app-game-banner 
+      [quarterId]="quarterId"
+      [quarterName]="quarterName || 'December 2024'">
+    </app-game-banner>
     <div *ngIf="!quarterData">Loading...</div>
     <div *ngIf="quarterData">
       <h2>{{ quarterData?.name || 'December 2024' }}</h2>
@@ -66,6 +70,9 @@ import { NgForm } from '@angular/forms';
   `]
 })
 export class Q1224Component extends BaseQuarterComponent {
+  @Input() quarterId: string = '1224';
+  @Input() quarterName: string = 'December 2024';
+
   constructor(
     firebaseService: FirebaseService,
     authService: AuthService

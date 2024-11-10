@@ -24,7 +24,6 @@ export class BaseQuarterComponent implements OnInit {
   isGuest: boolean = true;
   playerId: string = 'guest';
 
-
   constructor(
     protected firebaseService: FirebaseService, 
     protected authService: AuthService

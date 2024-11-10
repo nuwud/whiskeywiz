@@ -5,7 +5,7 @@
  * Integration:
  * <whiskey-wiz-0325></whiskey-wiz-0325> 
  */
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { BaseQuarterComponent } from '../base-quarter.component';
 import { AuthService } from '../../services/auth.service';
 import { FirebaseService } from '../../services/firebase.service';
@@ -66,6 +66,9 @@ import { NgForm } from '@angular/forms';
   `]
 })
 export class Q0325Component extends BaseQuarterComponent {
+  @Input() override quarterId: string = '0325';  // Add override since it's in base component
+  @Input() quarterName: string = 'March 2025';  
+
   constructor(
     firebaseService: FirebaseService,
     authService: AuthService
