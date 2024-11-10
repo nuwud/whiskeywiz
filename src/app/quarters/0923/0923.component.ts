@@ -70,6 +70,9 @@ import { NgForm } from '@angular/forms';
   `]
 })
 export class Q0923Component extends BaseQuarterComponent {
+  @Input() quarterId: string= '0923';
+  @Input() quarterName: string = 'September 2023';
+  
   constructor(
     firebaseService: FirebaseService,
     authService: AuthService
