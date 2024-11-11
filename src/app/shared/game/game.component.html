@@ -11,88 +11,101 @@
   </div>
 
   <!-- Game Content -->
-  <div class="game-content" *ngIf="!gameCompleted">
-
+  <div class="game-content" *ngIf="!gameCompleted" [@fadeInOut]>
+  
     <!-- Navigation Controls with Panel Background -->
     <div class="navigation-controls">
-      <div class="nav-button-container">
-        <img [src]="getButtonImage('Previous_Sample_Button', currentSample === 1 ? '' : '_Hover')"
-             (click)="changeSample(-1)"
-             [class.disabled]="currentSample === 1"
-             alt="Previous Sample">
-      </div>
 
+      <div class="nav-button-container">
+        <!--Previous Sample Button-->
+        <button class="nav-button previous"
+                [class.disabled]="buttonStates.previous.isDisabled"
+                (click)="changeSampleDirection(-1)"
+                [disabled]="buttonStates.previous.isDisabled">
+                <img *ngIf="currentSample > 1" 
+                      [src]="getButtonImage('Previous_Sample_Button')" 
+                      (click)="changeSampleDirection(-1)"
+                      class="nav-button">
+        </button>
+      </div>
+  
       <h2 class="sample-title font-hermona-4xl">
         Sample {{ getSampleLetter(currentSample) }}
       </h2>
-
+  
       <div class="nav-button-container">
-        <img *ngIf="!showSubmitAllButton()" 
-              [src]="getButtonImage('Next_Sample_Button')" 
-              (click)="changeSample(1)"
-              class="nav-button">
-        <img *ngIf="showSubmitAllButton()" 
-              src="assets/images/Submit_All_Guesses_Button.png" 
-              (click)="submitGuesses()"
-              class="submit-button">
+        <!-- Next Sample Button (shown when not all guesses are complete) -->
+        <button *ngIf="!showSubmitAllButton()"
+                class="nav-button next"
+                [class.disabled]="buttonStates.next.isDisabled"
+                (click)="changeSampleDirection(1)"
+                [disabled]="buttonStates.next.isDisabled">
+                <img *ngIf="currentSample < 4 || !showSubmitAllButton()" 
+                      [src]="getButtonImage('Next_Sample_Button')" 
+                      (click)="changeSampleDirection(1)"
+                      class="nav-button">
+        </button>
+        
+        <!-- Submit All Button (shown when all guesses are complete) -->
+        <button *ngIf="showSubmitAllButton()"
+                class="submit-button"
+                (click)="submitGuesses()">
+                <img *ngIf="currentSample === 4 && showSubmitAllButton()" 
+                      src="assets/images/Submit_All_Guesses_Button.png" 
+                      (click)="submitGuesses()"
+                      class="submit-button">
+        </button>
       </div>
     </div>
-
+  
     <!-- Main Form Area -->
     <div class="guess-form">
       <div class="panel-background">
         <img src="assets/images/Larger_Panel.png" class="panel-image" alt="background panel">
       </div>
-
+  
       <!-- Form Content -->
       <div class="form-content">
-
+  
         <!-- Age Statement -->
         <div class="form-group">
           <span class="label-group">
             <h3 class="font-hermona-2xl">Age Statement:
               <span class="value font-hermona-2xl">
                 {{ getSampleData(currentSample)?.age || 5 }} Years
-              </span></h3>
+              </span>
+            </h3>
           </span>
           <span class="slider-container">
             <img src="assets/images/Track.png" class="slider-track" alt="track">
-            <input type="range"
-                   class="custom-slider"
-                   min="1"
-                   max="10"
-                   [(ngModel)]="guesses['sample' + currentSample].age">
+            <input type="range" class="custom-slider" min="1" max="10"
+              [(ngModel)]="guesses['sample' + currentSample].age">
           </span>
         </div>
-
+  
         <!-- Proof -->
         <div class="form-group">
           <span class="label-group">
             <h3 class="font-hermona-2xl">Proof:
               <span class="value font-hermona-2xl">
                 {{ getSampleData(currentSample)?.proof || 100 }} Proof
-              </span></h3>
+              </span>
+            </h3>
           </span>
           <span class="slider-container">
             <img src="assets/images/Track.png" class="slider-track" alt="track">
-            <input type="range"
-                   class="custom-slider"
-                   min="80"
-                   max="130"
-                   [(ngModel)]="guesses['sample' + currentSample].proof">
+            <input type="range" class="custom-slider" min="80" max="130"
+              [(ngModel)]="guesses['sample' + currentSample].proof">
           </span>
         </div>
-
+  
         <!-- Mashbill -->
         <div class="form-group">
           <h3 class="font-hermona-2xl">Mashbill:</h3>
           <div class="mashbill-options">
             <div *ngFor="let type of mashbillTypes" class="mashbill-option">
-              <input type="radio" 
-                [id]="'mashbill-' + type"
-                [value]="type" 
-                [(ngModel)]="guesses['sample' + currentSample].mashbill"
-                name="mashbill{{currentSample}}">
+              <input type="radio" [id]="'mashbill-' + type" [value]="type"
+                [(ngModel)]="guesses['sample' + currentSample].mashbill" name="mashbill{{currentSample}}">
               <label [for]="'mashbill-' + type" class="helvetica-text">
                 <img src="assets/images/Ellipse_W.png" class="radio-unchecked" alt="unchecked">
                 <img src="assets/images/Ellipse_B.png" class="radio-checked" alt="checked">
@@ -101,11 +114,12 @@
             </div>
           </div>
         </div>
-
+  
         <!-- Star-Rating -->
         <div class="form-group">
           <span class="label-group">
-            <h3 class="font-hermona-2xl">Rating:
+            <h3 class="font-hermona-2xl">
+              Rating:
               <span class="value font-hermona-2xl" *ngIf="starRatings['sample'+currentSample]">
                 {{ starRatings['sample'+currentSample] }}/10
               </span>
@@ -113,46 +127,54 @@
           </span>
           <div class="rating-container">
             <app-star-rating 
-              [rating]="starRatings['sample'+currentSample]"
-              (ratingChange)="updateStarRating(currentSample, $event)">
+              [rating]="starRatings['sample' + currentSample] || 0"
+              (ratingChange)="updateStarRating(currentSample, $event)"
+              [readonly]="false">
             </app-star-rating>
           </div>
         </div>
 
+  
         <!-- Sample Navigation -->
         <div class="sample-navigation">
           <div class="samples-row">
-            <div *ngFor="let num of [1,2,3,4]" 
-                class="sample-indicator"
-                (click)="currentSample = num">
-              <img [src]="'assets/images/Sample_' + getSampleLetter(num) + 
-                          (currentSample === num ? '_hover' : '') + '.png'"
-                  [class.active]="currentSample === num"
-                  [alt]="'Sample ' + getSampleLetter(num)">
+            <div class="sample-indicator" 
+              *ngFor="let num of [1,2,3,4]" 
+              (click)="changeSampleDirection(num - currentSample)"
+              [class.active]="currentSample === num"
+              [class.completed]="sampleStates[num].completed">
+              <img [src]="getSampleIndicatorImage(num)" [alt]="'Sample ' + getSampleLetter(num)">
             </div>
           </div>
+              <!--<img [src]="'assets/images/Sample_' + getSampleLetter(num) + 
+                          (currentSample === num ? '_hover' : '') + '.png'" [alt]="'Sample ' + getSampleLetter(num)">-->
         </div>
 
-        <!-- Submit Button -->
-        <div class="submit-button-container">
-          <img src="assets/images/Submit_All_Guesses_Button.png" 
+          <!-- Submit Button -->
+          <div class="submit-button-container">
+            <img *ngIf="showSubmitAllButton()"
+              src="assets/images/Submit_All_Guesses_Button.png"
               class="submit-button"
               (click)="submitGuesses()"
               (mouseenter)="buttonHover('submit', true)"
-              (mouseleave)="buttonHover('submit', false)"
-              alt="Submit All Guesses">
+              (mouseleave)="buttonHover('submit', false)">
+              <!--<img src="assets/images/Submit_All_Guesses_Button.png" class="submit-button" (click)="submitGuesses()"
+                  (mouseenter)="buttonHover('submit', true)" (mouseleave)="buttonHover('submit', false)" alt="Submit All Guesses">-->
+          </div>
         </div>
+
       </div>
- 
+
   <!-- Results Component -->
-  <app-results 
-    *ngIf="gameCompleted"
-    [quarterData]="quarterData"
-    [guesses]="guesses"
-    [scores]="scores"
-    [totalScore]="totalScore"
-    (playAgain)="playAgain()"
-    (shareResults)="share()"
-    (submitScore)="submitScore()">
-  </app-results>
+<app-results 
+  *ngIf="gameCompleted"
+  [quarterData]="quarterData"
+  [guesses]="guesses"
+  [scores]="scores"
+  [totalScore]="totalScore"
+  (playAgain)="playAgain()"
+  (shareResults)="share()"
+  (submitScore)="submitScore()">
+</app-results>
+
 </div>

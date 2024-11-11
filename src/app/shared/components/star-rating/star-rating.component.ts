@@ -2,10 +2,10 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectorRef, Inject, OnInit } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
-export interface StarRatingProps {
-  rating: number;
-  readonly?: boolean;
-}
+//export interface StarRatingProps {
+//  rating: number;
+//  readonly?: boolean;
+//}
 @Component({
   selector: 'app-star-rating',
   template: `
@@ -32,7 +32,7 @@ export interface StarRatingProps {
   styles: [`
     .star-rating-container {
       display: flex;
-      justify-content: center;
+      /* justify-content: center; */
       margin: 0.25rem 0;
       gap: 0.25rem;
       padding: 0.25rem;
@@ -99,7 +99,7 @@ export interface StarRatingProps {
 export class StarRatingComponent implements OnInit {
   private _rating: number = 0;
 
-  @Input() 
+  @Input()
   set rating(value: number) {
     console.log('Rating value received:', value);
     this._rating = value || 0;
@@ -108,11 +108,18 @@ export class StarRatingComponent implements OnInit {
   get rating(): number {
     return this._rating;
   }
-
+  
   @Input() readonly: boolean = false;
   @Output() ratingChange = new EventEmitter<number>();
 
   hoverRating: number | null = null;
+
+  constructor(
+    private sanitizer: DomSanitizer,
+    // @Inject(ChangeDetectorRef) 
+    private cdr: ChangeDetectorRef
+) {}
+
 
   ngOnInit() {
     console.log('StarRating initialized with:', {
@@ -124,16 +131,24 @@ export class StarRatingComponent implements OnInit {
   onRatingChange(value: number): void {
     console.log('Rating change:', value);
     if (this.readonly) return;
-
     console.log('Rating changed to:', value);
     this.rating = value;
     this.ratingChange.emit(value);
     this.cdr.detectChanges();
   }
 
-  constructor(private sanitizer: DomSanitizer,
-              @Inject(ChangeDetectorRef) private cdr: ChangeDetectorRef
-  ) {}
+  setHoverState(value: number): void {
+    if (this.readonly) return;
+    console.log('Hover state:', value);
+    this.hoverRating = value;
+    this.cdr.detectChanges();
+  }
+
+  clearHoverState(): void {
+    console.log('Clear hover state');
+    this.hoverRating = null;
+    this.cdr.detectChanges();
+  }
 
   private getSvgStar(filled: boolean): string {
     const fillColor = filled ? '#FFD700' : 'none';
@@ -156,14 +171,5 @@ export class StarRatingComponent implements OnInit {
     return this.sanitizer.bypassSecurityTrustHtml(this.getSvgStar(filled));
   }
 
-  setHoverState(value: number): void {
-    if (this.readonly) return;
-    this.hoverRating = value;
-    this.cdr.detectChanges();
-  }
 
-  clearHoverState(): void {
-    this.hoverRating = null;
-    this.cdr.detectChanges();
-  }
 }

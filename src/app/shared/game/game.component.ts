@@ -7,7 +7,6 @@ import { AuthService } from '../../services/auth.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { environment } from '../../../environments/environment';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { StarRatingComponent } from '../components/star-rating/star-rating.component';
 
 // Type definitions
 type Mashbill = 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt' | 'Specialty';
@@ -82,6 +81,15 @@ interface SampleState {
         style({ opacity: 0 }),
         animate('300ms ease-out', style({ opacity: 0.2 }))
       ])
+    ]),
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('300ms ease-out', style({ opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('300ms ease-in', style({ opacity: 0 }))
+      ])
     ])
   ]
 })
@@ -105,6 +113,7 @@ export class GameComponent implements OnInit {
   private _quarterId: string = '';
   private readonly ANIMATION_DELAY = 200;
   private readonly DEBUG_PATHS = !environment.production;
+  private navigationInProgress = false;
   private _starRatings: { [key: string]: number } = {
     'sample1': 0,
     'sample2': 0,
@@ -122,6 +131,7 @@ export class GameComponent implements OnInit {
   guesses: { [key: string]: Guess } = {};
   scores: { [key: string]: number } = {};
   totalScore: number = 0;
+  showResults = false;
   gameCompleted: boolean = false;
   scoreSubmitted: boolean = false;
   loading: boolean = false;
@@ -153,13 +163,26 @@ export class GameComponent implements OnInit {
     private gameService: GameService,
     private authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,
-    private sanitizer: DomSanitizer    
+    private sanitizer: DomSanitizer
   ) {
     // Initialize auth state
     this.authService.getPlayerId().subscribe(id => {
       this.playerId = id;
       this.isGuest = id.startsWith('guest_');
     });
+  }
+
+  // Lifecycle
+  ngOnInit() {
+    // Handle route parameters for direct navigation
+    this.route.queryParams.subscribe(params => {
+      const quarterId = params['quarter'];
+      if (quarterId) {
+        this.quarterId = quarterId;
+      }
+    });
+    // Initialize ratings
+    this.initializeRatings();
   }
 
   // Helper method for image paths
@@ -189,18 +212,7 @@ export class GameComponent implements OnInit {
     return this.getImagePath(filename);
   }
 
-  // Lifecycle
-  ngOnInit() {
-    // Handle route parameters for direct navigation
-    this.route.queryParams.subscribe(params => {
-      const quarterId = params['quarter'];
-      if (quarterId) {
-        this.quarterId = quarterId;
-      }
-    });
-    // Initialize ratings
-    this.initializeRatings();
-  }
+
 
   // Button state management
   buttonHover(buttonId: string, isHovered: boolean): void {
@@ -233,26 +245,58 @@ export class GameComponent implements OnInit {
     return String.fromCharCode(64 + num); // Converts 1 to A, 2 to B, etc.
   }
 
-  // Sample navigation
-  changeSample(direction: number) {
-    const newSample = this.currentSample + direction;
-    if (newSample >= 1 && newSample <= 4) {
-      // Update button states
-      this.buttonStates.previous.isDisabled = newSample === 1;
-      this.buttonStates.next.isDisabled = newSample === 4;
+// Sample navigation
+// Method for directional navigation (Previous/Next buttons)
+changeSampleDirection(direction: number) {
+  const newSample = this.currentSample + direction;
+  if (newSample >= 1 && newSample <= 4) {
+    // Update button states
+    this.buttonStates.previous.isDisabled = newSample === 1;
+    this.buttonStates.next.isDisabled = newSample === 4;
 
-      // Animate sample transition
-      this.sampleStates[this.currentSample].active = false;
+    // Animate sample transition
+    this.sampleStates[this.currentSample].active = false;
+    
+    setTimeout(() => {
+      this.currentSample = newSample;
+      this.sampleStates[newSample].active = true;
       
-      // Delay sample change to allow
-      setTimeout(() => {
-        this.currentSample = newSample;
-        this.sampleStates[newSample].active = true;
-        
-        // Update completion status
-        this.updateSampleCompletion();
-      }, this.ANIMATION_DELAY);
-    }
+      // Update completion status
+      this.updateSampleCompletion();
+      this.changeDetectorRef.detectChanges();
+    }, this.ANIMATION_DELAY);
+  }
+}
+
+// Method for direct sample selection (clicking sample indicators)
+selectSample(num: number): void {
+  if (num === this.currentSample || num < 1 || num > 4) return;
+  
+  this.sampleStates[this.currentSample].active = false;
+  
+  setTimeout(() => {
+    this.currentSample = num;
+    this.sampleStates[num].active = true;
+    this.buttonStates.previous.isDisabled = num === 1;
+    this.buttonStates.next.isDisabled = num === 4;
+    this.updateSampleCompletion();
+    this.changeDetectorRef.detectChanges();
+  }, this.ANIMATION_DELAY);
+}
+
+  // New helper method for button state management
+  private updateNavigationButtons() {
+    this.buttonStates = {
+      ...this.buttonStates,
+      previous: {
+        ...this.buttonStates.previous,
+        isDisabled: this.currentSample === 1
+      },
+      next: {
+        ...this.buttonStates.next,
+        isDisabled: this.currentSample === 4
+      }
+    };
   }
 
   // Sample state management
@@ -276,12 +320,13 @@ export class GameComponent implements OnInit {
       };
     }
     return this.guesses[sampleKey][property] ?? 
-          (property === 'age' ? 5 : 
-            property === 'proof' ? 100 : 
-            property === 'rating' ? 0 : null);
+      (property === 'age' ? 5 : 
+        property === 'proof' ? 100 : 
+        property === 'rating' ? 0 : null);
   }
 
   get starRatings(): { [key: string]: number } {
+    console.log('Getting star ratings:', this._starRatings);
     return this._starRatings;
   }
 
@@ -301,7 +346,7 @@ export class GameComponent implements OnInit {
         age: 5,
         proof: 100,
         mashbill: null,
-        rating: 0
+        rating: rating
       };
     } else {
       console.log('Updating existing guess for:', sampleKey);
@@ -312,7 +357,7 @@ export class GameComponent implements OnInit {
     console.log('Updated state:', { 
       starRatings: this._starRatings,
       guesses: this.guesses,
-      currentGuess: this.guesses[sampleKey]
+      // currentGuess: this.guesses[sampleKey]
     }); // Debug log
 
     // Force change detection
@@ -406,7 +451,7 @@ export class GameComponent implements OnInit {
   private initializeRatings() {
     for (let i = 1; i <= 4; i++) {
       const sampleKey = `sample${i}`;
-      this._starRatings[sampleKey] = 0;
+        this._starRatings[sampleKey] = 0;
       if (this.guesses[sampleKey]) {
         this.guesses[sampleKey].rating = 0;
       }
@@ -454,41 +499,50 @@ export class GameComponent implements OnInit {
       if (!guess || 
           !guess.mashbill || 
           guess.age <= 0 || 
-          guess.proof <= 0 
+          guess.proof <= 0 ) {
           // Uncomment below line to make ratings mandatory:
           // || !this.starRatings[`sample${i}`]
-        ) {
         return false;
       }
     }
     return true;
   }
 
-  // Score calculation and submission
+  // Guess submission
   submitGuesses() {
+    // Reset error state
     console.log('Submitting guesses...');
+    
     try {
+      // Initial validation
       if (!this.areAllGuessesFilled()) {
         this.error = 'Please fill in all guesses';
         return;
       }
-
-      // Reset previous scores
+  
+      // Validate required data
+      if (!this.quarterData || !this.guesses || !this.scores) {
+        throw new Error('Missing required data for game completion');
+      }
+  
+      // Reset scores
       this.totalScore = 0;
+      
+      // Calculate scores for each sample
       for (let i = 1; i <= 4; i++) {
         const sampleKey = `sample${i}`;
         const actualSample = this.quarterData?.samples[sampleKey];
         const guess = this.guesses[sampleKey];
-
+  
         // Skip if data is missing
         if (!actualSample || !guess?.mashbill) {
           console.warn(`Missing data for ${sampleKey}`, { actualSample, guess });
           continue;
         }
-
+  
         // Calculate score for this sample
         let score = 0;
-
+  
         // Age scoring
         const ageDiff = Math.abs(actualSample.age - (guess.age || 0));
         if (ageDiff === 0) {
@@ -496,82 +550,89 @@ export class GameComponent implements OnInit {
         } else {
           score += Math.max(0, 20 - (ageDiff * 4));
         }
-
+  
         // Proof scoring
         const proofDiff = Math.abs(actualSample.proof - (guess.proof || 0));
         if (proofDiff === 0) {
           score += 30;
         } else {
-            score += Math.max(0, 20 - (proofDiff * 2));
-          }
-
-          // Mashbill scoring
-          if (guess.mashbill === actualSample.mashbill) {
-            score += 10;
-          }
-
-          // Rating scoring
-          if (guess.rating && guess.rating > 0) {
-            // Add up to 10 bonus points based on rating (1-10 stars = 1-10 points)
-            const ratingBonus = guess.rating;
-            score += ratingBonus;
-            
-            // Log the rating contribution
-            console.log(`Rating bonus for ${sampleKey}:`, ratingBonus);
-          }    
-
-      // Store the final score for this sample
-      this.scores[sampleKey] = score;
-      this.totalScore += score;
-
-          // Rating scoring
-      this.guesses[sampleKey] = {
-        ...guess,
-        rating: this.starRatings[sampleKey] || 0
-      };
-    }
-
-    // Log game completion data
-    console.log('Game completed:', {
-      quarterData: this.quarterData,
-      guesses: this.guesses,
-      scores: this.scores,
-      totalScore: this.totalScore,
-      ratings: this.starRatings 
-    });
-
-    // Debug logs
-    console.log('Final scores:', this.scores);
-    console.log('Total score:', this.totalScore);
-    console.log('Sample ratings:', this.starRatings);
-
-    // Force change detection
-    this.changeDetectorRef.detectChanges();
-
-    // Set game completed and ensure view updates
-    setTimeout(() => {
+          score += Math.max(0, 20 - (proofDiff * 2));
+        }
+  
+        // Mashbill scoring
+        if (guess.mashbill === actualSample.mashbill) {
+          score += 10;
+        }
+  
+        // Rating scoring
+        if (guess.rating && guess.rating > 0) {
+          const ratingBonus = guess.rating;
+          score += ratingBonus;
+          console.log(`Rating bonus for ${sampleKey}:`, ratingBonus);
+        }    
+  
+        // Store the final score for this sample
+        this.scores[sampleKey] = score;
+        this.totalScore += score;
+  
+        // Update guess with rating
+        this.guesses[sampleKey] = {
+          ...guess,
+          rating: this.starRatings[sampleKey] || 0
+        };
+      }
+  
+      // Log game completion data
+      console.log('Game completed:', {
+        quarterData: this.quarterData,
+        guesses: this.guesses,
+        scores: this.scores,
+        totalScore: this.totalScore,
+        ratings: this.starRatings 
+      });
+  
+      // Debug logs
+      console.log('Final scores:', this.scores);
+      console.log('Total score:', this.totalScore);
+      console.log('Sample ratings:', this.starRatings);
+  
+      // Trigger view updates
+      this.showResults = true;
       this.gameCompleted = true;
+      
+
+      // Force change detection
       this.changeDetectorRef.detectChanges();
-    }, 0);
-
-    // Error handling
-    if (!this.quarterData || !this.guesses || !this.scores) {
-      throw new Error('Missing required data for game completion');
-    }
-
-    // Update sample completion states
-    console.log('gameCompleted set to:', this.gameCompleted); // Debug log
-
-    // Update completion status
+  
+      // Update sample completion states
+      console.log('Game completed:', {
+        scores: this.scores,
+        totalScore: this.totalScore,
+        showResults: this.showResults,
+        gameCompleted: this.gameCompleted
+      });
+  
     } catch (error) {
       console.error('Error in submitGuesses:', error);
       this.error = 'An error occurred while submitting guesses';
+      this.showResults = false;
+      this.gameCompleted = false;
     }
   }
 
   // UI state management
   showSubmitAllButton(): boolean {
-    return this.currentSample === 4 && this.areAllGuessesFilled();
+    // Check if we're on the last sample AND all guesses are filled
+    const allGuessesFilled = this.areAllGuessesFilled();
+    const isLastSample = this.currentSample === 4;
+    
+    console.log('Show submit button check:', {
+      allGuessesFilled,
+      isLastSample,
+      currentSample: this.currentSample
+    });
+    
+    return allGuessesFilled;
   }
 
   // Score submission
@@ -665,7 +726,9 @@ export class GameComponent implements OnInit {
   // Share text generation
   private getShareText(): string {
     const ratings = Object.values(this.starRatings).filter(r => r > 0);
-    const avgRating = ratings.length > 0 
+    const avgRating = ratings.length > 0
+    ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1)
+    : 0;
 
     const quip = this.getScoreQuip();
     let text = `🥃 I scored ${this.totalScore} points in Whiskey Wiz!\n${quip}`;
