@@ -179,10 +179,11 @@ export class GameComponent implements OnInit {
       const quarterId = params['quarter'];
       if (quarterId) {
         this.quarterId = quarterId;
+            // Initialize ratings
+        this.initializeRatings();
       }
     });
-    // Initialize ratings
-    this.initializeRatings();
+
   }
 
   // Helper method for image paths
@@ -211,7 +212,6 @@ export class GameComponent implements OnInit {
     const filename = `Sample_${letter}${isActive ? '_hover' : ''}.png`;
     return this.getImagePath(filename);
   }
-
 
 
   // Button state management
@@ -267,37 +267,6 @@ changeSampleDirection(direction: number) {
     }, this.ANIMATION_DELAY);
   }
 }
-
-// Method for direct sample selection (clicking sample indicators)
-selectSample(num: number): void {
-  if (num === this.currentSample || num < 1 || num > 4) return;
-  
-  this.sampleStates[this.currentSample].active = false;
-  
-  setTimeout(() => {
-    this.currentSample = num;
-    this.sampleStates[num].active = true;
-    this.buttonStates.previous.isDisabled = num === 1;
-    this.buttonStates.next.isDisabled = num === 4;
-    this.updateSampleCompletion();
-    this.changeDetectorRef.detectChanges();
-  }, this.ANIMATION_DELAY);
-}
-
-  // New helper method for button state management
-  private updateNavigationButtons() {
-    this.buttonStates = {
-      ...this.buttonStates,
-      previous: {
-        ...this.buttonStates.previous,
-        isDisabled: this.currentSample === 1
-      },
-      next: {
-        ...this.buttonStates.next,
-        isDisabled: this.currentSample === 4
-      }
-    };
-  }
 
   // Sample state management
   getSampleState(sampleNum: number): string {

@@ -18,10 +18,7 @@
 
       <div class="nav-button-container">
         <!--Previous Sample Button-->
-        <button class="nav-button previous"
-                [class.disabled]="buttonStates.previous.isDisabled"
-                (click)="changeSampleDirection(-1)"
-                [disabled]="buttonStates.previous.isDisabled">
+        <button class="nav-button previous">
                 <img *ngIf="currentSample > 1" 
                       [src]="getButtonImage('Previous_Sample_Button')" 
                       (click)="changeSampleDirection(-1)"
@@ -36,10 +33,7 @@
       <div class="nav-button-container">
         <!-- Next Sample Button (shown when not all guesses are complete) -->
         <button *ngIf="!showSubmitAllButton()"
-                class="nav-button next"
-                [class.disabled]="buttonStates.next.isDisabled"
-                (click)="changeSampleDirection(1)"
-                [disabled]="buttonStates.next.isDisabled">
+                class="nav-button next">
                 <img *ngIf="currentSample < 4 || !showSubmitAllButton()" 
                       [src]="getButtonImage('Next_Sample_Button')" 
                       (click)="changeSampleDirection(1)"
@@ -48,8 +42,7 @@
         
         <!-- Submit All Button (shown when all guesses are complete) -->
         <button *ngIf="showSubmitAllButton()"
-                class="submit-button"
-                (click)="submitGuesses()">
+                class="submit-button">
                 <img *ngIf="currentSample === 4 && showSubmitAllButton()" 
                       src="assets/images/Submit_All_Guesses_Button.png" 
                       (click)="submitGuesses()"
@@ -137,11 +130,10 @@
         <!-- Sample Navigation -->
         <div class="sample-navigation">
           <div class="samples-row">
-            <div class="sample-indicator" 
-              *ngFor="let num of [1,2,3,4]" 
-              (click)="changeSampleDirection(num - currentSample)"
-              [class.active]="currentSample === num"
-              [class.completed]="sampleStates[num].completed">
+            <div class="sample-indicator" *ngFor="let num of [1,2,3,4]" 
+                  (click)="selectSample(num)" 
+                  [class.active]="currentSample === num"
+                  [class.completed]="sampleStates[num].completed">
               <img [src]="getSampleIndicatorImage(num)" [alt]="'Sample ' + getSampleLetter(num)">
             </div>
           </div>
