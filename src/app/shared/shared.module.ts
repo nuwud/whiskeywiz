@@ -14,9 +14,9 @@ import { GameBannerComponent } from './components/game-banner/game-banner.compon
     GameComponent,
     GameBannerComponent,
     LeaderboardComponent,
+    ResultsComponent,
     HermonaButtonComponent,
-    StarRatingComponent,
-    ResultsComponent
+    StarRatingComponent
   ],
   imports: [
     CommonModule,

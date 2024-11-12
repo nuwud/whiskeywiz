@@ -11,18 +11,20 @@
   </div>
 
   <!-- Game Content -->
-  <div class="game-content" *ngIf="!gameCompleted" [@fadeInOut]>
+  <div *ngIf="!gameCompleted" [@fadeInOut] class="game-content">
   
     <!-- Navigation Controls with Panel Background -->
     <div class="navigation-controls">
       <div class="nav-button-container">
         <!--Previous Sample Button-->
         <button class="nav-button previous"
+                [disabled]="currentSample === 1"
                 *ngIf="currentSample > 1" 
                 (click)="changeSampleDirection(-1)">
             <img [src]="getButtonImage('Previous_Sample_Button')" 
                   alt="Previous Sample Button" 
-                  class="nav-button">
+                  class="nav-button"
+                  [class.disabled]="currentSample === 1">
         </button>
       </div>
   
@@ -31,13 +33,17 @@
       </h2>
   
       <div class="nav-button-container">
-        <!-- Next Sample Button (shown when not all guesses are complete) -->
-        <button [class]="currentSample === 4 ? 'submit-button' : 'nav-button next'"
-                *ngIf="currentSample < 4 || (currentSample === 4 && showSubmitAllButton())"
-                (click)="currentSample === 4 ? submitGuesses() : changeSampleDirection(1)">
-          <img [src]="currentSample === 4 ? 'assets/images/Submit_All_Guesses_Button.png' : 
-                      getButtonImage('Next_Sample_Button')"
-                [alt]="currentSample === 4 ? 'Submit All Guesses' : 'Next Sample'" 
+        <button class="nav-button next"
+                [disabled]="currentSample === 4"
+                *ngIf="!showSubmitAllButton()"
+                (click)="changeSampleDirection(1)">
+          <img [src]="getButtonImage('Next_Sample_Button')"
+                class="nav-button">
+        </button>
+        <button class="submit-button"
+                *ngIf="showSubmitAllButton()"
+                (click)="submitGuesses()">
+          <img src="assets/images/Submit_All_Guesses_Button.png"
                 class="nav-button">
         </button>
       </div>
@@ -105,12 +111,14 @@
           <span class="label-group">
             <h3 class="font-hermona-2xl">
               Rating:
-              <!--<span class="value font-hermona-2xl" *ngIf="starRatings['sample'+currentSample]">
+              <span class="value font-hermona-2xl" *ngIf="starRatings['sample'+currentSample]">
                 {{ starRatings['sample'+currentSample] }}/10
-              </span>-->
+              </span>
             </h3>
           </span>
           <div class="rating-container">
+            <div>DEBUG: Current Sample = {{currentSample}}</div>
+            <div>DEBUG: Star Ratings = {{starRatings | json}}</div>
             <app-star-rating 
               [rating]="starRatings['sample' + currentSample] || 0"
               (ratingChange)="updateStarRating(currentSample, $event)"
@@ -145,11 +153,12 @@
           </div>
         </div>
 
-      </div>
+    </div>
+  </div>
 
     <!-- Results Component -->
   <app-results 
-    *ngIf="gameCompleted"
+    *ngIf="gameCompleted && showResults"
     [quarterData]="quarterData"
     [guesses]="guesses"
     [scores]="scores"
@@ -158,5 +167,5 @@
     (shareResults)="share()"
     (submitScore)="submitScore()">
   </app-results>
-
 </div>
+

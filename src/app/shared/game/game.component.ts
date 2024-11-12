@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { environment } from '../../../environments/environment';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { SharedModule } from '../shared.module';
 
 // Type definitions
 type Mashbill = 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt' | 'Specialty';

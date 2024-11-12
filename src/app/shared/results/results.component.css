@@ -117,7 +117,6 @@
 .comparison-grid {
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
   margin-bottom: 0.5rem;
@@ -214,13 +213,9 @@ p {
 }
 
 .rating-container {
-  margin-top: 1rem;
+  margin-top: 0;
   flex-direction: column;
   align-items: center;
   color: #FFD700;
-}
-
-/* Make stars slightly smaller in results view */
-.rating-container app-star-rating {
-  transform: scale(0.8);
+  transform: scale(0.7);
 }
