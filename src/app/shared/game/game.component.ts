@@ -195,14 +195,45 @@ export class GameComponent implements OnInit {
     return fullPath;
   }
 
-  // Helper for button images
-  getButtonImage(type: string, state: string = ''): string {
-    const filename = `${type}${state}.png`;
-    const path = this.getImagePath(filename);
-    if (this.DEBUG_PATHS) {
-      console.log(`Button image request - Type: ${type}, State: ${state}, Path: ${path}`);
+  // Sample navigation
+  // Method for directional navigation (Previous/Next buttons)
+  changeSampleDirection(direction: number) {
+    const newSample = this.currentSample + direction;
+    if (newSample >= 1 && newSample <= 4) {
+  
+      // Animate sample transition
+      this.sampleStates[this.currentSample].active = false;
+      
+      setTimeout(() => {
+        this.currentSample = newSample;
+        this.sampleStates[newSample].active = true;
+        
+        // Update completion status
+        this.updateSampleCompletion();
+        this.changeDetectorRef.detectChanges();
+      }, this.ANIMATION_DELAY);
     }
-    return path;
+  }
+  
+  // Simplified direct sample selection
+  selectSample(num: number): void {
+    if (num === this.currentSample) return;
+    if (num < 1 || num > 4) return;
+    
+    this.sampleStates[this.currentSample].active = false;
+    this.currentSample = num;
+    this.sampleStates[num].active = true;
+
+    this.updateSampleCompletion();
+    this.changeDetectorRef.detectChanges();
+  }
+
+  // Button image helper
+  getButtonImage(type: string): string {
+    // Ensure image path is valid
+    const imagePath = `assets/images/${type}.png`;
+    console.log(`Loading button image: ${imagePath}`);
+    return imagePath;
   }
 
   // Sample indicator image helper
@@ -213,6 +244,10 @@ export class GameComponent implements OnInit {
     return this.getImagePath(filename);
   }
 
+  // Sample management
+  getSampleLetter(num: number): string {
+    return String.fromCharCode(64 + num); // Converts 1 to A, 2 to B, etc.
+}
 
   // Button state management
   buttonHover(buttonId: string, isHovered: boolean): void {
@@ -239,34 +274,6 @@ export class GameComponent implements OnInit {
     if (state.isHovered) return 'hovered';
     return 'normal';
   }
-
-  // Sample management
-  getSampleLetter(num: number): string {
-    return String.fromCharCode(64 + num); // Converts 1 to A, 2 to B, etc.
-  }
-
-// Sample navigation
-// Method for directional navigation (Previous/Next buttons)
-changeSampleDirection(direction: number) {
-  const newSample = this.currentSample + direction;
-  if (newSample >= 1 && newSample <= 4) {
-    // Update button states
-    this.buttonStates.previous.isDisabled = newSample === 1;
-    this.buttonStates.next.isDisabled = newSample === 4;
-
-    // Animate sample transition
-    this.sampleStates[this.currentSample].active = false;
-    
-    setTimeout(() => {
-      this.currentSample = newSample;
-      this.sampleStates[newSample].active = true;
-      
-      // Update completion status
-      this.updateSampleCompletion();
-      this.changeDetectorRef.detectChanges();
-    }, this.ANIMATION_DELAY);
-  }
-}
 
   // Sample state management
   getSampleState(sampleNum: number): string {
@@ -375,7 +382,10 @@ changeSampleDirection(direction: number) {
   // Sample completion management
   updateSampleCompletion(): void {
     const currentGuess = this.guesses[`sample${this.currentSample}`];
-    if (currentGuess && currentGuess.mashbill && currentGuess.age > 0 && currentGuess.proof > 0) {
+    if (currentGuess && 
+        currentGuess.mashbill && 
+        currentGuess.age > 0 && 
+        currentGuess.proof > 0) {
       this.sampleStates[this.currentSample].completed = true;
     }
   }
@@ -469,8 +479,6 @@ changeSampleDirection(direction: number) {
           !guess.mashbill || 
           guess.age <= 0 || 
           guess.proof <= 0 ) {
-          // Uncomment below line to make ratings mandatory:
-          // || !this.starRatings[`sample${i}`]
         return false;
       }
     }
@@ -478,119 +486,81 @@ changeSampleDirection(direction: number) {
   }
 
   // Guess submission
+  // Submit guesses
   submitGuesses() {
-    // Reset error state
-    console.log('Submitting guesses...');
-    
+    if (!this.areAllGuessesFilled()) {
+      this.error = 'Please complete all guesses';
+      return;
+    }
+
     try {
-      // Initial validation
-      if (!this.areAllGuessesFilled()) {
-        this.error = 'Please fill in all guesses';
-        return;
-      }
-  
-      // Validate required data
-      if (!this.quarterData || !this.guesses || !this.scores) {
-        throw new Error('Missing required data for game completion');
-      }
-  
-      // Reset scores
-      this.totalScore = 0;
-      
-      // Calculate scores for each sample
-      for (let i = 1; i <= 4; i++) {
-        const sampleKey = `sample${i}`;
-        const actualSample = this.quarterData?.samples[sampleKey];
-        const guess = this.guesses[sampleKey];
-  
-        // Skip if data is missing
-        if (!actualSample || !guess?.mashbill) {
-          console.warn(`Missing data for ${sampleKey}`, { actualSample, guess });
-          continue;
-        }
-  
-        // Calculate score for this sample
-        let score = 0;
-  
-        // Age scoring
-        const ageDiff = Math.abs(actualSample.age - (guess.age || 0));
-        if (ageDiff === 0) {
-          score += 30;
-        } else {
-          score += Math.max(0, 20 - (ageDiff * 4));
-        }
-  
-        // Proof scoring
-        const proofDiff = Math.abs(actualSample.proof - (guess.proof || 0));
-        if (proofDiff === 0) {
-          score += 30;
-        } else {
-          score += Math.max(0, 20 - (proofDiff * 2));
-        }
-  
-        // Mashbill scoring
-        if (guess.mashbill === actualSample.mashbill) {
-          score += 10;
-        }
-  
-        // Rating scoring
-        if (guess.rating && guess.rating > 0) {
-          const ratingBonus = guess.rating;
-          score += ratingBonus;
-          console.log(`Rating bonus for ${sampleKey}:`, ratingBonus);
-        }    
-  
-        // Store the final score for this sample
-        this.scores[sampleKey] = score;
-        this.totalScore += score;
-  
-        // Update guess with rating
-        this.guesses[sampleKey] = {
-          ...guess,
-          rating: this.starRatings[sampleKey] || 0
-        };
-      }
-  
-      // Log game completion data
+      // Calculate scores
+      this.calculateScores();
+
+      // Update game state
+      this.gameCompleted = true;
+      this.showResults = true;
+
+      // Force view update
+      this.changeDetectorRef.detectChanges();
+
       console.log('Game completed:', {
-        quarterData: this.quarterData,
-        guesses: this.guesses,
         scores: this.scores,
         totalScore: this.totalScore,
-        ratings: this.starRatings 
+        showResults: this.showResults,
+        gameCompleted: this.gameCompleted
       });
-  
-      // Debug logs
-      console.log('Final scores:', this.scores);
-      console.log('Total score:', this.totalScore);
-      console.log('Sample ratings:', this.starRatings);
-  
-      // Trigger view updates
-      this.showResults = true;
-      this.gameCompleted = true;
-      this.changeDetectorRef.detectChanges();
-  
     } catch (error) {
-      console.error('Error in submitGuesses:', error);
+      console.error('Error submitting guesses:', error);
       this.error = 'An error occurred while submitting guesses';
       this.showResults = false;
       this.gameCompleted = false;
     }
   }
 
+  // Score calculation - moved to separate method
+  private calculateScores(): void {
+    this.totalScore = 0;
+    
+    for (let i = 1; i <= 4; i++) {
+      const sampleKey = `sample${i}`;
+      const actualSample = this.quarterData?.samples[sampleKey];
+      const guess = this.guesses[sampleKey];
+
+      if (!actualSample || !guess?.mashbill) continue;
+
+      let score = 0;
+
+      // Age scoring
+      const ageDiff = Math.abs(actualSample.age - (guess.age || 0));
+      score += ageDiff === 0 ? 30 : Math.max(0, 20 - (ageDiff * 4));
+
+      // Proof scoring
+      const proofDiff = Math.abs(actualSample.proof - (guess.proof || 0));
+      score += proofDiff === 0 ? 30 : Math.max(0, 20 - (proofDiff * 2));
+
+      // Mashbill scoring
+      if (guess.mashbill === actualSample.mashbill) score += 10;
+
+      // Store score
+      this.scores[sampleKey] = score;
+      this.totalScore += score;
+    }
+  }
+
   // UI state management
+  // Submit button visibility
   showSubmitAllButton(): boolean {
-    // Check if we're on the last sample AND all guesses are filled
     const allGuessesFilled = this.areAllGuessesFilled();
     const isLastSample = this.currentSample === 4;
     
-    console.log('Show submit button check:', {
+    console.log('Submit button check:', {
       allGuessesFilled,
       isLastSample,
       currentSample: this.currentSample
     });
     
-    return allGuessesFilled;
+    return isLastSample && allGuessesFilled; // Show on last sample
   }
 
   // Score submission

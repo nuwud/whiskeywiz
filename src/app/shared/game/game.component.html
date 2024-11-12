@@ -15,14 +15,13 @@
   
     <!-- Navigation Controls with Panel Background -->
     <div class="navigation-controls">
-
       <div class="nav-button-container">
         <!--Previous Sample Button-->
-        <button class="nav-button previous">
-                <img *ngIf="currentSample > 1" 
-                      [src]="getButtonImage('Previous_Sample_Button')" 
-                      (click)="changeSampleDirection(-1)"
-                      class="nav-button">
+        <button class="nav-button previous"
+                *ngIf="currentSample > 1" 
+                (click)="changeSampleDirection(-1)">
+            <img [src]="getButtonImage('Previous_Sample_Button')" 
+                  alt="Previous Sample Button">
         </button>
       </div>
   
@@ -32,21 +31,21 @@
   
       <div class="nav-button-container">
         <!-- Next Sample Button (shown when not all guesses are complete) -->
-        <button *ngIf="!showSubmitAllButton()"
-                class="nav-button next">
-                <img *ngIf="currentSample < 4 || !showSubmitAllButton()" 
-                      [src]="getButtonImage('Next_Sample_Button')" 
-                      (click)="changeSampleDirection(1)"
-                      class="nav-button">
+        <button [class]="currentSample === 4 ? 'submit-button' : 'nav-button next'"
+                *ngIf="currentSample < 4 || (currentSample === 4 && showSubmitAllButton())"
+                (click)="currentSample === 4 ? submitGuesses() : changeSampleDirection(1)">
+          <img [src]="currentSample === 4 ? 'assets/images/Submit_All_Guesses_Button.png' : 
+                      getButtonImage('Next_Sample_Button')"
+                [alt]="currentSample === 4 ? 'Submit All Guesses' : 'Next Sample'">
         </button>
         
         <!-- Submit All Button (shown when all guesses are complete) -->
         <button *ngIf="showSubmitAllButton()"
                 class="submit-button">
-                <img *ngIf="currentSample === 4 && showSubmitAllButton()" 
-                      src="assets/images/Submit_All_Guesses_Button.png" 
-                      (click)="submitGuesses()"
-                      class="submit-button">
+          <img *ngIf="currentSample === 4 && showSubmitAllButton()" 
+                src="assets/images/Submit_All_Guesses_Button.png" 
+                (click)="submitGuesses()"
+                class="submit-button">
         </button>
       </div>
     </div>
@@ -130,15 +129,16 @@
         <!-- Sample Navigation -->
         <div class="sample-navigation">
           <div class="samples-row">
-            <div class="sample-indicator" *ngFor="let num of [1,2,3,4]" 
-                  (click)="selectSample(num)" 
-                  [class.active]="currentSample === num"
-                  [class.completed]="sampleStates[num].completed">
-              <img [src]="getSampleIndicatorImage(num)" [alt]="'Sample ' + getSampleLetter(num)">
-            </div>
+            <button *ngFor="let num of [1,2,3,4]" 
+                    class="sample-indicator"
+                    [class.active]="currentSample === num"
+                    [class.completed]="sampleStates[num].completed"
+                    (click)="selectSample(num)"
+                    [attr.aria-label]="'Go to Sample ' + getSampleLetter(num)">
+              <img [src]="getSampleIndicatorImage(num)" 
+                  [alt]="'Sample ' + getSampleLetter(num)">
+            </button>
           </div>
-              <!--<img [src]="'assets/images/Sample_' + getSampleLetter(num) + 
-                          (currentSample === num ? '_hover' : '') + '.png'" [alt]="'Sample ' + getSampleLetter(num)">-->
         </div>
 
           <!-- Submit Button -->
