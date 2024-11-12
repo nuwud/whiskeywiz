@@ -21,7 +21,8 @@
                 *ngIf="currentSample > 1" 
                 (click)="changeSampleDirection(-1)">
             <img [src]="getButtonImage('Previous_Sample_Button')" 
-                  alt="Previous Sample Button">
+                  alt="Previous Sample Button" 
+                  class="nav-button">
         </button>
       </div>
   
@@ -36,16 +37,8 @@
                 (click)="currentSample === 4 ? submitGuesses() : changeSampleDirection(1)">
           <img [src]="currentSample === 4 ? 'assets/images/Submit_All_Guesses_Button.png' : 
                       getButtonImage('Next_Sample_Button')"
-                [alt]="currentSample === 4 ? 'Submit All Guesses' : 'Next Sample'">
-        </button>
-        
-        <!-- Submit All Button (shown when all guesses are complete) -->
-        <button *ngIf="showSubmitAllButton()"
-                class="submit-button">
-          <img *ngIf="currentSample === 4 && showSubmitAllButton()" 
-                src="assets/images/Submit_All_Guesses_Button.png" 
-                (click)="submitGuesses()"
-                class="submit-button">
+                [alt]="currentSample === 4 ? 'Submit All Guesses' : 'Next Sample'" 
+                class="nav-button">
         </button>
       </div>
     </div>
@@ -112,9 +105,9 @@
           <span class="label-group">
             <h3 class="font-hermona-2xl">
               Rating:
-              <span class="value font-hermona-2xl" *ngIf="starRatings['sample'+currentSample]">
+              <!--<span class="value font-hermona-2xl" *ngIf="starRatings['sample'+currentSample]">
                 {{ starRatings['sample'+currentSample] }}/10
-              </span>
+              </span>-->
             </h3>
           </span>
           <div class="rating-container">
@@ -149,23 +142,21 @@
               (click)="submitGuesses()"
               (mouseenter)="buttonHover('submit', true)"
               (mouseleave)="buttonHover('submit', false)">
-              <!--<img src="assets/images/Submit_All_Guesses_Button.png" class="submit-button" (click)="submitGuesses()"
-                  (mouseenter)="buttonHover('submit', true)" (mouseleave)="buttonHover('submit', false)" alt="Submit All Guesses">-->
           </div>
         </div>
 
       </div>
 
-  <!-- Results Component -->
-<app-results 
-  *ngIf="gameCompleted"
-  [quarterData]="quarterData"
-  [guesses]="guesses"
-  [scores]="scores"
-  [totalScore]="totalScore"
-  (playAgain)="playAgain()"
-  (shareResults)="share()"
-  (submitScore)="submitScore()">
-</app-results>
+    <!-- Results Component -->
+  <app-results 
+    *ngIf="gameCompleted"
+    [quarterData]="quarterData"
+    [guesses]="guesses"
+    [scores]="scores"
+    [totalScore]="totalScore"
+    (playAgain)="playAgain()"
+    (shareResults)="share()"
+    (submitScore)="submitScore()">
+  </app-results>
 
 </div>
