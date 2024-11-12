@@ -5,7 +5,7 @@
  * Integration:
  * <whiskey-wiz-0122></whiskey-wiz-0122> 
  */
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectorRef } from '@angular/core';
 import { BaseQuarterComponent } from '../base-quarter.component';
 import { AuthService } from '../../services/auth.service';
 import { FirebaseService } from '../../services/firebase.service';
@@ -70,12 +70,13 @@ import { NgForm } from '@angular/forms';
   `]
 })
 export class Q0122Component extends BaseQuarterComponent {
-  @Input() override quarterId: string = '0122';  // Add override since it's in base component
+  @Input() override quarterId: string = '0122';  /* Add override since it's in base component*/
   @Input() quarterName: string = 'January 2022';
 
   constructor(
     firebaseService: FirebaseService,
-    authService: AuthService
+    authService: AuthService,
+    private changeDetectorRef: ChangeDetectorRef
   ) {
     super(firebaseService, authService);
     this.quarterId = '0122';
@@ -89,6 +90,7 @@ export class Q0122Component extends BaseQuarterComponent {
         mashbill: form.value.mashbillGuess
       };
       super.submitGuess(guess);
+      this.changeDetectorRef.detectChanges(); /* Manually trigger change detection*/
     }
   }
 }

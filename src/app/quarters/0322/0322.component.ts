@@ -5,7 +5,7 @@
  * Integration:
  * <whiskey-wiz-0322></whiskey-wiz-0322> 
  */
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectorRef } from '@angular/core';
 import { BaseQuarterComponent } from '../base-quarter.component';
 import { AuthService } from '../../services/auth.service';
 import { FirebaseService } from '../../services/firebase.service';
@@ -75,7 +75,8 @@ export class Q0322Component extends BaseQuarterComponent {
 
   constructor(
     firebaseService: FirebaseService,
-    authService: AuthService
+    authService: AuthService,
+    private changeDetectorRef: ChangeDetectorRef
   ) {
     super(firebaseService, authService);
     this.quarterId = '0322';
@@ -89,6 +90,7 @@ export class Q0322Component extends BaseQuarterComponent {
         mashbill: form.value.mashbillGuess
       };
       super.submitGuess(guess);
+      this.changeDetectorRef.detectChanges(); // Manually trigger change detection
     }
   }
 }

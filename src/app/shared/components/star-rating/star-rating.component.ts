@@ -97,22 +97,32 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
   `]
 })
 export class StarRatingComponent implements OnInit {
-  private _rating: number = 0;
-
-  @Input()
-  set rating(value: number) {
-    console.log('Rating value received:', value);
-    this._rating = value || 0;
-    this.cdr.detectChanges();
-  }
-  get rating(): number {
-    return this._rating;
-  }
-  
+  @Input() rating: number = 0;
   @Input() readonly: boolean = false;
   @Output() ratingChange = new EventEmitter<number>();
 
   hoverRating: number | null = null;
+  
+  setHoverState(star: number): void {
+    console.log('Hovering over star:', star);
+    if (!this.readonly) {
+      console.log('Setting hover state to:', star);
+      this.hoverRating = star;
+    }
+  }
+
+  clearHoverState(): void {
+    console.log('Clearing hover state');
+    this.hoverRating = null;
+  }
+
+  onRatingChange(star: number): void {
+    console.log('Clicked on star:', star);
+    if (!this.readonly) {
+      console.log('Setting rating to:', star);
+      this.ratingChange.emit(star);
+    }
+  }
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -126,28 +136,6 @@ export class StarRatingComponent implements OnInit {
       rating: this.rating,
       readonly: this.readonly
     });
-  }
-
-  onRatingChange(value: number): void {
-    console.log('Rating change:', value);
-    if (this.readonly) return;
-    console.log('Rating changed to:', value);
-    this.rating = value;
-    this.ratingChange.emit(value);
-    this.cdr.detectChanges();
-  }
-
-  setHoverState(value: number): void {
-    if (this.readonly) return;
-    console.log('Hover state:', value);
-    this.hoverRating = value;
-    this.cdr.detectChanges();
-  }
-
-  clearHoverState(): void {
-    console.log('Clear hover state');
-    this.hoverRating = null;
-    this.cdr.detectChanges();
   }
 
   private getSvgStar(filled: boolean): string {

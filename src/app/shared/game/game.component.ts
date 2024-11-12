@@ -357,13 +357,13 @@ selectSample(num: number): void {
     console.log('Updated state:', { 
       starRatings: this._starRatings,
       guesses: this.guesses,
-      // currentGuess: this.guesses[sampleKey]
+      currentGuess: this.guesses[sampleKey]
     }); // Debug log
 
     // Force change detection
     this.changeDetectorRef.detectChanges(); // Update view
     // Update sample completion status
-    // this.updateSampleCompletion(); 
+    this.updateSampleCompletion(); 
   }
   
   // Star rating SVG generation
@@ -599,18 +599,7 @@ selectSample(num: number): void {
       // Trigger view updates
       this.showResults = true;
       this.gameCompleted = true;
-      
-
-      // Force change detection
       this.changeDetectorRef.detectChanges();
-  
-      // Update sample completion states
-      console.log('Game completed:', {
-        scores: this.scores,
-        totalScore: this.totalScore,
-        showResults: this.showResults,
-        gameCompleted: this.gameCompleted
-      });
   
     } catch (error) {
       console.error('Error in submitGuesses:', error);

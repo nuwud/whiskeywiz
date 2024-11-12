@@ -18,11 +18,11 @@ import { SharedModule } from '../shared/shared.module';
 export class BaseQuarterComponent implements OnInit {
   @Input() quarterId!: string;
   quarterData: Quarter | null = null;
-  gameCompleted = false;
-  playerScore: number = 0;
-  guess = { age: 0, proof: 0, mashbill: '' };
+  guess: { age: number; proof: number; mashbill: string } = { age: 0, proof: 0, mashbill: '' };
   isGuest: boolean = true;
   playerId: string = 'guest';
+  gameCompleted = false;
+  playerScore: number = 0;
 
   constructor(
     protected firebaseService: FirebaseService, 
@@ -92,8 +92,13 @@ export class BaseQuarterComponent implements OnInit {
       score += 10;
     }
 
-    this.playerScore = score;
     this.gameCompleted = true;
+    this.playerScore = this.calculateScore(guess); 
+  }
+
+  calculateScore(guess: { age: number; proof: number; mashbill: string }): number {
+    // Logic to calculate the score based on the guess
+    return 100; // Example score calculation
   }
 
   submitScore() {
