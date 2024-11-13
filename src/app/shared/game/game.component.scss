@@ -126,7 +126,7 @@
 /* Guess Form */
 .guess-form {
   position: relative;
-  padding: 6rem;
+  padding: 2rem;
   margin-bottom: 2rem;
 
   .panel-background {
@@ -277,10 +277,11 @@
   align-items: center;
   cursor: pointer;
   position: relative; // For absolute positioning of radio buttons if needed
+  padding-right: 0.5rem;
   
   label {
     font-family: Helvetica, Arial, sans-serif;
-    font-size: 1.5rem; // Increased size
+    font-size: 1rem;
     font-weight: normal;
     cursor: pointer;
     display: flex;
@@ -371,6 +372,8 @@
     border: none;
     cursor: pointer;
     padding: 0;
+    width: 200px;
+    height: auto;
     transition: transform 0.2s ease;
     
     &.active {
@@ -390,8 +393,14 @@
     &:hover:not(.active) {
       transform: scale(1.1);
     }
+
+    img {
+      width: 200px;
+      height: auto;
+    }
   }
 }
+
 
 /* Submit Button */
 .submit-button-container {

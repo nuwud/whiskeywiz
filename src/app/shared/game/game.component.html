@@ -117,8 +117,6 @@
             </h3>
           </span>
           <div class="rating-container">
-            <div>DEBUG: Current Sample = {{currentSample}}</div>
-            <div>DEBUG: Star Ratings = {{starRatings | json}}</div>
             <app-star-rating 
               [rating]="starRatings['sample' + currentSample] || 0"
               (ratingChange)="updateStarRating(currentSample, $event)"

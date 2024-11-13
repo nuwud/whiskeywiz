@@ -24,7 +24,7 @@
                         <p>Age: {{ guesses['sample' + num]?.age || 0 }} years</p>
                         <p>Proof: {{ guesses['sample' + num]?.proof || 0 }}</p>
                         <p>Type: {{ guesses['sample' + num]?.mashbill || 'None' }}</p>
-                        <div class="rating-container">
+                        <div class="rating-container"><h5 class="font-hermona"></h5>
                             <app-star-rating 
                                 [rating]="guesses['sample' + num]?.rating || 0" 
                                 [readonly]="true">
