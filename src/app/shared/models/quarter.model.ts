@@ -42,3 +42,11 @@ export interface ScoringRules {
   proofPenaltyPerPoint: number;
   mashbillCorrectScore: number;
 }
+
+export interface GameState {
+  currentSample: number;
+  guesses: {[key: string]: any};
+  isComplete: boolean;
+  scores: {[key: string]: number};
+  totalScore: number;
+}

@@ -11,7 +11,7 @@ import { CallableRequest } from 'firebase-functions/v2/https';
 import { map, switchMap, tap, catchError } from 'rxjs/operators';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanActivateFn } from '@angular/router';
 import { AuthService } from './auth.service';
-import { Quarter, PlayerScore, ScoringRules } from '../shared/models/quarter.model';
+import { Quarter, PlayerScore, ScoringRules, GameState } from '../shared/models/quarter.model';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +38,63 @@ export class FirebaseService {
 
   getAuthState(): Observable<any> {
     return this.auth.authState;
+  }
+
+  gameProgress(authId: string): Observable<GameState> {
+    return this.firestore.collection('gameProgress').doc(authId).valueChanges() as Observable<GameState>;
+  }
+
+  gameProgressRef(authId: string): AngularFirestoreDocument<GameState> {
+    return this.firestore.collection('gameProgress').doc(authId);
+  }
+
+  gameProgressSet(authId: string, gameState: GameState): Observable<void> {
+    return from(this.firestore.collection('gameProgress').doc(authId).set(gameState));
+  }
+
+  gameProgressUpdate(authId: string, gameState: Partial<GameState>): Observable<void> {
+    return from(this.firestore.collection('gameProgress').doc(authId).update(gameState));
+  }
+
+  gameProgressDelete(authId: string): Observable<void> {
+    return from(this.firestore.collection('gameProgress').doc(authId).delete());
+  }
+
+  gameProgressBatch(batch: any): Observable<void> {
+    return from(batch.commit()).pipe(map(() => undefined));
+  }
+  
+  gameProgressBatchSet(authId: string, gameState: GameState): any {
+    const batch = this.firestore.firestore.batch();
+    const docRef = this.firestore.collection('gameProgress').doc(authId).ref;
+    batch.set(docRef, gameState);
+    return batch;
+  }
+
+  gameProgressBatchUpdate(authId: string, gameState: Partial<GameState>): any {
+    const batch = this.firestore.firestore.batch();
+    const docRef = this.firestore.collection('gameProgress').doc(authId).ref;
+    batch.update(docRef, gameState);
+    return batch;
+  }
+
+  gameProgressBatchDelete(authId: string): any {
+    const batch = this.firestore.firestore.batch();
+    const docRef = this.firestore.collection('gameProgress').doc(authId).ref;
+    batch.delete(docRef);
+    return batch;
+  }
+
+gameState(authId: string): Observable<GameState> {
+    return this.firestore.collection('gameProgress').doc(authId).valueChanges() as Observable<GameState>;
+  }
+
+gameStateRef(authId: string): AngularFirestoreDocument<GameState> {
+    return this.firestore.collection('gameProgress').doc(authId);
+  }
+
+gameStateSet(authId: string, gameState: GameState): Observable<void> {
+    return from(this.firestore.collection('gameProgress').doc(authId).set(gameState));
   }
 
   updateQuarter(quarterId: string, quarterData: Partial<Quarter>): Observable<void> {
@@ -220,6 +277,14 @@ export class FirebaseService {
   logEvent(eventName: string, eventParams: any): void {
     this.analytics.logEvent(eventName, eventParams);
   }
+
+  // Game state operations
+  saveGameProgress(authId: string, gameState: GameState): Promise<void> {
+      return this.firestore.collection('gameProgress').doc(authId).set(gameState);
+      // Implement the logic to save game progress
+  
+  }
+
   
 }
 

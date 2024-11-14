@@ -12,6 +12,14 @@
   margin-bottom: 1rem;
 }
 
+.header-panel {
+  height: 120px; 
+  
+  @media (max-width: 768px) {
+    height: 80px; 
+  }
+}
+
 .results-actions {
   display: flex;
   justify-content: center;

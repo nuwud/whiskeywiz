@@ -1,5 +1,5 @@
 // auth.guard.ts
-import { inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { CanActivateFn, Router, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable, of, from, combineLatest } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';

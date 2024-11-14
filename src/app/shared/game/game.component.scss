@@ -8,6 +8,8 @@
   margin: 0 auto;
   padding: 20px;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background-color: transparent;
   /*background-image: url('../../../assets/images/blackbackground.png');*/
   background-size: cover;
@@ -256,17 +258,15 @@
 }
 /* Mashbill Options */
 .mashbill-options {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 1rem;
-  margin-top: 0.5rem;
-  flex-wrap: wrap;
   
   @media (min-width: 769px) {
     margin-left: 1rem;
   }
   
   @media (max-width: 768px) {
-    flex-direction: column;
     gap: 0.5rem;
   }
 }
@@ -348,6 +348,16 @@
 
 /* Sample Navigation */
 .sample-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  .prev-button {
+    &.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+      visibility: visible; // Keeps space but shows as disabled
+    }
 
   .samples-row {
     display: flex;
@@ -399,6 +409,7 @@
       height: auto;
     }
   }
+}
 }
 
 
@@ -488,16 +499,12 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .game-container {
-    padding: 10px;
+    padding: 1rem;
   }
 
   .navigation-controls {
     flex-direction: column;
     gap: 0;
-  }
-
-  .mashbill-options {
-    flex-direction: column;
   }
 
   .sample-indicator img {

@@ -34,6 +34,22 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
     .star-button.filled {
       opacity: 1;
     }
+    .star-rating {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      
+      .star {
+        font-size: 24px;
+        cursor: pointer;
+        padding: 8px; // Larger click target
+        
+        &.selected {
+          color: #FFD700;
+        }
+      }
+    }
+
   `]
 })
 export class StarRatingComponent {

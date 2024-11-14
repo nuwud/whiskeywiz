@@ -7,6 +7,8 @@ import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { GameComponent } from './shared/game/game.component';
 import { LeaderboardComponent } from './shared/leaderboard/leaderboard.component';
+import { ShopifyCallbackComponent } from './auth/shopify-callback/shopify-callback.component';
+
 
 const routes: Routes = [
   { path: 'admin', component: AdminComponent, canActivate: [combineGuards(canActivateAuth, canActivateAdmin)],children: [ { path: 'quarter/:id', component: PlayerComponent }] },
@@ -15,6 +17,7 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'game', component: GameComponent },
   { path: 'leaderboard', component: LeaderboardComponent },
+  { path: 'auth/callback', component: ShopifyCallbackComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'unauthorized', redirectTo: '/player' }, 
   { path: '**', redirectTo: '/login' } 

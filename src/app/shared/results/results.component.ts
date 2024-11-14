@@ -52,6 +52,11 @@ export class ResultsComponent {
     this.submitScore.emit();
   }
 
+  handleLeaderboard() {
+    // Implement leaderboard navigation here
+    
+  }
+
   getEmojiScore(score: number): string {
     if (score >= 30) return '🟦';
     if (score >= 20) return '🟨';

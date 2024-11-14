@@ -26,6 +26,7 @@
     "@angular/platform-browser": "^17.2.0",
     "@angular/platform-browser-dynamic": "^17.2.0",
     "@angular/router": "^17.2.0",
+    "@shopify/shopify-api": "^11.6.0",
     "@webcomponents/custom-elements": "^1.6.0",
     "custom-elements": "^1.0.2",
     "firebase": "^10.8.0",

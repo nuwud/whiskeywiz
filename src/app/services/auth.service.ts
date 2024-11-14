@@ -71,6 +71,18 @@ export class AuthService {
     }
   }
 
+  shopifyDomain = 'https://blind-barrels.myshopify.com'; 
+  
+  async connectWithShopify() {
+    // Shopify OAuth integration
+    const shopifyAuthUrl = `${this.shopifyDomain}/oauth/authorize?client_id=${this.clientId}`;
+    window.location.href = shopifyAuthUrl;
+  }
+  
+  async handleShopifyCallback(code: string) {
+    // Exchange code for token and create/update user
+  }
+
   async register(email: string, password: string) {
     try {
       const credential = await this.afAuth.createUserWithEmailAndPassword(email, password);
