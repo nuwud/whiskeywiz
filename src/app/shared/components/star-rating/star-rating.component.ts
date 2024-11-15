@@ -42,7 +42,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
       .star {
         font-size: 24px;
         cursor: pointer;
-        padding: 8px; // Larger click target
+        padding: 8px;
         
         &.selected {
           color: #FFD700;

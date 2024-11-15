@@ -1,6 +1,18 @@
-<div class="leaderboard">
+<div class="leaderboard" [class.loading]="isLoading">
   <h2>Leaderboard</h2>
-  <table class="leaderboard-table">
+  
+  <div *ngIf="isLoading" class="loading-spinner">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Display error message and retry button if there is an error -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+    <button (click)="retry()">Retry</button>
+  </div>
+  
+  <table class="leaderboard-table" *ngIf="!isLoading && !error && leaderboard.length > 0"
+         [@listAnimation]="leaderboard.length">
     <thead>
       <tr>
         <th>Rank</th>
@@ -9,14 +21,16 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let score of leaderboard; let i = index">
+      <tr *ngFor="let score of leaderboard; let i = index"
+          [class.highlighted]="isCurrentPlayer(score.playerId)">
         <td>{{ i + 1 }}</td>
         <td>{{ score.playerName }}</td>
         <td>{{ score.score }}</td>
       </tr>
-      <tr *ngIf="leaderboard.length === 0">
-        <td colspan="3">No scores yet!</td>
-      </tr>
     </tbody>
   </table>
+
+  <div class="no-scores" *ngIf="!isLoading && !error && leaderboard.length === 0">
+    No scores yet!
+  </div>
 </div>

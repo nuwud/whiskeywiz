@@ -29,6 +29,23 @@
             "value": "${TIMESTAMP}"
           }
         ]
+      },
+      {
+        "source": "/elements/game-elements.js",
+        "headers": [
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "https://blind-barrels.myshopify.com"
+          },
+          {
+            "key": "Access-Control-Allow-Methods",
+            "value": "GET"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
       }
     ],
     "ignore": [

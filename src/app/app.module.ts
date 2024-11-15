@@ -20,6 +20,7 @@ import { getDatabase, provideDatabase } from '@angular/fire/database';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
 import { BaseQuarterComponent } from './quarters/base-quarter.component';
+import { QuarterComponent } from './quarters/quarter.component';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { AdminComponent } from './admin/admin.component';
@@ -61,6 +62,7 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
   declarations: [
     AppComponent,
     BaseQuarterComponent,
+    QuarterComponent,
     AdminComponent,
     AdminNavComponent,
     PlayerComponent, 
@@ -143,6 +145,7 @@ export class AppModule implements DoBootstrap {
     // Define all components that will be used as web components
     const webComponents = [
       { name: 'whiskey-wiz-admin', component: AdminComponent },
+      { name: 'whiskey-wiz-quarter', component: QuarterComponent },
       { name: 'whiskey-wiz-0122', component: Q0122Component },
       { name: 'whiskey-wiz-0322', component: Q0322Component },
       { name: 'whiskey-wiz-0323', component: Q0323Component },

@@ -1,5 +1,6 @@
 // auth.service.ts
 import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
 import { Observable, from, of } from 'rxjs';
@@ -16,6 +17,7 @@ interface UserData {
 })
 export class AuthService {
   user$: Observable<any>;
+  private readonly shopifyConfig = environment.shopify;
   private readonly adminEmails = ['nuwudorder@gmail.com', 'bobby@blindbarrels.com'];
 
   createGuestSession(): Observable<string> {
@@ -74,11 +76,14 @@ export class AuthService {
   shopifyDomain = 'https://blind-barrels.myshopify.com'; 
   
   async connectWithShopify() {
-    // Shopify OAuth integration
-    const shopifyAuthUrl = `${this.shopifyDomain}/oauth/authorize?client_id=${this.clientId}`;
+    const shopifyAuthUrl = `${this.shopifyConfig.shopName}/admin/oauth/authorize?` +
+      `client_id=${this.shopifyConfig.apiKey}&` +
+      `redirect_uri=${encodeURIComponent(this.shopifyConfig.redirectUri)}&` +
+      `scope=read_customers,write_customers`;
+    
     window.location.href = shopifyAuthUrl;
   }
-  
+
   async handleShopifyCallback(code: string) {
     // Exchange code for token and create/update user
   }
