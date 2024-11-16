@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { Quarter } from '../models/quarter.model';
 import { GameGuess } from '../models/game.model';
 import { BehaviorSubject } from 'rxjs';
@@ -20,6 +21,10 @@ export class ResultsComponent {
   submitHovered = false;
   shareHovered = false;
   playAgainHovered = false;
+  leaderboardHovered: boolean = false;
+
+
+  constructor(private changeDetectorRef: ChangeDetectorRef, private router: Router) {}
 
   getButtonImage(baseName: string, isHovered: boolean): string {
     const suffix = isHovered ? '_Hover' : '';
@@ -38,8 +43,6 @@ export class ResultsComponent {
     this.changeDetectorRef.detectChanges();
   }
 
-  constructor(private changeDetectorRef: ChangeDetectorRef) {}
-
   handleShare() {
     this.shareResults.emit();
   }
@@ -53,8 +56,7 @@ export class ResultsComponent {
   }
 
   handleLeaderboard() {
-    // Implement leaderboard navigation here
-    
+    this.router.navigate(['/leaderboard']);
   }
 
   getEmojiScore(score: number): string {

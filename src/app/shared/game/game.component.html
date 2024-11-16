@@ -125,9 +125,10 @@
           </div>
         </div>
 
-        <!-- Sample Navigation -->
+        <!-- Sample Navigation 
         <div class="sample-navigation">
           <div class="samples-row">
+            <div class="samples-indicator">
             <button *ngFor="let num of [1,2,3,4]" 
                     class="sample-indicator"
                     [class.active]="currentSample === num"
@@ -138,9 +139,10 @@
                   [alt]="'Sample ' + getSampleLetter(num)">
             </button>
           </div>
-        </div>
+          </div>
+        </div>-->
 
-          <!-- Submit Button -->
+          <!-- Submit Button
           <div class="submit-button-container">
             <img *ngIf="showSubmitAllButton()"
               src="assets/images/Submit_All_Guesses_Button.png"
@@ -148,7 +150,7 @@
               (click)="submitGuesses()"
               (mouseenter)="buttonHover('submit', true)"
               (mouseleave)="buttonHover('submit', false)">
-          </div>
+          </div> -->
         </div>
 
     </div>

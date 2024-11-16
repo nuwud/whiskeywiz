@@ -1,11 +1,11 @@
 <div class="results-container">
     <div class="results-header">
-      <img src="assets/images/header-panel.png" class="panel-background">
-      <div class="content">
-        <h3 class="font-hermona-2xl">Game Completed!</h3>
-        <div class="total-score font-hermona-4xl">Total Score: {{ totalScore }}</div>
-        <div class="score-quip">{{ getScoreQuip(totalScore) }}</div>
-      </div>
+        <img src="assets/images/header-panel.png" class="panel-background">
+        <div class="content">
+            <h3 class="font-hermona-2xl">Game Completed!</h3>
+            <div class="total-score font-hermona-4xl">Total Score: {{ totalScore }}</div>
+            <div class="score-quip">{{ getScoreQuip(totalScore) }}</div>
+        </div>
     </div>
 
     <div class="results-grid">
@@ -51,7 +51,7 @@
                (click)="handleSubmitScore()"
                class="action-button">
         </div>
-        
+
         <div class="button-container">
           <img [src]="getButtonImage('Share_Score_Button', shareHovered)"
                (mouseenter)="shareHovered = true"
@@ -59,7 +59,7 @@
                (click)="handleShare()"
                class="action-button">
         </div>
-        
+
         <div class="button-container">
           <img [src]="getButtonImage('Play_Again_Button', playAgainHovered)"
                (mouseenter)="playAgainHovered = true"
@@ -69,15 +69,19 @@
         </div>
       </div>
 
+    <div class="button-container">
+        <img [src]="getButtonImage('Leaderboard_Button', leaderboardHovered)"
+             (mouseenter)="leaderboardHovered = true"
+             (mouseleave)="leaderboardHovered = false"
+             (click)="handleLeaderboard()"
+             class="action-button">
+      </div>
+
     <div class="results-footer">
         <img src="assets/images/footer-panel.png" class="panel-background">
         <div class="content">
             <p class="font-hermona">Thanks for playing!</p>
             <p class="font-hermona">Check out the leaderboard to see how you stack up against other players.</p>
         </div>
-
-        <div class="leaderboard-button-container">
-            <img src="assets/images/leaderboard-button.png" class="leaderboard-button" (click)="handleLeaderboard()">
-
-            <div class="leaderboard-button-text font-hermona"></div>
+        </div>
 </div>

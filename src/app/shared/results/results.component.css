@@ -191,6 +191,14 @@ p {
   color: #1A1A1A;
 }
 
+.leaderboard-button {
+  width: 250px;
+}
+
+.leaderboard-button-container {
+  width: 250px;
+}
+
 @media (max-width: 768px) {
   .results-grid {
     grid-template-columns: 1fr;
