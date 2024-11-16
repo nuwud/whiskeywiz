@@ -113,14 +113,14 @@ export class BaseQuarterComponent implements OnInit {
       isGuest: this.isGuest
     };
 
-          this.firebaseService.submitScore(playerScore).subscribe(
-            () => {
-              console.log('Score submitted successfully');
-            },
-            error => {
-              console.error('Error submitting score:', error);
-            }
-          );
+    this.firebaseService.submitScore(playerScore).subscribe(
+      () => {
+        console.log('Score submitted successfully');
+      },
+      error => {
+        console.error('Error submitting score:', error);
+      }
+    );
   }
 
   resetGame() {

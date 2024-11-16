@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FirebaseService } from '../../services/firebase.service';
 import { Quarter, PlayerScore } from '../../shared/models/quarter.model';
 import { GameService } from '../../services/game.service';
@@ -164,7 +164,8 @@ export class GameComponent implements OnInit {
     private gameService: GameService,
     private authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private router: Router
   ) {
     // Initialize auth state
     this.authService.getPlayerId().subscribe(id => {
@@ -493,20 +494,20 @@ export class GameComponent implements OnInit {
       this.error = 'Please complete all guesses';
       return;
     }
-
+  
     try {
       // Calculate scores
       this.calculateScores();
-
+  
       // Update game state
       this.gameCompleted = true;
       this.showResults = true;
-
+  
       this.submitScore();
-
+  
       // Force view update
       this.changeDetectorRef.detectChanges();
-
+  
       console.log('Game completed:', {
         scores: this.scores,
         totalScore: this.totalScore,
@@ -519,6 +520,51 @@ export class GameComponent implements OnInit {
       this.showResults = false;
       this.gameCompleted = false;
     }
+  }
+  
+  submitScore() {
+    if (!this.playerName) {
+      this.error = 'Please enter your name';
+      return;
+    }
+  
+    // Check for quarter ID
+    if (!this._quarterId) {
+      this.error = 'Quarter ID is missing';
+      return;
+    }
+  
+    // Prepare player score object
+    const playerScore: PlayerScore = {
+      playerId: this.playerId,
+      playerName: this.isGuest ? this.playerName : '',
+      score: this.totalScore,
+      quarterId: this._quarterId,
+      isGuest: this.isGuest
+    };
+  
+    // Submit score to Firebase
+    this.firebaseService.submitScore(playerScore).subscribe(
+      () => {
+        console.log('Score submitted successfully');
+        this.scoreSubmitted = true;
+        this.error = null;
+  
+        // Show registration prompt for guests
+        if (this.isGuest) {
+          this.showRegisterPrompt();
+        }
+      },
+      // Error handling
+      error => {
+        console.error('Error submitting score:', error);
+        this.error = 'Failed to submit score';
+      }
+    );
+  }
+  
+  navigateToLeaderboard() {
+    this.router.navigate(['/leaderboard'], { queryParams: { quarter: this._quarterId } });
   }
 
   // Score calculation - moved to separate method
@@ -564,48 +610,6 @@ export class GameComponent implements OnInit {
     });
     
     return isLastSample && allGuessesFilled; // Show on last sample
-  }
-
-  // Score submission
-  submitScore() {
-    if (!this.playerName) {
-      this.error = 'Please enter your name';
-      return;
-    }
-
-    // Check for quarter ID
-    if (!this._quarterId) {
-      this.error = 'Quarter ID is missing';
-      return;
-    }
-
-    // Prepare player score object
-    const playerScore: PlayerScore = {
-      playerId: this.playerId,
-      playerName: this.isGuest ? this.playerName : '',
-      score: this.totalScore,
-      quarterId: this._quarterId,
-      isGuest: this.isGuest
-    };
-
-    // Submit score to Firebase
-    this.firebaseService.submitScore(playerScore).subscribe(
-      () => {
-        console.log('Score submitted successfully');
-        this.scoreSubmitted = true;
-        this.error = null;
-
-        // Show registration prompt for guests
-        if (this.isGuest) {
-          this.showRegisterPrompt();
-        }
-      },
-      // Error handling
-      error => {
-        console.error('Error submitting score:', error);
-        this.error = 'Failed to submit score';
-      }
-    );
   }
 
   // UI feedback and prompts
