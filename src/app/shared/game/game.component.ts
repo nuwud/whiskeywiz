@@ -502,6 +502,8 @@ export class GameComponent implements OnInit {
       this.gameCompleted = true;
       this.showResults = true;
 
+      this.submitScore();
+
       // Force view update
       this.changeDetectorRef.detectChanges();
 

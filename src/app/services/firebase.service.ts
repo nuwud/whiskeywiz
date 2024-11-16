@@ -174,6 +174,7 @@ gameStateSet(authId: string, gameState: GameState): Observable<void> {
       );
   }
 
+  
   submitScore(score: PlayerScore): Observable<void> {
     return from(this.scoresCollection.add(score)).pipe(
       map(() => undefined)

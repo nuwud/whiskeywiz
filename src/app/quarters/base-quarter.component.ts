@@ -94,6 +94,7 @@ export class BaseQuarterComponent implements OnInit {
 
     this.gameCompleted = true;
     this.playerScore = this.calculateScore(guess); 
+    this.submitScore();
   }
 
   calculateScore(guess: { age: number; proof: number; mashbill: string }): number {

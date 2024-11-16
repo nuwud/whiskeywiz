@@ -59,12 +59,33 @@ export class LeaderboardComponent implements OnInit, OnChanges {
           .sort((a, b) => b.score - a.score)
           .slice(0, 10);
         this.retryCount = 0;
+        this.submitScoreIfNeeded();
       }
     } catch (err) {
       this.handleError(err);
     } finally {
       this.isLoading = false;
     }
+  }
+
+  private async submitScoreIfNeeded() {
+    const currentPlayerId = await firstValueFrom(this.authService.getCurrentUserId());
+    const isPlayerInLeaderboard = this.leaderboard.some(score => score.playerId === currentPlayerId);
+    if (!isPlayerInLeaderboard) {
+      this.submitScore();
+    }
+  }
+
+  private async submitScore() {
+    const currentUserId = await firstValueFrom(this.authService.getCurrentUserId());
+    const playerScore: PlayerScore = {
+      playerId: currentUserId || 'unknown', // Provide a default value if null
+      playerName: 'Player Name', // Replace with actual player name
+      score: 0, // Replace with actual score
+      quarterId: this.quarterId,
+      isGuest: false // Replace with actual guest status
+    };
+    await firstValueFrom(this.firebaseService.submitScore(playerScore));
   }
 
   private handleError(error: any) {
