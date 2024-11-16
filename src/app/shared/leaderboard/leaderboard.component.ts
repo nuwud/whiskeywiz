@@ -30,6 +30,7 @@ export class LeaderboardComponent implements OnInit, OnChanges {
   error: string | null = null;
   private retryCount = 0;
   private maxRetries = 3;
+  router: any;
 
   constructor(
     private firebaseService: FirebaseService,
@@ -66,6 +67,10 @@ export class LeaderboardComponent implements OnInit, OnChanges {
     } finally {
       this.isLoading = false;
     }
+  }
+
+  navigateBackToGame() {
+    this.router.navigate(['/game'], { queryParams: { quarter: this.quarterId } });
   }
 
   private async submitScoreIfNeeded() {

@@ -554,6 +554,9 @@ export class GameComponent implements OnInit {
         if (this.isGuest) {
           this.showRegisterPrompt();
         }
+  
+        // Navigate to leaderboard
+        this.navigateToLeaderboard();
       },
       // Error handling
       error => {
@@ -575,22 +578,22 @@ export class GameComponent implements OnInit {
       const sampleKey = `sample${i}`;
       const actualSample = this.quarterData?.samples[sampleKey];
       const guess = this.guesses[sampleKey];
-
+  
       if (!actualSample || !guess?.mashbill) continue;
-
+  
       let score = 0;
-
+  
       // Age scoring
       const ageDiff = Math.abs(actualSample.age - (guess.age || 0));
       score += ageDiff === 0 ? 30 : Math.max(0, 20 - (ageDiff * 4));
-
+  
       // Proof scoring
       const proofDiff = Math.abs(actualSample.proof - (guess.proof || 0));
       score += proofDiff === 0 ? 30 : Math.max(0, 20 - (proofDiff * 2));
-
+  
       // Mashbill scoring
       if (guess.mashbill === actualSample.mashbill) score += 10;
-
+  
       // Store score
       this.scores[sampleKey] = score;
       this.totalScore += score;

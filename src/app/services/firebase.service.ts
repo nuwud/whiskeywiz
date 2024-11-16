@@ -156,7 +156,7 @@ gameStateSet(authId: string, gameState: GameState): Observable<void> {
               id: doc.id,
               name: data.name,
               active: data.active,
-              samples: data.samples,
+              samples: data.samples || {}, // Ensure samples is defined
               ...(data.startDate && { startDate: data.startDate }),
               ...(data.endDate && { endDate: data.endDate })
             };
