@@ -6,7 +6,7 @@ import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   imports: [
-    BrowserModule,
+    BrowserModule, 
     SharedModule
   ],
   providers: []
@@ -20,6 +20,8 @@ export class GameElementsModule {
       customElements.define('whiskey-wiz-game', GameElement);
     }
   }
+
+  ngDoBootstrap() {}
 }
 
 // Then in your quarter component:

@@ -1,4 +1,19 @@
 <div class="game-container">
+  <div class="auth-modal" *ngIf="!isLoggedIn && !isGuest">
+    <div class="auth-content">
+      <h2 class="font-hermona-2xl">Welcome to Whiskey Wiz</h2>
+      <p>Please sign in or continue as guest to play</p>
+      
+      <div class="auth-buttons">
+        <button class="auth-button login" (click)="login()">
+          <img src="assets/images/Login_Button.png" alt="Login">
+        </button>
+        <button class="auth-button guest" (click)="continueAsGuest()">
+          <img src="assets/images/Guest_Button.png" alt="Play as Guest">
+        </button>
+      </div>
+    </div>
+  </div>
   <!-- Header Section -->
   <div class="header-container">
     <div class="logo-header">

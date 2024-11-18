@@ -7,7 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { environment } from '../../../environments/environment';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { SharedModule } from '../shared.module';
+import { firstValueFrom } from 'rxjs';
 
 // Type definitions
 type Mashbill = 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt' | 'Specialty';
@@ -156,6 +156,46 @@ export class GameComponent implements OnInit {
   // Game options
   mashbillCategories: Mashbill[] = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
   mashbillTypes = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
+
+  async login() {
+    try {
+      // First try to get the provider ID if they were a guest
+      const currentGuestId = localStorage.getItem('guestId');
+      
+      // Navigate to login page with return URL
+      this.router.navigate(['/login'], { 
+        queryParams: { 
+          returnUrl: `/game?quarter=${this._quarterId}`,
+          guestId: currentGuestId // Pass guest ID to potentially merge scores
+        }
+      });
+    } catch (error) {
+      console.error('Error during login:', error);
+      this.error = 'Failed to start login process';
+    }
+  }
+  
+  async continueAsGuest() {
+    try {
+      // Create guest session via auth service
+      const guestId = await firstValueFrom(this.authService.createGuestSession());
+      
+      // Set guest state
+      this.isGuest = true;
+      this.playerId = guestId;
+      this.isLoggedIn = false;
+  
+      // Initialize game state for guest
+      this.initializeGuesses();
+      
+      // Force change detection
+      this.changeDetectorRef.detectChanges();
+      
+    } catch (error) {
+      console.error('Error continuing as guest:', error);
+      this.error = 'Failed to continue as guest';
+    }
+  }
 
   // Game constructor
   constructor(

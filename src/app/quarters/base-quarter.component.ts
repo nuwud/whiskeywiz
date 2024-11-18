@@ -4,13 +4,15 @@ import { of } from 'rxjs';
 import { FirebaseService } from '../services/firebase.service';
 import { AuthService } from '../services/auth.service';
 import { Quarter, PlayerScore } from '../shared/models/quarter.model';
-import { SharedModule } from '../shared/shared.module';
 
 @Component({
   template: `
-    <div *ngIf="quarterData">
-      <h2>{{ quarterData.name }}</h2>
-      <!-- ... existing game logic ... -->
+    <app-game-banner 
+      [quarterId]="quarterId"
+      [quarterName]="quarterData?.name || getDefaultQuarterName()">
+    </app-game-banner>
+    
+    <div class="leaderboard-container" *ngIf="showLeaderboard">
       <app-leaderboard [quarterId]="quarterId"></app-leaderboard>
     </div>
   `
@@ -18,6 +20,7 @@ import { SharedModule } from '../shared/shared.module';
 export class BaseQuarterComponent implements OnInit {
   @Input() quarterId!: string;
   quarterData: Quarter | null = null;
+  showLeaderboard: boolean = false;
   guess: { age: number; proof: number; mashbill: string } = { age: 0, proof: 0, mashbill: '' };
   isGuest: boolean = true;
   playerId: string = 'guest';
@@ -51,6 +54,18 @@ export class BaseQuarterComponent implements OnInit {
       }
       this.loadQuarterData();
     });
+  }
+
+  protected getDefaultQuarterName(): string {
+    if (!this.quarterId) return 'Whiskey Wiz Challenge';
+    
+    const month = parseInt(this.quarterId.substring(0, 2));
+    const year = '20' + this.quarterId.substring(2, 4);
+    
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'];
+    
+    return `${monthNames[month - 1]} ${year}`;
   }
 
   loadQuarterData() {

@@ -1,13 +1,27 @@
-<div class="leaderboard" [class.loading]="isLoading">
-  <h2>Leaderboard</h2>
-  
-  <div *ngIf="isLoading">Loading...</div>
-  <div *ngIf="error">{{ error }}</div>
-  <div *ngIf="!isLoading && !error">
-    <ul>
-      <li *ngFor="let player of leaderboard">
-        {{ player.playerName }} - {{ player.score }}
-      </li>
-    </ul>
+<div class="leaderboard-container">
+  <h2 class="font-hermona">Leaderboard</h2>
+
+  <div class="loading-spinner" *ngIf="isLoading">
+    <div class="spinner"></div>
   </div>
+
+  <div class="error-message" *ngIf="error">
+    {{ error }}
+    <button (click)="retry()" class="retry-button">Try Again</button>
+  </div>
+
+  <div class="scores-list" *ngIf="!isLoading && !error" [@listAnimation]="leaderboard.length">
+    <div class="score-item" *ngFor="let score of leaderboard; let i = index" 
+        [class.highlighted]="isCurrentPlayer(score.playerId) | async">
+      <div class="rank">{{i + 1}}</div>
+      <div class="player-info">
+        <span class="player-name">{{score.playerName || 'Anonymous'}}</span>
+        <span class="score">{{score.score}}</span>
+      </div>
+    </div>
+  </div>
+
+  <button class="back-button font-hermona" (click)="navigateBackToGame()">
+    Back to Game
+  </button>
 </div>

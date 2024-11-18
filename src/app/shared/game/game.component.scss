@@ -17,6 +17,68 @@
   position: relative;
 }
 
+/* Add these to your existing game.component.scss */
+
+.auth-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 1000;
+}
+
+.auth-content {
+  background-color: rgba(0, 0, 0, 0.9);
+  border: 2px solid var(--color-gold);
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-gold);
+  max-width: 400px;
+  width: 90%;
+
+  h2 {
+    margin-bottom: 1rem;
+  }
+
+  p {
+    margin-bottom: 2rem;
+    color: white;
+  }
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+
+  .auth-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    padding: 0;
+
+    img {
+      width: 180px;
+      height: auto;
+    }
+
+    &:hover {
+      transform: scale(1.05);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}
+
 /* Header Section */
 .header-container {
   display: flex;

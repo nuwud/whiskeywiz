@@ -106,6 +106,31 @@ export class AuthService {
     return this.afAuth.signOut();
   }
 
+  async transferGuestScores(guestId: string, newUserEmail: string): Promise<void> {
+    try {
+      const batch = this.afs.firestore.batch();
+      
+      // Get all scores for guest
+      const guestScores = await this.afs.collection('scores')
+        .ref.where('playerId', '==', guestId).get();
+      
+      // Update each score with new user ID
+      guestScores.docs.forEach(doc => {
+        const scoreData = doc.data();
+        batch.update(doc.ref, {
+          playerId: newUserEmail,
+          isGuest: false,
+          playerName: newUserEmail
+        });
+      });
+      
+      await batch.commit();
+    } catch (error) {
+      console.error('Error transferring guest scores:', error);
+      throw error;
+    }
+  }  
+
   // User data methods
   private async updateUserData(user: any) {
     const userRef: AngularFirestoreDocument<UserData> = this.afs.doc(`users/${user.uid}`);
@@ -189,4 +214,6 @@ export class AuthService {
 
     return new Error(message);
   }
+
+
 }

@@ -3,20 +3,21 @@ import { FirebaseService } from '../../services/firebase.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { PlayerScore } from '../../shared/models/quarter.model';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
-import { firstValueFrom } from 'rxjs'
+import { firstValueFrom, catchError, retry, timeout, of, Observable } from 'rxjs';
+import { Router } from '@angular/router';
+import { RetryConfig } from 'rxjs/internal/operators/retry';
 
 @Component({
   selector: 'app-leaderboard',
   templateUrl: './leaderboard.component.html',
-  styleUrls: ['./leaderboard.component.css'],
+  styleUrls: ['./leaderboard.component.scss'],
   animations: [
     trigger('listAnimation', [
       transition('* => *', [
         query(':enter', [
           style({ opacity: 0, transform: 'translateY(-15px)' }),
           stagger(50, [
-            animate('300ms ease-out', 
-              style({ opacity: 1, transform: 'translateY(0)' }))
+            animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
           ])
         ], { optional: true })
       ])
@@ -30,11 +31,12 @@ export class LeaderboardComponent implements OnInit, OnChanges {
   error: string | null = null;
   private retryCount = 0;
   private maxRetries = 3;
-  router: any;
+  private readonly TIMEOUT_MS = 10000;
 
   constructor(
     private firebaseService: FirebaseService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -54,43 +56,79 @@ export class LeaderboardComponent implements OnInit, OnChanges {
     this.error = null;
 
     try {
-      const scores = await firstValueFrom(this.firebaseService.getLeaderboard(this.quarterId));
-      if (scores) {
-        this.leaderboard = scores
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 10);
-        this.retryCount = 0;
-        this.submitScoreIfNeeded();
+      const config: RetryConfig = {
+        count: this.maxRetries,
+        delay: (error, retryCount) => {
+          this.retryCount = retryCount;
+          return of(retryCount * 1000); // Return an Observable for delay
+        }
+      };
+
+      const scores = await firstValueFrom(
+        this.firebaseService.getLeaderboard(this.quarterId).pipe(
+          timeout(this.TIMEOUT_MS),
+          retry(config),
+          catchError(error => {
+            if (error.name === 'TimeoutError') {
+              throw new Error('Request timed out. Please check your connection.');
+            }
+            throw error;
+          })
+        )
+      );
+
+      if (!scores || scores.length === 0) {
+        this.leaderboard = [];
+        this.error = 'No scores found for this quarter';
+        return;
       }
-    } catch (err) {
+
+      this.leaderboard = scores
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 10);
+      
+      await this.submitScoreIfNeeded();
+      
+    } catch (err: any) {
       this.handleError(err);
     } finally {
       this.isLoading = false;
     }
   }
 
-  navigateBackToGame() {
-    this.router.navigate(['/game'], { queryParams: { quarter: this.quarterId } });
-  }
-
   private async submitScoreIfNeeded() {
-    const currentPlayerId = await firstValueFrom(this.authService.getCurrentUserId());
-    const isPlayerInLeaderboard = this.leaderboard.some(score => score.playerId === currentPlayerId);
-    if (!isPlayerInLeaderboard) {
-      this.submitScore();
+    try {
+      const currentPlayerId = await firstValueFrom(this.authService.getCurrentUserId());
+      if (!currentPlayerId) return;
+
+      const isPlayerInLeaderboard = this.leaderboard.some(
+        score => score.playerId === currentPlayerId
+      );
+
+      if (!isPlayerInLeaderboard) {
+        await this.submitScore(currentPlayerId);
+      }
+    } catch (error) {
+      console.error('Error checking player score:', error);
     }
   }
 
-  private async submitScore() {
-    const currentUserId = await firstValueFrom(this.authService.getCurrentUserId());
-    const playerScore: PlayerScore = {
-      playerId: currentUserId || 'unknown', // Provide a default value if null
-      playerName: 'Player Name', // Replace with actual player name
-      score: 0, // Replace with actual score
-      quarterId: this.quarterId,
-      isGuest: false // Replace with actual guest status
-    };
-    await firstValueFrom(this.firebaseService.submitScore(playerScore));
+  private async submitScore(currentUserId: string) {
+    try {
+      const user = await firstValueFrom(this.authService.user$);
+      const playerScore: PlayerScore = {
+        playerId: currentUserId,
+        playerName: user?.email || 'Anonymous',
+        score: 0, // Replace with actual score
+        quarterId: this.quarterId,
+        isGuest: !user // If no user object, treat as guest
+      };
+
+      await firstValueFrom(this.firebaseService.submitScore(playerScore));
+    } catch (error) {
+      console.error('Error submitting score:', error);
+      throw error;
+    }
   }
 
   private handleError(error: any) {
@@ -102,6 +140,10 @@ export class LeaderboardComponent implements OnInit, OnChanges {
     } else {
       this.error = 'Failed to load leaderboard. Please try again later.';
     }
+  }
+
+  navigateBackToGame() {
+    this.router.navigate(['/game'], { queryParams: { quarter: this.quarterId } });
   }
 
   retry() {
@@ -117,5 +159,4 @@ export class LeaderboardComponent implements OnInit, OnChanges {
       return false;
     }
   }
-
 }

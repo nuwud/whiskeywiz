@@ -5,6 +5,7 @@ import { FirebaseService } from './firebase.service';
 import { AuthService } from './auth.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { GameState } from '../shared/models/game.model'; // Adjust the path as necessary
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,8 @@ export class GameService {
 
   constructor(
     private firebaseService: FirebaseService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   loadQuarter(quarterId: string): void {
@@ -44,7 +46,7 @@ export class GameService {
       this.saveGameState();
     }
   }
-  
+
   async saveGameState() {
     const authId = await this.authService.getCurrentUserId().toPromise();
     if (authId) {

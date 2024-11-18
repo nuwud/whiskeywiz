@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { GameService } from 'src/app/services/game.service';
 import { Quarter } from '../models/quarter.model';
 import { GameGuess } from '../models/game.model';
 import { BehaviorSubject } from 'rxjs';
@@ -55,7 +56,17 @@ export class ResultsComponent {
   }
 
   handleLeaderboard() {
-    this.router.navigate(['/leaderboard'], { queryParams: { quarter: this.quarterData?.id } });
+    this.router.navigate(['/leaderboard'], { 
+      queryParams: { quarter: this.quarterData?.id },
+      queryParamsHandling: 'merge'  // This will merge new params with existing ones
+    });
+  }
+
+  navigateWithQuarter(route: string, quarterId: string) {
+    this.router.navigate([route], {
+      queryParams: { quarter: quarterId },
+      queryParamsHandling: 'merge'
+    });
   }
 
   getEmojiScore(score: number): string {
