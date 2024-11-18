@@ -23,7 +23,6 @@ export class ResultsComponent {
   playAgainHovered = false;
   leaderboardHovered: boolean = false;
 
-
   constructor(private changeDetectorRef: ChangeDetectorRef, private router: Router) {}
 
   getButtonImage(baseName: string, isHovered: boolean): string {
@@ -56,7 +55,7 @@ export class ResultsComponent {
   }
 
   handleLeaderboard() {
-    this.router.navigate(['/leaderboard']);
+    this.router.navigate(['/leaderboard'], { queryParams: { quarter: this.quarterData?.id } });
   }
 
   getEmojiScore(score: number): string {

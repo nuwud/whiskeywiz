@@ -544,8 +544,8 @@ export class GameComponent implements OnInit {
     };
   
     // Submit score to Firebase
-    this.firebaseService.submitScore(playerScore).subscribe(
-      () => {
+    this.firebaseService.submitScore(playerScore).subscribe({
+      next: () => {
         console.log('Score submitted successfully');
         this.scoreSubmitted = true;
         this.error = null;
@@ -558,17 +558,17 @@ export class GameComponent implements OnInit {
         // Navigate to leaderboard
         this.navigateToLeaderboard();
       },
-      // Error handling
-      error => {
+      error: (error) => {
         console.error('Error submitting score:', error);
         this.error = 'Failed to submit score';
       }
-    );
+    });
   }
   
   navigateToLeaderboard() {
     this.router.navigate(['/leaderboard'], { queryParams: { quarter: this._quarterId } });
   }
+  
 
   // Score calculation - moved to separate method
   private calculateScores(): void {
