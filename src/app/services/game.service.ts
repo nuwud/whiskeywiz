@@ -21,6 +21,20 @@ export class GameService {
     scores: {},
     totalScore: 0 
   });
+  private currentScores = new BehaviorSubject<{[key: string]: number}>({});
+  scores$ = this.currentScores.asObservable();
+  
+  updateScore(sampleId: string, score: number) {
+    const currentScores = this.currentScores.value;
+    this.currentScores.next({
+      ...currentScores,
+      [sampleId]: score
+    });
+  }
+
+getTotalScore(): number {
+  return Object.values(this.currentScores.value).reduce((sum, score) => sum + score, 0);
+}
 
   constructor(
     private firebaseService: FirebaseService,

@@ -577,7 +577,7 @@ export class GameComponent implements OnInit {
     // Prepare player score object
     const playerScore: PlayerScore = {
       playerId: this.playerId,
-      playerName: this.isGuest ? this.playerName : '',
+      playerName: this.playerName || 'Anonymous Player',
       score: this.totalScore,
       quarterId: this._quarterId,
       isGuest: this.isGuest
@@ -629,15 +629,33 @@ export class GameComponent implements OnInit {
   
       // Proof scoring
       const proofDiff = Math.abs(actualSample.proof - (guess.proof || 0));
-      score += proofDiff === 0 ? 30 : Math.max(0, 20 - (proofDiff * 2));
+      if (proofDiff === 0) {
+        score += 30; // Perfect match bonus
+      } else {
+        score += Math.max(0, 20 - (proofDiff * 2)); // 2 points per proof point off
+      }
   
       // Mashbill scoring
       if (guess.mashbill === actualSample.mashbill) score += 10;
+
+      console.log(`Sample ${sampleKey} scoring:`, {
+        actual: actualSample,
+        guess: guess,
+        ageDiff,
+        proofDiff,
+        mashbillMatch: guess.mashbill === actualSample.mashbill,
+        score
+      });
   
       // Store score
       this.scores[sampleKey] = score;
       this.totalScore += score;
     }
+
+    console.log('Final scores:', {
+      sampleScores: this.scores,
+      totalScore: this.totalScore
+    });
   }
 
   // UI state management
