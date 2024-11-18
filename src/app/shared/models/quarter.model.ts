@@ -29,8 +29,8 @@ export interface PlayerScore {
   playerName: string;
   score: number;
   quarterId: string;
-  isGuest: boolean;  // Added this line
-  timestamp?: number; // Optional: add timestamp for sorting
+  isGuest: boolean;
+  timestamp?: number;
 }
 
 export interface ScoringRules {

@@ -182,7 +182,7 @@ gameStateSet(authId: string, gameState: GameState): Observable<void> {
   }
 
   getLeaderboard(quarterId: string): Observable<PlayerScore[]> {
-    return this.firestore.collection<PlayerScore>('scores', ref => 
+    return this.firestore.collection<PlayerScore>('leaderboard', ref => 
       ref.where('quarterId', '==', quarterId).orderBy('score', 'desc').limit(10)
     ).valueChanges();
   }
