@@ -826,6 +826,25 @@ export class GameComponent implements OnInit {
         return '';
     }
   }
+  
+  getQuarterTitle(): string {
+    if (!this.quarterData?.name) {
+      // Parse from quarterId if name not available
+      if (this._quarterId) {
+        const month = parseInt(this._quarterId.substring(0, 2));
+        const year = '20' + this._quarterId.substring(2, 4);
+        
+        const monthNames = [
+          'January', 'February', 'March', 'April', 'May', 'June',
+          'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+        
+        return `${monthNames[month - 1]} ${year}`;
+      }
+      return 'Whiskey Wiz Challenge';
+    }
+    return this.quarterData.name;
+  }
 
   // Star rating helper methods
   getSafeStarHtml(filled: boolean): SafeHtml {

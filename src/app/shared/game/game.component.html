@@ -18,11 +18,15 @@
   <div class="header-container">
     <div class="logo-header">
       <img [src]="getImagePath('BlindBarrels.png')" alt="Blind Barrels Logo" class="logo">
+      <button *ngIf="isLoggedIn" class="logout-button" (click)="logout()">
+        <span class="font-hermona-extras glyph">I</span>
+        <span class="font-hermona-lg">Logout</span>
+      </button>
+      <h1 class="quarter-title font-hermona-2xl">
+        {{ getQuarterTitle() }}
+      </h1>
     </div>
-    <button *ngIf="isLoggedIn" class="logout-button" (click)="logout()">
-      <span class="font-hermona-extras glyph">I</span>
-      <span class="font-hermona-lg">Logout</span>
-    </button>
+
   </div>
 
   <!-- Game Content -->
@@ -33,13 +37,12 @@
       <div class="nav-button-container">
         <!--Previous Sample Button-->
         <button class="nav-button previous"
-                [disabled]="currentSample === 1"
-                *ngIf="currentSample > 1" 
-                (click)="changeSampleDirection(-1)">
+                [disabled]="currentSample === 1" 
+                (click)="changeSampleDirection(-1)"
+                [class.disabled]="currentSample === 1">
             <img [src]="getButtonImage('Previous_Sample_Button')" 
                   alt="Previous Sample Button" 
-                  class="nav-button"
-                  [class.disabled]="currentSample === 1">
+                  class="nav-button">
         </button>
       </div>
   

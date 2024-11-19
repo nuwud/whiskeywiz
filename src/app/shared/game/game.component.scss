@@ -116,6 +116,14 @@
   }
 }
 
+.quarter-title {
+  color: var(--color-gold);
+  text-align: center;
+  margin: 1rem 0;
+  font-size: 2rem;
+  font-family: Hermona;
+}
+
 /* Navigation Controls */
 .navigation-controls {
   display: flex;
@@ -127,6 +135,21 @@
     min-width: 100px; // Ensures consistent spacing
     display: flex;
     justify-content: center;
+    
+    .nav-button {
+      &.disabled {
+        opacity: 0.5;
+        pointer-events: none;
+        // Still show the button, just dimmed
+        img {
+          filter: grayscale(50%);
+        }
+      }
+
+      &:not(.disabled):hover {
+        transform: scale(1.1);
+      }
+    }
   }
   
   button {
@@ -165,8 +188,19 @@
 }
 
 .nav-button {
-  width: 250px;
-  margin: 0 1rem;
+  background: none;
+  border: none;
+  padding: 0;
+  visibility: visible !important; // Force visibility
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+
+  img {
+    width: 250px;
+    height: auto;
+  }
 }
 
 .submit-button {
