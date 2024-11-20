@@ -21,7 +21,12 @@ export class GameElementsModule {
     }
   }
 
-  ngDoBootstrap() {}
+  ngDoBootstrap() {
+    const GameElement = createCustomElement(GameComponent, { injector: this.injector });
+    if (!customElements.get('whiskey-wiz-game')) {
+      customElements.define('whiskey-wiz-game', GameElement);
+    }
+  }
 }
 
 // Then in your quarter component:
