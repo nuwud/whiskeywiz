@@ -169,14 +169,14 @@ export class LeaderboardComponent implements OnInit, OnChanges {
   }
 
   navigateBackToGame() {
-    if (localStorage.getItem('gameState')) {
-      // Return to results if there was a completed game
-      const gameState = JSON.parse(localStorage.getItem('gameState') || '{}');
+    const savedState = localStorage.getItem('gameState');
+    if (savedState) {
+      const gameState = JSON.parse(savedState);
       if (gameState.completed) {
-        this.router.navigate(['/results'], { 
+        this.router.navigate(['/game'], { 
           queryParams: { 
             quarter: this.quarterId,
-            score: gameState.totalScore
+            view: 'results'
           }
         });
         return;
