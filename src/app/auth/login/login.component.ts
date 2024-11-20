@@ -54,28 +54,29 @@ export class LoginComponent implements OnInit {
       this.error = 'Please enter both email and password';
       return;
     }
-
+  
     try {
       const result = await this.authService.signIn(this.email, this.password);
-      console.log('Login successful, navigating...');
       
-      // Navigate based on admin status and return quarter
-      if (this.authService.isAdminSync(this.email)) {
-        if (this.returnQuarter) {
-          this.router.navigate(['/game'], { 
-            queryParams: { quarter: this.returnQuarter }
-          });
-        } else {
-          this.router.navigate(['/admin']);
-        }
-      } else {
-        this.router.navigate(['/game'], { 
-          queryParams: this.returnQuarter ? { quarter: this.returnQuarter } : {}
-        });
-      }
+      // Check for return URL
+      const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/game';
+      const quarter = this.route.snapshot.queryParams['quarter'];
+
+    // Store the user's email as playerName
+    if (result?.user?.email) {
+      localStorage.setItem('playerName', result.user.email);
+    }
+    
+    // Navigate directly to game with quarter if available
+    if (quarter) {
+      this.router.navigate(['/game'], { queryParams: { quarter } });
+    } else {
+      this.router.navigateByUrl(returnUrl);
+    }
+
     } catch (error: any) {
       console.error('Login error:', error);
-      this.error = error.message || 'Failed to log in. Please check your credentials.';
+      this.error = error.message || 'Failed to log in';
     }
   }
 }

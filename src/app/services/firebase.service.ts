@@ -85,18 +85,18 @@ export class FirebaseService {
     return batch;
   }
 
-gameState(authId: string): Observable<GameState> {
-    return this.firestore.collection('gameProgress').doc(authId).valueChanges() as Observable<GameState>;
-  }
-
-gameStateRef(authId: string): AngularFirestoreDocument<GameState> {
-    return this.firestore.collection('gameProgress').doc(authId);
-  }
-
-gameStateSet(authId: string, gameState: GameState): Observable<void> {
-    return from(this.firestore.collection('gameProgress').doc(authId).set(gameState));
-  }
-
+  gameState(authId: string): Observable<GameState> {
+      return this.firestore.collection('gameProgress').doc(authId).valueChanges() as Observable<GameState>;
+    }
+  
+  gameStateRef(authId: string): AngularFirestoreDocument<GameState> {
+      return this.firestore.collection('gameProgress').doc(authId);
+    }
+  
+  gameStateSet(authId: string, gameState: GameState): Observable<void> {
+      return from(this.firestore.collection('gameProgress').doc(authId).set(gameState));
+    }
+  
   updateQuarter(quarterId: string, quarterData: Partial<Quarter>): Observable<void> {
     console.log('Attempting to update quarter:', { quarterId, quarterData });
     const docRef = this.firestore.collection('quarters').doc(quarterId);
@@ -176,17 +176,44 @@ gameStateSet(authId: string, gameState: GameState): Observable<void> {
 
   
   submitScore(score: PlayerScore): Observable<void> {
-    return from(this.scoresCollection.add(score)).pipe(
-      map(() => undefined)
+    console.log('Submitting score:', score);
+    const timestamp = new Date();
+    const scoreWithTimestamp = {
+      ...score,
+      timestamp,
+      playerId: score.playerId || 'guest',
+      playerName: score.playerName || 'Guest Player'
+    };
+    
+    return from(this.scoresCollection.add(scoreWithTimestamp)).pipe(
+      tap(ref => console.log('Score submitted with ID:', ref.id)),
+      map(() => undefined),
+      catchError(error => {
+        console.error('Error submitting score:', error);
+        return throwError(() => error);
+      })
     );
   }
 
   getLeaderboard(quarterId: string): Observable<PlayerScore[]> {
-    return this.firestore.collection<PlayerScore>('scores', ref => 
-      ref.where('quarterId', '==', quarterId)
-      .orderBy('score', 'desc')
-      .limit(10)
-    ).valueChanges({ idField: 'id' });
+    console.log('Getting leaderboard for quarter:', quarterId);
+    return this.firestore
+      .collection<PlayerScore>('scores', ref => 
+        ref.where('quarterId', '==', quarterId)
+        .orderBy('score', 'desc')
+        .limit(10)
+      ).valueChanges({ idField: 'id' }).pipe(
+        tap(scores => {
+          console.log('Fetched scores:', scores);
+          if (scores.length === 0) {
+            console.log('No scores found for quarter:', quarterId);
+          }
+        }),
+        catchError(error => {
+          console.error('Error fetching leaderboard:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   private generateQuarterId(quarterName: string): string {

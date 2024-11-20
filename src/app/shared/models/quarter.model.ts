@@ -30,7 +30,7 @@ export interface PlayerScore {
   score: number;
   quarterId: string;
   isGuest: boolean;
-  timestamp?: number;
+  timestamp?: Date;
 }
 
 export interface ScoringRules {

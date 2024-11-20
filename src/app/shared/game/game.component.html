@@ -1,5 +1,5 @@
 <div class="game-container">
-  <div class="auth-modal" *ngIf="!isLoggedIn && !isGuest">
+  <div class="auth-modal" *ngIf="!isLoggedIn$ && !isGuest">
     <div class="auth-content">
       <h2 class="font-hermona-2xl">Welcome to Whiskey Wiz</h2>
       <p>Please sign in or continue as guest to play</p>
@@ -18,7 +18,7 @@
   <div class="header-container">
     <div class="logo-header">
       <img [src]="getImagePath('BlindBarrels.png')" alt="Blind Barrels Logo" class="logo">
-      <button *ngIf="isLoggedIn" class="logout-button" (click)="logout()">
+      <button *ngIf="isLoggedIn$" class="logout-button" (click)="logout()">
         <span class="font-hermona-extras glyph">I</span>
         <span class="font-hermona-lg">Logout</span>
       </button>

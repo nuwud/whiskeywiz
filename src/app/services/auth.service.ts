@@ -193,6 +193,12 @@ export class AuthService {
     );
   }
 
+  getUserEmail(): Observable<string | null> {
+    return this.user$.pipe(
+      map(user => user?.email || null)
+    );
+  }
+
   private handleAuthError(error: any): Error {
     let message = 'An authentication error occurred';
     

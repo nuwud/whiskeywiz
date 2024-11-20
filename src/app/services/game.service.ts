@@ -3,9 +3,11 @@
 import { Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { AuthService } from './auth.service';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { GameState } from '../shared/models/game.model'; // Adjust the path as necessary
 import { Router } from '@angular/router';
+
 
 @Injectable({
   providedIn: 'root'
@@ -32,9 +34,9 @@ export class GameService {
     });
   }
 
-getTotalScore(): number {
-  return Object.values(this.currentScores.value).reduce((sum, score) => sum + score, 0);
-}
+  getTotalScore(): number {
+    return Object.values(this.currentScores.value).reduce((sum, score) => sum + score, 0);
+  }
 
   constructor(
     private firebaseService: FirebaseService,
@@ -61,10 +63,13 @@ getTotalScore(): number {
     }
   }
 
-  async saveGameState() {
-    const authId = await this.authService.getCurrentUserId().toPromise();
-    if (authId) {
-      this.firebaseService.saveGameProgress(authId, this.gameState.value);
-    }
+  saveGameState() {
+    return this.authService.getCurrentUserId().pipe(
+      switchMap(authId => {
+        if (!authId) return of(null);
+        const currentState = this.gameState.value;
+        return this.firebaseService.gameProgressSet(authId, currentState);
+      })
+    ).subscribe();
   }
 }

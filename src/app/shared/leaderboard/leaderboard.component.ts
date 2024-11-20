@@ -5,6 +5,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { PlayerScore } from '../../shared/models/quarter.model';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { firstValueFrom, catchError, retry, timeout, of, Observable } from 'rxjs';
+import { tap } from 'rxjs/operators'; // Add this import
 import { RetryConfig } from 'rxjs/internal/operators/retry';
 
 @Component({
@@ -27,6 +28,7 @@ import { RetryConfig } from 'rxjs/internal/operators/retry';
 export class LeaderboardComponent implements OnInit, OnChanges {
   @Input() quarterId: string = '';
   leaderboard: PlayerScore[] = [];
+  quarterTitle: string = '';
   isLoading: boolean = false;
   error: string | null = null;
   private retryCount = 0;
@@ -41,12 +43,39 @@ export class LeaderboardComponent implements OnInit, OnChanges {
 
   ) {}
 
-  ngOnInit() {
-    if (this.quarterId) {
-      this.loadLeaderboard();
-    }
+
+
+  private getQuarterTitle(quarterId: string): string {
+    const month = parseInt(quarterId.substring(0, 2));
+    const year = '20' + quarterId.substring(2);
+    
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    
+    return `${monthNames[month - 1]} ${year}`;
   }
 
+
+  ngOnInit() {
+    console.log('LeaderBoard Init - Input quarterId:', this.quarterId);
+    
+    // Get quarter from URL if not provided as input
+    this.route.queryParams.subscribe(params => {
+      const urlQuarterId = params['quarter'];
+      console.log('URL Quarter ID:', urlQuarterId);
+      
+      if (urlQuarterId) {
+        this.quarterId = urlQuarterId;
+        console.log('Loading leaderboard with quarterId:', this.quarterId);
+        this.quarterTitle = this.getQuarterTitle(urlQuarterId);
+        console.log('Quarter title:', this.quarterTitle);
+        this.loadLeaderboard();
+      }
+    });
+  }
+  
   ngOnChanges(changes: SimpleChanges) {
     if (changes['quarterId'] && this.quarterId) {
       this.loadLeaderboard();
@@ -54,43 +83,38 @@ export class LeaderboardComponent implements OnInit, OnChanges {
   }
 
   async loadLeaderboard() {
+    if (!this.quarterId) {
+      console.error('No quarter ID available');
+      this.error = 'Quarter ID is missing';
+      return;
+    }
+  
+    console.log('Loading leaderboard for quarter:', this.quarterId);
     this.isLoading = true;
     this.error = null;
-
+  
     try {
-      const config: RetryConfig = {
-        count: this.maxRetries,
-        delay: (error, retryCount) => {
-          this.retryCount = retryCount;
-          return of(retryCount * 1000); // Return an Observable for delay
-        }
-      };
-
-      const scores = await firstValueFrom(
-        this.firebaseService.getLeaderboard(this.quarterId).pipe(
-          timeout(this.TIMEOUT_MS),
-          retry(config),
-          catchError(error => {
-            if (error.name === 'TimeoutError') {
-              throw new Error('Request timed out. Please check your connection.');
-            }
-            throw error;
-          })
-        )
+      const scores: PlayerScore[] = await firstValueFrom(
+        this.firebaseService.getLeaderboard(this.quarterId)
+          .pipe(
+            tap((scores: PlayerScore[]) => console.log('Raw scores from Firebase:', scores))
+          )
       );
-
+  
+      console.log('Scores for quarter', this.quarterId, ':', scores);
+  
       if (!scores || scores.length === 0) {
         this.leaderboard = [];
         this.error = 'No scores found for this quarter';
         return;
       }
-
+  
       this.leaderboard = scores
+        .filter((score: PlayerScore) => score.quarterId === this.quarterId) // Extra check
         .sort((a, b) => b.score - a.score)
         .slice(0, 10);
       
-      await this.submitScoreIfNeeded();
-      
+      console.log('Final leaderboard:', this.leaderboard);
     } catch (err: any) {
       this.handleError(err);
     } finally {
@@ -145,22 +169,21 @@ export class LeaderboardComponent implements OnInit, OnChanges {
   }
 
   navigateBackToGame() {
-    if (!this.quarterId) {
-      // Try to get quarter ID from multiple sources
-      this.quarterId = 
-        localStorage.getItem('lastPlayedQuarter') || 
-        this.route.snapshot.queryParams['quarter'];
-  
-      if (!this.quarterId) {
-        console.error('No quarter ID found for navigation');
-        this.router.navigate(['/game']);
+    if (localStorage.getItem('gameState')) {
+      // Return to results if there was a completed game
+      const gameState = JSON.parse(localStorage.getItem('gameState') || '{}');
+      if (gameState.completed) {
+        this.router.navigate(['/results'], { 
+          queryParams: { 
+            quarter: this.quarterId,
+            score: gameState.totalScore
+          }
+        });
         return;
       }
     }
   
-    // Store quarter ID for future use
-    localStorage.setItem('lastPlayedQuarter', this.quarterId);
-    
+    // Otherwise return to game
     this.router.navigate(['/game'], { 
       queryParams: { quarter: this.quarterId }
     });

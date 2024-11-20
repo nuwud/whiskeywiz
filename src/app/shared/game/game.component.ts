@@ -7,7 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { environment } from '../../../environments/environment';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 // Type definitions
 type Mashbill = 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt' | 'Specialty';
@@ -110,8 +110,7 @@ interface Sample {
 })
 
 // Game component class
-export class GameComponent implements OnInit {
-  // Input handling for quarter ID
+export class GameComponent implements OnInit {  // Input handling for quarter ID
   @Input() set quarterId(value: string) {
     if (value) {
       this._quarterId = value;
@@ -123,34 +122,55 @@ export class GameComponent implements OnInit {
     return this._quarterId;
   }
 
-  // Private properties
-  private readonly BASE_IMAGE_PATH = 'assets/images/';
-  private _quarterId: string = '';
-  private readonly ANIMATION_DELAY = 200;
-  private readonly DEBUG_PATHS = !environment.production;
-  private navigationInProgress = false;
-  private _starRatings: { [key: string]: number } = {
-    'sample1': 0,
-    'sample2': 0,
-    'sample3': 0,
-    'sample4': 0
-  };
+    // Private properties
+    private readonly BASE_IMAGE_PATH = 'assets/images/';
+    private _quarterId: string = '';
+    private readonly ANIMATION_DELAY = 200;
+    private readonly DEBUG_PATHS = !environment.production;
+    private navigationInProgress = false;
+    private _starRatings: { [key: string]: number } = {
+      'sample1': 0,
+      'sample2': 0,
+      'sample3': 0,
+      'sample4': 0
+    };
+  
+    // Public properties
+    playerId: string = '';
+    isLoggedIn$: Observable<boolean>;
+    isGuest: boolean = true;
+    quarterData: Quarter | null = null;
+    currentSample: number = 1;
+    playerName: string = '';
+    guesses: { [key: string]: Guess } = {};
+    scores: { [key: string]: number } = {};
+    totalScore: number = 0;
+    showResults = false;
+    gameCompleted: boolean = false;
+    scoreSubmitted: boolean = false;
+    loading: boolean = false;
+    error: string | null = null;
 
-  // Public properties
-  isLoggedIn: boolean = false;
-  playerId: string = '';
-  isGuest: boolean = true;
-  quarterData: Quarter | null = null;
-  currentSample: number = 1;
-  playerName: string = '';
-  guesses: { [key: string]: Guess } = {};
-  scores: { [key: string]: number } = {};
-  totalScore: number = 0;
-  showResults = false;
-  gameCompleted: boolean = false;
-  scoreSubmitted: boolean = false;
-  loading: boolean = false;
-  error: string | null = null;
+    // Game constructor
+    constructor(
+      private route: ActivatedRoute,
+      private firebaseService: FirebaseService,
+      private gameService: GameService,
+      private authService: AuthService,
+      private changeDetectorRef: ChangeDetectorRef,
+      private sanitizer: DomSanitizer,
+      private router: Router
+    ) {
+        this.isLoggedIn$ = this.authService.isAuthenticated();
+        // Initialize auth state
+        this.authService.getPlayerId().subscribe(id => {
+          this.playerId = id;
+          this.isGuest = id.startsWith('guest_');
+          if (!this.isGuest) {
+            this.playerName = localStorage.getItem('playerName') || 'Anonymous';
+          }
+        });
+      }
 
   // Button and sample states
   buttonStates: { [key: string]: ButtonState } = {
@@ -171,6 +191,8 @@ export class GameComponent implements OnInit {
   mashbillCategories: Mashbill[] = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
   mashbillTypes = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
 
+
+
     // Lifecycle
     ngOnInit() {
       // Handle route parameters for direct navigation
@@ -182,14 +204,31 @@ export class GameComponent implements OnInit {
           this.initializeRatings();
         }
       });
+      this.checkAuthentication();
       this.initializeGuesses();  
+    }
+
+    checkAuthentication(): void {
+      this.authService.isAuthenticated().subscribe(isAuth => {
+        console.log('Is authenticated:', isAuth);
+      });
     }
 
   async login() {
     try {
       // First try to get the provider ID if they were a guest
       const currentGuestId = localStorage.getItem('guestId');
+      const returnUrl = `/game?quarter=${this._quarterId}`;
       
+      // Store current game state if needed
+      if (this.gameCompleted) {
+        localStorage.setItem('gameState', JSON.stringify({
+          completed: true,
+          scores: this.scores,
+          totalScore: this.totalScore
+        }));
+      }
+
       // Navigate to login page with return URL
       this.router.navigate(['/login'], { 
         queryParams: { 
@@ -211,7 +250,6 @@ export class GameComponent implements OnInit {
       // Set guest state
       this.isGuest = true;
       this.playerId = guestId;
-      this.isLoggedIn = false;
   
       // Initialize game state for guest
       this.initializeGuesses();
@@ -223,23 +261,6 @@ export class GameComponent implements OnInit {
       console.error('Error continuing as guest:', error);
       this.error = 'Failed to continue as guest';
     }
-  }
-
-  // Game constructor
-  constructor(
-    private route: ActivatedRoute,
-    private firebaseService: FirebaseService,
-    private gameService: GameService,
-    private authService: AuthService,
-    private changeDetectorRef: ChangeDetectorRef,
-    private sanitizer: DomSanitizer,
-    private router: Router
-  ) {
-    // Initialize auth state
-    this.authService.getPlayerId().subscribe(id => {
-      this.playerId = id;
-      this.isGuest = id.startsWith('guest_');
-    });
   }
 
   // Helper method for image paths
@@ -584,11 +605,6 @@ export class GameComponent implements OnInit {
   }
   
   submitScore() {
-    if (!this.playerName) {
-      this.error = 'Please enter your name';
-      return;
-    }
-  
     // Check for quarter ID
     if (!this._quarterId) {
       this.error = 'Quarter ID is missing';
@@ -598,13 +614,18 @@ export class GameComponent implements OnInit {
     // Store quarter ID before submission
     localStorage.setItem('lastPlayedQuarter', this._quarterId);
 
+    // Ensure we have a player name
+    this.playerName = this.playerName || 
+    (this.isGuest ? 'Guest Player' : 'Anonymous');
+
     // Prepare player score object
     const playerScore: PlayerScore = {
       playerId: this.playerId,
-      playerName: this.playerName || 'Anonymous Player',
+      playerName: this.isGuest ? 'Guest Player' : (localStorage.getItem('playerName') || 'Anonymous'),
       score: this.totalScore,
       quarterId: this._quarterId,
-      isGuest: this.isGuest
+      isGuest: this.isGuest,
+      timestamp: new Date()
     };
 
     console.log('Submitting score:', playerScore); // Debug log
@@ -615,17 +636,14 @@ export class GameComponent implements OnInit {
       next: () => {
         console.log('Score submitted successfully');
         this.scoreSubmitted = true;
+        this.showResults = true; // Show results instead of navigating
         this.error = null;
   
         // Show registration prompt for guests
-        if (this.isGuest) {
-          this.showRegisterPrompt();
-        }
+        //if (this.isGuest) {
+        //  this.showRegisterPrompt();
+        //}
   
-        // Navigate to leaderboard with stored quarter
-        this.router.navigate(['/leaderboard'], { 
-          queryParams: { quarter: this._quarterId }
-        });
       },
       error: (error) => {
         console.error('Error submitting score:', error);
