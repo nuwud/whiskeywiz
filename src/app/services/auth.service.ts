@@ -90,15 +90,31 @@ export class AuthService {
 
   async register(email: string, password: string) {
     try {
+      console.log('Starting registration for:', email);
       const credential = await this.afAuth.createUserWithEmailAndPassword(email, password);
-      if (credential.user) {
-        await this.updateUserData(credential.user);
-        return credential.user;
+      
+      if (!credential.user) {
+        throw new Error('No user returned after registration');
       }
-      throw new Error('User creation failed');
+  
+      // Create user profile in Firestore
+      await this.afs.doc(`users/${credential.user.uid}`).set({
+        email: credential.user.email,
+        createdAt: new Date(),
+        isGuest: false
+      }, { merge: true });
+  
+      console.log('Registration successful:', credential.user.uid);
+      return credential.user;
+  
     } catch (error: any) {
       console.error('Registration error:', error);
-      throw this.handleAuthError(error);
+      // Enhance error message
+      if (error.code === 'auth/email-already-in-use') {
+        throw new Error('This email is already registered. Please login instead.');
+      }
+      // Pass through Firebase errors directly
+      throw error;
     }
   }
 

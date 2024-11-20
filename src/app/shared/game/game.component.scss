@@ -132,7 +132,7 @@
   padding: 1rem;
   
   .nav-button-container {
-    min-width: 100px; // Ensures consistent spacing
+    min-width: 100px;
     display: flex;
     justify-content: center;
     
@@ -140,7 +140,6 @@
       &.disabled {
         opacity: 0.5;
         pointer-events: none;
-        // Still show the button, just dimmed
         img {
           filter: grayscale(50%);
         }
@@ -191,7 +190,7 @@
   background: none;
   border: none;
   padding: 0;
-  visibility: visible !important; // Force visibility
+  visibility: visible !important; 
   display: flex;
   align-items: center;
   justify-content: center;
@@ -255,7 +254,6 @@
 /* Form Groups */
 .form-group {
   margin-bottom: 1rem;
- // Desktop layout
   @media (min-width: 769px) {
     display: grid;
     grid-template-columns: auto 1fr;
@@ -271,7 +269,6 @@
     }
   }
 
-  // Mobile layout
   @media (max-width: 768px) {
     display: flex;
     flex-direction: column;
@@ -372,7 +369,7 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  position: relative; // For absolute positioning of radio buttons if needed
+  position: relative; 
   padding-right: 0.5rem;
   
   label {
@@ -382,7 +379,7 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 0.5rem; // Increased gap
+    gap: 0.5rem; 
     color: white;
     width: 100%;
     padding: 0.5rem 0;
@@ -410,7 +407,7 @@
 
   .radio-unchecked,
   .radio-checked {
-    width: 35px; // Slightly larger
+    width: 35px; 
     height: 35px;
     margin-right: 0;
     transition: all 0.2s ease;
@@ -422,7 +419,7 @@
 
   .label-text {
     color: white;
-    font-size: 1.5rem; // Match label font size
+    font-size: 1.5rem; 
     transition: color 0.2s ease;
     
     &:hover {
@@ -431,7 +428,7 @@
   }
 }
 
-// Add hover effects
+
 .mashbill-option:hover {
   .radio-unchecked {
     transform: scale(1.05);
@@ -452,7 +449,7 @@
     &.disabled {
       opacity: 0.5;
       pointer-events: none;
-      visibility: visible; // Keeps space but shows as disabled
+      visibility: visible; 
     }
 
   .samples-row {
@@ -595,15 +592,74 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .game-container {
+    padding: 10px;
+    min-height: calc(100vh - 20px);
+  }
+
+  .guess-form {
     padding: 1rem;
+
+    .form-group {
+      margin-bottom: 0.5rem;
+      
+      h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.25rem;
+      }
+    }
   }
 
   .navigation-controls {
+    padding: 0.5rem;
     flex-direction: column;
     gap: 0;
+
+    .nav-button {
+      width: 180px; 
+    }
+    
+    .sample-title {
+      font-size: 2rem; 
+    }
+  }
+
+  .mashbill-options {
+    grid-template-columns: 1fr; 
+  }
+
+  .label-text {
+    font-size: 1.2rem; 
+  }
+
+  button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 10px;
+  }
+
+  .slider-container {
+    .custom-slider {
+      height: 44px; 
+      
+      &::-webkit-slider-thumb {
+        width: 44px;
+        height: 44px;
+      }
+      
+      &::-moz-range-thumb {
+        width: 44px;
+        height: 44px;
+      }
+    }
   }
 
   .sample-indicator img {
     height: 40px;
   }
+  
+}
+
+@viewport {
+  width: device-width;
+  initial-scale: 1;
 }

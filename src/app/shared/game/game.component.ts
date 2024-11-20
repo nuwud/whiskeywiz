@@ -16,7 +16,14 @@ type Mashbill = 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt' | 'Specialty';
 interface Guess {
   age: number;
   proof: number;
-  mashbill: Mashbill | null;
+  mashbill: Mashbill | string;
+  rating?: number;
+}
+
+interface GuessUpdate {
+  age?: number;
+  proof?: number;
+  mashbill?: Mashbill | string;
   rating?: number;
 }
 
@@ -32,6 +39,13 @@ interface SampleState {
   active: boolean;
   hover: boolean;
   completed: boolean;
+}
+
+interface Sample {
+  age: number;
+  proof: number;
+  mashbill: string;
+  rating?: number; 
 }
 
 // Game component
@@ -157,6 +171,20 @@ export class GameComponent implements OnInit {
   mashbillCategories: Mashbill[] = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
   mashbillTypes = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
 
+    // Lifecycle
+    ngOnInit() {
+      // Handle route parameters for direct navigation
+      this.route.queryParams.subscribe(params => {
+        const quarterId = params['quarter'];
+        if (quarterId) {
+          this.quarterId = quarterId;
+              // Initialize ratings
+          this.initializeRatings();
+        }
+      });
+      this.initializeGuesses();  
+    }
+
   async login() {
     try {
       // First try to get the provider ID if they were a guest
@@ -212,20 +240,6 @@ export class GameComponent implements OnInit {
       this.playerId = id;
       this.isGuest = id.startsWith('guest_');
     });
-  }
-
-  // Lifecycle
-  ngOnInit() {
-    // Handle route parameters for direct navigation
-    this.route.queryParams.subscribe(params => {
-      const quarterId = params['quarter'];
-      if (quarterId) {
-        this.quarterId = quarterId;
-            // Initialize ratings
-        this.initializeRatings();
-      }
-    });
-
   }
 
   // Helper method for image paths
@@ -333,7 +347,7 @@ export class GameComponent implements OnInit {
       this.guesses[sampleKey] = {
         age: 5,
         proof: 100,
-        mashbill: null,
+        mashbill: '',
         rating: 0
       };
     }
@@ -363,8 +377,8 @@ export class GameComponent implements OnInit {
       this.guesses[sampleKey] = {
         age: 5,
         proof: 100,
-        mashbill: null,
-        rating: rating
+        mashbill: '',
+        rating: 0
       };
     } else {
       console.log('Updating existing guess for:', sampleKey);
@@ -490,7 +504,7 @@ export class GameComponent implements OnInit {
       this.guesses[sampleKey] = {
         age: 5,
         proof: 100,
-        mashbill: null,
+        mashbill: '',
         rating: 0
       };
       this.scores[sampleKey] = 0;
@@ -506,11 +520,18 @@ export class GameComponent implements OnInit {
 
   // Guess update methods
   updateGuess(sampleNum: number, field: keyof Guess, value: any) {
-    if (!this.guesses[`sample${sampleNum}`]) {
-      this.guesses[`sample${sampleNum}`] = { age: 5, proof: 100, mashbill: null };
+    const sampleKey = `sample${sampleNum}`;
+    if (!this.guesses[sampleKey]) {
+      this.guesses[sampleKey] = {
+        age: 5,
+        proof: 100,
+        mashbill: '',
+        rating: 0
+      };
     }
-    (this.guesses[`sample${sampleNum}`][field] as any) = value;
+    (this.guesses[sampleKey][field] as any) = value;
     this.updateSampleCompletion();
+  
   }
 
   // Validation and submission
@@ -573,7 +594,10 @@ export class GameComponent implements OnInit {
       this.error = 'Quarter ID is missing';
       return;
     }
-  
+
+    // Store quarter ID before submission
+    localStorage.setItem('lastPlayedQuarter', this._quarterId);
+
     // Prepare player score object
     const playerScore: PlayerScore = {
       playerId: this.playerId,
@@ -582,6 +606,9 @@ export class GameComponent implements OnInit {
       quarterId: this._quarterId,
       isGuest: this.isGuest
     };
+
+    console.log('Submitting score:', playerScore); // Debug log
+
   
     // Submit score to Firebase
     this.firebaseService.submitScore(playerScore).subscribe({
@@ -595,8 +622,10 @@ export class GameComponent implements OnInit {
           this.showRegisterPrompt();
         }
   
-        // Navigate to leaderboard
-        this.navigateToLeaderboard();
+        // Navigate to leaderboard with stored quarter
+        this.router.navigate(['/leaderboard'], { 
+          queryParams: { quarter: this._quarterId }
+        });
       },
       error: (error) => {
         console.error('Error submitting score:', error);

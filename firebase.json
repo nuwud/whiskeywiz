@@ -8,52 +8,56 @@
       "npm run build"
     ],
     "public": "dist/whiskey-wiz", 
+"headers": [
+  {
+    "source": "/**",
     "headers": [
       {
-        "source": "/**",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "no-cache, no-store, must-revalidate, max-age=0"
-          },
-          {
-            "key": "Pragma",
-            "value": "no-cache"
-          },
-          {
-            "key": "Expires",
-            "value": "0"
-          },
-          {
-            "key": "X-Deploy-Time",
-            "value": "${TIMESTAMP}"
-          }
-        ]
+        "key": "Cache-Control",
+        "value": "no-cache, no-store, must-revalidate"
+      }
+    ]
+  },
+  {
+    "source": "/elements/game-elements.js",
+    "headers": [
+      {
+        "key": "Access-Control-Allow-Origin",
+        "value": "*"
       },
       {
-        "source": "/elements/game-elements.js",
-        "headers": [
-          {
-            "key": "Access-Control-Allow-Origin",
-            "value": "https://blind-barrels.myshopify.com"
-          },
-          {
-            "key": "Access-Control-Allow-Methods",
-            "value": "GET"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "no-cache"
-          }
-        ]
+        "key": "Access-Control-Allow-Methods",
+        "value": "GET"
+      },
+      {
+        "key": "Cache-Control",
+        "value": "no-cache"
+      },
+      {
+        "key": "Pragma",
+        "value": "no-cache"
+      },
+      {
+        "key": "Expires",
+        "value": "0"
+      },
+      {
+        "key": "X-Deploy-Time",
+        "value": "${TIMESTAMP}"
       }
-    ],
+    ]
+  }
+],
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
     "rewrites": [
+      {
+        "source": "/elements/game-elements.js",
+        "destination": "/elements/game-elements.js"
+      },
       {
         "source": "**",
         "destination": "/index.html"

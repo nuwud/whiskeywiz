@@ -8,11 +8,11 @@
     "watch": "nx build --watch --configuration development",
     "test": "nx test",
     "lint": "nx lint",
-    "build:elements": "nx build --configuration=production --output-hashing=none && node concat.js && node scripts/build-web-components.js",
+    "build:elements": "nx build --output-hashing=none --configuration=production && node concat.js",
     "serve:elements": "http-server dist/whiskey-wiz -p 8080",
     "build:all": "npm run build:elements",
-    "postbuild:elements": "node scripts/concat-elements.js",
-    "deploy": "npm run build:elements && firebase deploy --only hosting"
+    "deploy": "npm run build:elements && firebase deploy --only hosting",
+    "clean": "rimraf dist/whiskey-wiz/elements"
   },
   "private": true,
   "dependencies": {
@@ -71,6 +71,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "nx": "17.2.0",
+    "rimraf": "^5.0.10",
     "typescript": "~5.2.2"
   }
 }

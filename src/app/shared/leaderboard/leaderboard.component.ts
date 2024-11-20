@@ -1,10 +1,10 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';  // Add ActivatedRoute import
 import { FirebaseService } from '../../services/firebase.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { PlayerScore } from '../../shared/models/quarter.model';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { firstValueFrom, catchError, retry, timeout, of, Observable } from 'rxjs';
-import { Router } from '@angular/router';
 import { RetryConfig } from 'rxjs/internal/operators/retry';
 
 @Component({
@@ -36,7 +36,9 @@ export class LeaderboardComponent implements OnInit, OnChanges {
   constructor(
     private firebaseService: FirebaseService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute 
+
   ) {}
 
   ngOnInit() {
@@ -143,7 +145,25 @@ export class LeaderboardComponent implements OnInit, OnChanges {
   }
 
   navigateBackToGame() {
-    this.router.navigate(['/game'], { queryParams: { quarter: this.quarterId } });
+    if (!this.quarterId) {
+      // Try to get quarter ID from multiple sources
+      this.quarterId = 
+        localStorage.getItem('lastPlayedQuarter') || 
+        this.route.snapshot.queryParams['quarter'];
+  
+      if (!this.quarterId) {
+        console.error('No quarter ID found for navigation');
+        this.router.navigate(['/game']);
+        return;
+      }
+    }
+  
+    // Store quarter ID for future use
+    localStorage.setItem('lastPlayedQuarter', this.quarterId);
+    
+    this.router.navigate(['/game'], { 
+      queryParams: { quarter: this.quarterId }
+    });
   }
 
   retry() {
