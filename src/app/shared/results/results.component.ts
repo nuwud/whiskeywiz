@@ -48,7 +48,18 @@ export class ResultsComponent {
   }
 
   handlePlayAgain() {
-    this.playAgain.emit();
+    const quarterId = this.quarterData?.id || localStorage.getItem('lastPlayedQuarter');
+    if (quarterId) {
+      this.router.navigate(['/game'], {
+        queryParams: { quarter: quarterId },
+        replaceUrl: true
+      });
+    } else {
+      // Fallback to default quarter if none found
+      this.router.navigate(['/game'], {
+        queryParams: { quarter: '0124' } // Use current quarter as default
+      });
+    }
   }
 
   handleSubmitScore() {

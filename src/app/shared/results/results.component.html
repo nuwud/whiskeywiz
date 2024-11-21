@@ -45,14 +45,6 @@
 
     <div class="results-actions">
         <div class="button-container">
-          <img [src]="getButtonImage('Submit_Score_Button', submitHovered)" 
-               (mouseenter)="submitHovered = true"
-               (mouseleave)="submitHovered = false"
-               (click)="handleSubmitScore()"
-               class="action-button">
-        </div>
-
-        <div class="button-container">
           <img [src]="getButtonImage('Share_Score_Button', shareHovered)"
                (mouseenter)="shareHovered = true"
                (mouseleave)="shareHovered = false"

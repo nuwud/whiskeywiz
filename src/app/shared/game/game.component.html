@@ -8,8 +8,9 @@
         <button class="auth-button login" (click)="login()">
           <img src="assets/images/Login_Button.png" alt="Login">
         </button>
-        <button class="auth-button guest" (click)="continueAsGuest()">
-          <img src="assets/images/Guest_Button.png" alt="Play as Guest">
+        <button class="auth-button" [class.guest]="isGuest" (click)="handleAuth()">
+          <img [src]="isGuest ? 'assets/images/Login_Button.png' : 'assets/images/Logout_Button.png'" 
+               [alt]="isGuest ? 'Login' : 'Logout'">
         </button>
       </div>
     </div>

@@ -11,9 +11,8 @@
   </div>
 
   <div class="scores-list" *ngIf="!isLoading && !error" [@listAnimation]="leaderboard.length">
-    <div class="score-item" 
-         *ngFor="let score of leaderboard; let i = index"
-          [class.highlighted]="isCurrentPlayer(score.playerId) | async">
+    <div class="score-item" *ngFor="let score of leaderboard; let i = index"
+      [class.highlighted]="isCurrentPlayer(score.playerId) | async">
       <div class="rank">#{{i + 1}}</div>
       <div class="player-info">
         <span class="player-name">{{score.playerName || 'Anonymous'}}</span>
@@ -25,4 +24,17 @@
   <button class="back-button" (click)="navigateBackToGame()">
     Back to Game
   </button>
+
+  <div class="login-prompt-modal" *ngIf="showLoginPrompt">
+    <div class="modal-content">
+      <h3 class="font-hermona">Save Your Score</h3>
+      <p>Score: {{currentScore}}</p>
+      <p>Create an account to save your scores and track your progress!</p>
+      <div class="modal-actions">
+        <button (click)="navigateToRegister()" class="register-btn">Register</button>
+        <button (click)="navigateToLogin()" class="login-btn">Login</button>
+        <button (click)="showLoginPrompt = false" class="guest-btn">Continue as Guest</button>
+      </div>
+    </div>
+  </div>
 </div>

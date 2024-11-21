@@ -25,12 +25,15 @@ import { RetryConfig } from 'rxjs/internal/operators/retry';
     ])
   ]
 })
+
 export class LeaderboardComponent implements OnInit, OnChanges {
   @Input() quarterId: string = '';
   leaderboard: PlayerScore[] = [];
   quarterTitle: string = '';
   isLoading: boolean = false;
   error: string | null = null;
+  showLoginPrompt = false;
+  currentScore: number | null = null;
   private retryCount = 0;
   private maxRetries = 3;
   private readonly TIMEOUT_MS = 10000;
@@ -39,33 +42,50 @@ export class LeaderboardComponent implements OnInit, OnChanges {
     private firebaseService: FirebaseService,
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute 
+    private route: ActivatedRoute
 
-  ) {}
-
-
+  ) { }
 
   private getQuarterTitle(quarterId: string): string {
     const month = parseInt(quarterId.substring(0, 2));
     const year = '20' + quarterId.substring(2);
-    
+
     const monthNames = [
       'January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December'
     ];
-    
+
     return `${monthNames[month - 1]} ${year}`;
   }
 
+  navigateToRegister() {
+    this.router.navigate(['/register'], {
+      queryParams: {
+        returnUrl: `/leaderboard?quarter=${this.quarterId}`,
+        score: this.currentScore
+      }
+    });
+  }
+
+  navigateToLogin() {
+    this.router.navigate(['/login'], {
+      queryParams: {
+        returnUrl: `/leaderboard?quarter=${this.quarterId}`,
+        score: this.currentScore
+      }
+    });
+  }
+
+  isGuest = true;
 
   ngOnInit() {
     console.log('LeaderBoard Init - Input quarterId:', this.quarterId);
-    
+
     // Get quarter from URL if not provided as input
     this.route.queryParams.subscribe(params => {
       const urlQuarterId = params['quarter'];
       console.log('URL Quarter ID:', urlQuarterId);
-      
+
       if (urlQuarterId) {
         this.quarterId = urlQuarterId;
         console.log('Loading leaderboard with quarterId:', this.quarterId);
@@ -74,8 +94,13 @@ export class LeaderboardComponent implements OnInit, OnChanges {
         this.loadLeaderboard();
       }
     });
+
+    // Check if user is guest
+    this.authService.getPlayerId().subscribe(id => {
+      this.isGuest = id.startsWith('guest_');
+    });
   }
-  
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['quarterId'] && this.quarterId) {
       this.loadLeaderboard();
@@ -88,11 +113,11 @@ export class LeaderboardComponent implements OnInit, OnChanges {
       this.error = 'Quarter ID is missing';
       return;
     }
-  
+
     console.log('Loading leaderboard for quarter:', this.quarterId);
     this.isLoading = true;
     this.error = null;
-  
+
     try {
       const scores: PlayerScore[] = await firstValueFrom(
         this.firebaseService.getLeaderboard(this.quarterId)
@@ -100,20 +125,20 @@ export class LeaderboardComponent implements OnInit, OnChanges {
             tap((scores: PlayerScore[]) => console.log('Raw scores from Firebase:', scores))
           )
       );
-  
+
       console.log('Scores for quarter', this.quarterId, ':', scores);
-  
+
       if (!scores || scores.length === 0) {
         this.leaderboard = [];
         this.error = 'No scores found for this quarter';
         return;
       }
-  
+
       this.leaderboard = scores
         .filter((score: PlayerScore) => score.quarterId === this.quarterId) // Extra check
         .sort((a, b) => b.score - a.score)
         .slice(0, 10);
-      
+
       console.log('Final leaderboard:', this.leaderboard);
     } catch (err: any) {
       this.handleError(err);
@@ -168,13 +193,20 @@ export class LeaderboardComponent implements OnInit, OnChanges {
     }
   }
 
+  submitGuestScore(score: PlayerScore) {
+    if (this.isGuest) {
+      this.currentScore = score.score;
+      this.showLoginPrompt = true;
+    }
+  }
+
   navigateBackToGame() {
     const savedState = localStorage.getItem('gameState');
     if (savedState) {
       const gameState = JSON.parse(savedState);
       if (gameState.completed) {
-        this.router.navigate(['/game'], { 
-          queryParams: { 
+        this.router.navigate(['/game'], {
+          queryParams: {
             quarter: this.quarterId,
             view: 'results'
           }
@@ -182,9 +214,9 @@ export class LeaderboardComponent implements OnInit, OnChanges {
         return;
       }
     }
-  
+
     // Otherwise return to game
-    this.router.navigate(['/game'], { 
+    this.router.navigate(['/game'], {
       queryParams: { quarter: this.quarterId }
     });
   }

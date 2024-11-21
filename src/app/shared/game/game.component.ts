@@ -219,9 +219,15 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
     this.route.queryParams.subscribe(params => {
       const quarterId = params['quarter'];
       if (quarterId) {
-        this.quarterId = quarterId;
-        // Initialize ratings
-        this.initializeRatings();
+        // Redirect to last played quarter or default
+        const lastQuarter = localStorage.getItem('lastPlayedQuarter') || '0124';
+          this.router.navigate(['/game'], {
+            queryParams: { quarter: lastQuarter }
+          });
+        } else {
+          this.quarterId = quarterId;
+          // Initialize ratings
+          this.initializeRatings();
       }
     });
     this.checkAuthentication();
@@ -698,6 +704,12 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
       const actualSample = this.quarterData?.samples[sampleKey];
       const guess = this.guesses[sampleKey];
 
+      console.log(`Calculating score for ${sampleKey}:`, {
+        actual: actualSample,
+        guess: guess,
+        isMobile: window.innerWidth < 768
+      });
+
       if (!actualSample || !guess?.mashbill) continue;
 
       let score = 0;
@@ -735,6 +747,7 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
       sampleScores: this.scores,
       totalScore: this.totalScore
     });
+
   }
 
   // UI state management
@@ -761,6 +774,12 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
   // Game reset
   playAgain() {
     localStorage.removeItem('gameState');
+    // Clean URL without view parameter
+    this.router.navigate(['/game'], { 
+      queryParams: { quarter: this._quarterId },
+      replaceUrl: true // This replaces the URL instead of adding to history
+    });
+
     this.currentSample = 1;
     this.totalScore = 0;
     this.gameCompleted = false;
@@ -796,6 +815,16 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
       }
     } else {
       this.fallbackShare();
+    }
+  }
+
+  async handleAuth() {
+    if (this.isGuest) {
+      await this.login();
+    } else {
+      await this.logout();
+      // After logout, navigate to login page
+      this.router.navigate(['/login']);
     }
   }
 
