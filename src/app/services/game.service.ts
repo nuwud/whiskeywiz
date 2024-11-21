@@ -63,6 +63,29 @@ export class GameService {
     }
   }
 
+  private lastPlayedQuarter = new BehaviorSubject<string>('');
+
+  setLastPlayedQuarter(quarterId: string) {
+    localStorage.setItem('lastPlayedQuarter', quarterId);
+    this.lastPlayedQuarter.next(quarterId);
+  }
+
+  getLastPlayedQuarter(): Observable<string> {
+    const stored = localStorage.getItem('lastPlayedQuarter');
+    if (stored) {
+      this.lastPlayedQuarter.next(stored);
+    }
+    return this.lastPlayedQuarter.asObservable();
+  }
+
+  navigateToGame(quarterId?: string) {
+    const targetQuarter = quarterId || localStorage.getItem('lastPlayedQuarter') || '0124';
+    return this.router.navigate(['/game'], {
+      queryParams: { quarter: targetQuarter },
+      replaceUrl: true
+    });
+  }
+
   saveGameState() {
     return this.authService.getCurrentUserId().pipe(
       switchMap(authId => {

@@ -16,39 +16,40 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
     </div>
   `,
   styles: [`
-    .star-rating-container {
-      display: flex;
-      gap: 0px;
+.star-rating-container {
+  display: grid;
+  grid-template-columns: repeat(10, auto);
+  gap: 4px;
+  justify-content: start;
+  align-items: center;
+  position: relative;
+  margin: 0.5rem 0;
+  
+  .star-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    font-size: 24px;
+    line-height: 1;
+    color: rgba(255, 215, 0, 0.3); // Dimmed gold
+    transition: all 0.2s ease;
+    
+    &.filled {
+      color: #FFD700; // Bright gold
     }
     
-    .star-button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 24px;
-      padding: 0;
-      opacity: 0.3;
-      transition: all 0.2s ease;
+    &:hover {
+      transform: scale(1.1);
     }
-    
-    .star-button.filled {
-      opacity: 1;
-    }
-    .star-rating {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      
-      .star {
-        font-size: 24px;
-        cursor: pointer;
-        padding: 8px;
-        
-        &.selected {
-          color: #FFD700;
-        }
-      }
-    }
+  }
+}
+
+.rating-value {
+  font-family: Hermona, sans-serif;
+  color: #FFD700;
+  margin-left: 1rem;
+}
 
   `]
 })

@@ -1,5 +1,6 @@
 import { NgModule, Injector, DoBootstrap, ApplicationRef, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AuthButtonComponent } from './auth/auth-button/auth-button.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -68,6 +69,7 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
     PlayerComponent, 
     LoginComponent, 
     RegisterComponent,
+    AuthButtonComponent,
     Q0122Component, 
     Q0322Component, 
     Q0323Component, 
@@ -105,6 +107,9 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
     AngularFireFunctionsModule,
     AngularFireAnalyticsModule
   ],
+  exports: [
+    AuthButtonComponent
+  ],
   providers: [
     GameService, 
     FirebaseService, 
@@ -135,6 +140,7 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
+
 export class AppModule implements DoBootstrap {
   constructor(private injector: Injector) {}
   
