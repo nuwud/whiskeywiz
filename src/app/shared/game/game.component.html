@@ -19,9 +19,9 @@
   <div class="header-container">
     <div class="logo-header">
       <img [src]="getImagePath('BlindBarrels.png')" alt="Blind Barrels Logo" class="logo">
-      <button *ngIf="isLoggedIn$" class="logout-button" (click)="logout()">
-        <span class="font-hermona-extras glyph">I</span>
-        <span class="font-hermona-lg">Logout</span>
+      <button class="auth-button" [class.guest]="isGuest" (click)="handleAuth()">
+        <img [src]="isGuest ? 'assets/images/Login_Button.png' : 'assets/images/Logout_Button.png'" 
+             [alt]="isGuest ? 'Login' : 'Logout'">
       </button>
     </div>
 

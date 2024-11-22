@@ -32,11 +32,11 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
     padding: 4px;
     font-size: 24px;
     line-height: 1;
-    color: rgba(255, 215, 0, 0.3); // Dimmed gold
+    color: rgba(255, 215, 0, 0.3); 
     transition: all 0.2s ease;
     
     &.filled {
-      color: #FFD700; // Bright gold
+      color: #FFD700; 
     }
     
     &:hover {

@@ -219,17 +219,12 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
     this.route.queryParams.subscribe(params => {
       const quarterId = params['quarter'];
       if (quarterId) {
-        // Redirect to last played quarter or default
-        const lastQuarter = localStorage.getItem('lastPlayedQuarter') || '0124';
-          this.router.navigate(['/game'], {
-            queryParams: { quarter: lastQuarter }
-          });
-        } else {
-          this.quarterId = quarterId;
-          // Initialize ratings
-          this.initializeRatings();
+        this.quarterId = quarterId;
+        // Initialize ratings
+        this.initializeRatings();
       }
     });
+  
     this.checkAuthentication();
     this.initializeGuesses();
   }
@@ -255,7 +250,7 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
         }));
       }
 
-      // Navigate to login page with return URL
+      // aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa to login page with return URL
       this.router.navigate(['/login'], {
         queryParams: {
           returnUrl: `/game?quarter=${this._quarterId}`,
@@ -502,22 +497,23 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
     this.error = null;
 
     // Load quarter data
-    this.firebaseService.getQuarterById(this._quarterId).subscribe(
-      quarter => {
+    this.firebaseService.getQuarterById(this._quarterId).subscribe({
+      next: quarter => {
         if (quarter) {
           this.quarterData = quarter;
-          this.initializeGuesses();
+          // Force quarter title update
+          this.changeDetectorRef.detectChanges();
         } else {
           this.error = 'Quarter not found';
         }
         this.loading = false;
       },
-      error => {
+      error: error => {
         console.error('Error loading quarter:', error);
         this.error = 'Failed to load quarter data';
         this.loading = false;
       }
-    );
+  });
   }
 
   // Quarter data validation
@@ -691,9 +687,11 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
   }
 
   navigateToLeaderboard() {
-    this.router.navigate(['/leaderboard'], { queryParams: { quarter: this._quarterId } });
+    // Don't check auth status, just navigate directly
+    this.router.navigate(['/leaderboard'], {
+      queryParams: { quarter: this._quarterId } 
+    });
   }
-
 
   // Score calculation - moved to separate method
   private calculateScores(): void {
@@ -773,21 +771,22 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
 
   // Game reset
   playAgain() {
-    localStorage.removeItem('gameState');
-    // Clean URL without view parameter
-    this.router.navigate(['/game'], { 
-      queryParams: { quarter: this._quarterId },
-      replaceUrl: true // This replaces the URL instead of adding to history
-    });
-
+    // First reset all state
     this.currentSample = 1;
     this.totalScore = 0;
     this.gameCompleted = false;
     this.scoreSubmitted = false;
     this.error = null;
+    this.showResults = false;
+    
+    // Clear stored state
+    localStorage.removeItem('gameState');
+    
+    // Reset all guesses and ratings
     this.initializeGuesses();
-
-    // Reset all sample states
+    this.initializeRatings();
+    
+    // Reset sample states
     Object.keys(this.sampleStates).forEach(key => {
       const sampleNum = parseInt(key);
       this.sampleStates[sampleNum] = {
@@ -796,7 +795,14 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
         completed: false
       };
     });
+  
+    // Re-load quarter data
+    this.loadQuarterData();
+    
+    // Force change detection
+    this.changeDetectorRef.detectChanges();
   }
+  
 
   // Sharing functionality
   async share() {
@@ -937,9 +943,14 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
   }
 
   getQuarterTitle(): string {
+      // First try to get from quarter data
+  if (this.quarterData?.name) {
+    return this.quarterData.name;
+  }
+  
     if (!this.quarterData?.name) {
       // Parse from quarterId if name not available
-      if (this._quarterId) {
+      try {
         const month = parseInt(this._quarterId.substring(0, 2));
         const year = '20' + this._quarterId.substring(2, 4);
 
@@ -948,11 +959,15 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
           'July', 'August', 'September', 'October', 'November', 'December'
         ];
 
-        return `${monthNames[month - 1]} ${year}`;
+        if (month >= 1 && month <= 12) {
+          return `${monthNames[month - 1]} ${year}`;
+        }
+      } catch (e) {
+        console.error('Error parsing quarter ID:', e);
       }
-      return 'Whiskey Wiz Challenge';
     }
-    return this.quarterData.name;
+    
+    return 'Whiskey Wiz Challenge';
   }
 
   // Star rating helper methods

@@ -5,7 +5,7 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
-import { Observable, from, throwError } from 'rxjs';
+import { Observable, from, throwError, of } from 'rxjs';
 import * as functions from 'firebase-functions';
 import { CallableRequest } from 'firebase-functions/v2/https';
 import { map, switchMap, tap, catchError } from 'rxjs/operators';
@@ -174,7 +174,22 @@ export class FirebaseService {
       );
   }
 
-  
+  getActiveQuarters(): Observable<string[]> {
+    return this.firestore
+      .collection<Quarter>('quarters', ref => 
+        ref.where('active', '==', true)
+           .orderBy('name', 'desc')
+      )
+      .valueChanges({ idField: 'id' })
+      .pipe(
+        map(quarters => quarters.map(quarter => quarter.id)),
+        catchError(error => {
+          console.error('Error fetching active quarters:', error);
+          return of([]);
+        })
+      );
+  }
+
   submitScore(score: PlayerScore): Observable<void> {
     console.log('Submitting score:', score);
     const timestamp = new Date();

@@ -1,13 +1,10 @@
-// src/app/services/game.service.ts
-
 import { Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { AuthService } from './auth.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
-import { GameState } from '../shared/models/game.model'; // Adjust the path as necessary
+import { map, switchMap, take } from 'rxjs/operators';
+import { GameState } from '../shared/models/game.model'; 
 import { Router } from '@angular/router';
-
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +12,6 @@ import { Router } from '@angular/router';
 export class GameService {
   private currentQuarterSubject = new BehaviorSubject<any>(null);
   currentQuarter$ = this.currentQuarterSubject.asObservable();
-  private currentSample = new BehaviorSubject<number>(0);
   private gameState = new BehaviorSubject<GameState>({
     currentSample: 0,
     guesses: {},
@@ -26,7 +22,13 @@ export class GameService {
   private currentScores = new BehaviorSubject<{[key: string]: number}>({});
   scores$ = this.currentScores.asObservable();
   
-  updateScore(sampleId: string, score: number) {
+  constructor(
+    private firebaseService: FirebaseService,
+    private authService: AuthService,
+    private router: Router
+  ) {}
+
+  updateScore(sampleId: string, score: number): void {
     const currentScores = this.currentScores.value;
     this.currentScores.next({
       ...currentScores,
@@ -38,61 +40,53 @@ export class GameService {
     return Object.values(this.currentScores.value).reduce((sum, score) => sum + score, 0);
   }
 
-  constructor(
-    private firebaseService: FirebaseService,
-    private authService: AuthService,
-    private router: Router
-  ) {}
-
   loadQuarter(quarterId: string): void {
     this.firebaseService.getQuarterGameData(quarterId).subscribe(data => {
       this.currentQuarterSubject.next(data);
     });
   }
 
-  shareScore(score: number, quarter: string) {
+  shareScore(score: number, quarter: string): void {
     const shareText = `I scored ${score} points in the Whiskey Wiz ${quarter} challenge!`;
     // Implement sharing logic here
   }
 
-  navigateToSample(sampleIndex: number) {
+  navigateToSample(sampleIndex: number): void {
     if (sampleIndex >= 0 && sampleIndex < 4) {
-      this.currentSample.next(sampleIndex);
-      // Save state if user is authenticated
-      this.saveGameState();
+      this.gameState.next({
+        ...this.gameState.value,
+        currentSample: sampleIndex
+      });
+      this.saveGameProgress();
     }
   }
 
-  private lastPlayedQuarter = new BehaviorSubject<string>('');
+  private saveGameProgress(): void {
+    this.authService.getCurrentUserId().pipe(
+      take(1),
+      switchMap(authId => {
+        if (!authId) return of(null);
+        return this.firebaseService.gameProgressSet(authId, this.gameState.value);
+      })
+    ).subscribe();
+  }
 
-  setLastPlayedQuarter(quarterId: string) {
+  loadQuarterData(quarterId: string) {
+    return this.firebaseService.getQuarterById(quarterId);
+  }
+
+  navigateToGame(quarterId: string) {
+    if (!quarterId) return;
+    
     localStorage.setItem('lastPlayedQuarter', quarterId);
-    this.lastPlayedQuarter.next(quarterId);
-  }
-
-  getLastPlayedQuarter(): Observable<string> {
-    const stored = localStorage.getItem('lastPlayedQuarter');
-    if (stored) {
-      this.lastPlayedQuarter.next(stored);
-    }
-    return this.lastPlayedQuarter.asObservable();
-  }
-
-  navigateToGame(quarterId?: string) {
-    const targetQuarter = quarterId || localStorage.getItem('lastPlayedQuarter') || '0124';
     return this.router.navigate(['/game'], {
-      queryParams: { quarter: targetQuarter },
-      replaceUrl: true
+      queryParams: { quarter: quarterId }
     });
   }
 
-  saveGameState() {
-    return this.authService.getCurrentUserId().pipe(
-      switchMap(authId => {
-        if (!authId) return of(null);
-        const currentState = this.gameState.value;
-        return this.firebaseService.gameProgressSet(authId, currentState);
-      })
-    ).subscribe();
+  navigateToLeaderboard(quarterId: string) {
+    return this.router.navigate(['/leaderboard'], {
+      queryParams: { quarter: quarterId }
+    });
   }
 }
