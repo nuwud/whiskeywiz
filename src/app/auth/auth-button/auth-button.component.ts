@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
@@ -7,13 +7,24 @@ import { BehaviorSubject, Subscription } from 'rxjs';
   selector: 'app-auth-button',
   template: `
     <button 
-      [class.logged-in]="isLoggedIn"
-      (click)="handleAuth()"
+      (click)="openAuthModal()"
       (mouseenter)="isHovered = true"
       (mouseleave)="isHovered = false"
       class="auth-button">
-      <img [src]="buttonImage" [alt]="buttonAlt">
+      <img 
+        [src]="getButtonImage()" 
+        [alt]="isLoggedIn ? 'Logout' : 'Login'"
+        class="auth-image">
     </button>
+
+    <div *ngIf="showAuthModal" class="auth-modal">
+      <div class="auth-modal-content">
+        <app-login 
+          [returnQuarter]="currentQuarter"
+          (authComplete)="handleAuthComplete($event)">
+        </app-login>
+      </div>
+    </div>
   `,
   styles: [`
     .auth-button {
@@ -22,25 +33,72 @@ import { BehaviorSubject, Subscription } from 'rxjs';
       right: 20px;
       background: none;
       border: none;
+      padding: 0;
       cursor: pointer;
+    }
+
+    .auth-image {
+      width: 125px;
+      height: auto;
       transition: transform 0.2s ease;
-      
-      &:hover {
-        transform: scale(1.05);
-      }
-      
-      img {
-        height: 40px;
-        width: auto;
-      }
+    }
+
+    .auth-button:hover .auth-image {
+      transform: scale(1.05);
+    }
+
+    .auth-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .auth-modal-content {
+      background: linear-gradient(145deg, #2a2a2a 0%, #1a1a1a 100%);
+      border: 2px solid #FFD700;
+      border-radius: 8px;
+      padding: 2rem;
+      max-width: 90%;
+      width: 400px;
     }
   `]
 })
 export class AuthButtonComponent implements OnInit, OnDestroy {
+  @Input() currentQuarter: string = '';
   isLoggedIn = false;
   isHovered = false;
+  showAuthModal = false;
   private authSubscription?: Subscription;
   
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
+
+  ngOnInit() {
+    this.authSubscription = this.authService.isAuthenticated()
+      .subscribe(isAuth => {
+        this.isLoggedIn = isAuth;
+      });
+    this.route.queryParams.subscribe(params => {
+        this.currentQuarter = params['quarter'] || '';
+      });
+  }
+
+  ngOnDestroy() {
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+    }
+  }
+
   get buttonImage(): string {
     return this.getImagePath(
       this.isLoggedIn 
@@ -53,21 +111,22 @@ export class AuthButtonComponent implements OnInit, OnDestroy {
     return this.isLoggedIn ? 'Logout' : 'Login';
   }
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
-
-  ngOnInit() {
-    this.authSubscription = this.authService.isAuthenticated()
-      .subscribe(isAuth => {
-        this.isLoggedIn = isAuth;
-      });
+  getButtonImage(): string {
+    const baseImage = this.isLoggedIn ? 'Logout' : 'Login';
+    const state = this.isHovered ? '_Hover' : '';
+    return `assets/images/${baseImage}_Button${state}.png`;
   }
 
-  ngOnDestroy() {
-    if (this.authSubscription) {
-      this.authSubscription.unsubscribe();
+  openAuthModal(): void {
+    this.showAuthModal = true;
+  }
+
+  handleAuthComplete(success: boolean): void {
+    this.showAuthModal = false;
+    if (success) {
+      // Handle successful auth
+      this.router.navigate(['/game'], { queryParams: { quarter: this.currentQuarter } });
+      
     }
   }
 

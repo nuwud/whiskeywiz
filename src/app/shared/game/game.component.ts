@@ -191,37 +191,53 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
   mashbillCategories: Mashbill[] = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
   mashbillTypes = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
 
-
+  private getStorageKey(): string {
+    return `gameState_${this._quarterId}`;
+  }
+  
+  // Update how we store game state
+  private saveGameState() {
+    const gameState = {
+      completed: this.gameCompleted,
+      scores: this.scores,
+      totalScore: this.totalScore,
+      quarterData: this.quarterData,
+      guesses: this.guesses,
+      showResults: this.showResults
+    };
+    localStorage.setItem(this.getStorageKey(), JSON.stringify(gameState));
+  }
 
   // Lifecycle
   ngOnInit() {
-    // First check for stored game state
-    const savedState = localStorage.getItem('gameState');
-    if (savedState) {
-      try {
-        const gameState = JSON.parse(savedState);
-        if (gameState.completed) {
-          this.scores = gameState.scores;
-          this.totalScore = gameState.totalScore;
-          this.quarterData = gameState.quarterData;
-          this.guesses = gameState.guesses;
-          this.gameCompleted = true;
-          this.showResults = true;
-          this.changeDetectorRef.detectChanges();
-          return; // Don't continue with normal game initialization
-        }
-      } catch (e) {
-        console.error('Error restoring game state:', e);
-      }
-    }
-
-    // Normal initialization if no stored state
+    // First check for stored game state for this specific quarter
     this.route.queryParams.subscribe(params => {
       const quarterId = params['quarter'];
       if (quarterId) {
-        this.quarterId = quarterId;
-        // Initialize ratings
+        this._quarterId = quarterId;
+        const savedState = localStorage.getItem(this.getStorageKey());
+        
+        if (savedState) {
+          try {
+            const gameState = JSON.parse(savedState);
+            if (gameState.completed) {
+              this.scores = gameState.scores;
+              this.totalScore = gameState.totalScore;
+              this.quarterData = gameState.quarterData;
+              this.guesses = gameState.guesses;
+              this.gameCompleted = true;
+              this.showResults = true;
+              this.changeDetectorRef.detectChanges();
+              return; // Don't continue with normal game initialization
+            }
+          } catch (e) {
+            console.error('Error restoring game state:', e);
+          }
+        }
+        
+        // Initialize new game for this quarter
         this.initializeRatings();
+        this.loadQuarterData();
       }
     });
   
@@ -633,6 +649,9 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
       return;
     }
 
+    // Store quarter-specific game state
+    this.saveGameState();
+  
     // Store quarter ID before submission
     localStorage.setItem('lastPlayedQuarter', this._quarterId);
 
@@ -771,6 +790,9 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
 
   // Game reset
   playAgain() {
+    // Remove quarter-specific game state
+    localStorage.removeItem(this.getStorageKey());
+
     // First reset all state
     this.currentSample = 1;
     this.totalScore = 0;
@@ -778,9 +800,6 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
     this.scoreSubmitted = false;
     this.error = null;
     this.showResults = false;
-    
-    // Clear stored state
-    localStorage.removeItem('gameState');
     
     // Reset all guesses and ratings
     this.initializeGuesses();
