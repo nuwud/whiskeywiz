@@ -3,25 +3,26 @@
     <div class="auth-content">
       <h2 class="font-hermona-2xl">Welcome to Whiskey Wiz</h2>
       <p>Please sign in or continue as guest to play</p>
-      
+
       <div class="auth-buttons">
         <button class="auth-button login" (click)="login()">
           <img src="assets/images/Login_Button.png" alt="Login">
         </button>
         <button class="auth-button" [class.guest]="isGuest" (click)="handleAuth()">
-          <img [src]="isGuest ? 'assets/images/Login_Button.png' : 'assets/images/Logout_Button.png'" 
-                [alt]="isGuest ? 'Login' : 'Logout'">
+          <img [src]="isGuest ? 'assets/images/Login_Button.png' : 'assets/images/Logout_Button.png'"
+            [alt]="isGuest ? 'Login' : 'Logout'">
         </button>
       </div>
     </div>
   </div>
+
   <!-- Header Section -->
   <div class="header-container">
     <div class="logo-header">
       <img [src]="getImagePath('BlindBarrels.png')" alt="Blind Barrels Logo" class="logo">
       <button class="auth-button" [class.guest]="isGuest" (click)="handleAuth()">
-        <img [src]="isGuest ? 'assets/images/Login_Button.png' : 'assets/images/Logout_Button.png'" 
-              [alt]="isGuest ? 'Login' : 'Logout'">
+        <img [src]="isGuest ? 'assets/images/Login_Button.png' : 'assets/images/Logout_Button.png'"
+          [alt]="isGuest ? 'Login' : 'Logout'">
       </button>
     </div>
 
@@ -29,70 +30,57 @@
 
   <!-- Game Content -->
   <div *ngIf="!gameCompleted" [@fadeInOut] class="game-content">
-  
-    <!-- Navigation Controls with Panel Background -->
-    <div class="navigation-controls">
-      <div class="nav-button-container">
-        <!--Previous Sample Button-->
-        <button class="nav-button previous"
-                [disabled]="currentSample === 1" 
-                (click)="changeSampleDirection(-1)"
-                [class.disabled]="currentSample === 1">
-            <img [src]="getButtonImage('Previous_Sample_Button')" 
-                  alt="Previous Sample Button" 
-                  class="nav-button">
-        </button>
-      </div>
-  
+
+    <!-- Quarter Title and Sample Title -->
+    <div class="titles-container">
       <h4 class="quarter-title font-hermona-2xl">
         {{ getQuarterTitle() }}
       </h4>
       <h2 class="sample-title font-hermona-4xl">
         Sample {{ getSampleLetter(currentSample) }}
       </h2>
-  
-      <div class="nav-button-container">
-        <button class="nav-button next"
-                [disabled]="currentSample === 4"
-                *ngIf="!showSubmitAllButton()"
-                (click)="changeSampleDirection(1)">
-          <img [src]="getButtonImage('Next_Sample_Button')"
-                class="nav-button">
-        </button>
-        <button class="submit-button"
-                *ngIf="showSubmitAllButton()"
-                (click)="submitGuesses()">
-          <img src="assets/images/Submit_All_Guesses_Button.png"
-                class="nav-button">
-        </button>
-      </div>
     </div>
-  
+
+    <!-- Navigation Controls with Panel Background -->
+    <div class="navigation-controls">
+
+      <!--Previous Sample Button-->
+      <button class="nav-button previous" [disabled]="currentSample === 1" (click)="changeSampleDirection(-1)"
+        [class.disabled]="currentSample === 1">
+        <img [src]="getButtonImage('Previous_Sample_Button')" alt="Previous Sample Button" class="nav-button">
+      </button>
+      <button class="nav-button next" [disabled]="currentSample === 4" *ngIf="!showSubmitAllButton()"
+        (click)="changeSampleDirection(1)">
+        <img [src]="getButtonImage('Next_Sample_Button')" class="nav-button">
+      </button>
+      <button class="submit-button" *ngIf="showSubmitAllButton()" (click)="submitGuesses()">
+        <img src="assets/images/Submit_All_Guesses_Button.png" class="nav-button">
+      </button>
+
+    </div>
+
     <!-- Main Form Area -->
     <div class="guess-form">
-      <div class="panel-background">
-        <img src="assets/images/Larger_Panel.png" class="panel-image" alt="background panel">
-      </div>
-  
+
       <!-- Form Content -->
       <div class="form-content">
-  
+
         <!-- Age Statement -->
         <div class="form-group">
-          <span class="label-group">
+          <div class="label-group">
             <h3 class="font-hermona-2xl">Age Statement:
               <span class="value font-hermona-2xl">
                 {{ getSampleData(currentSample)?.age || 5 }} Years
               </span>
             </h3>
-          </span>
+          </div>
           <span class="slider-container">
             <img src="assets/images/Track.png" class="slider-track" alt="track">
             <input type="range" class="custom-slider" min="1" max="10"
               [(ngModel)]="guesses['sample' + currentSample].age">
           </span>
         </div>
-  
+
         <!-- Proof -->
         <div class="form-group">
           <span class="label-group">
@@ -108,7 +96,7 @@
               [(ngModel)]="guesses['sample' + currentSample].proof">
           </span>
         </div>
-  
+
         <!-- Mashbill -->
         <div class="form-group">
           <h3 class="font-hermona-2xl">Mashbill:</h3>
@@ -136,54 +124,19 @@
             </h3>
           </span>
           <div class="rating-container">
-            <app-star-rating 
-              [rating]="starRatings['sample' + currentSample] || 0"
-              (ratingChange)="updateStarRating(currentSample, $event)"
-              [readonly]="false">
+            <app-star-rating [rating]="starRatings['sample' + currentSample] || 0"
+              (ratingChange)="updateStarRating(currentSample, $event)" [readonly]="false">
             </app-star-rating>
           </div>
         </div>
 
-        <!-- Sample Navigation 
-        <div class="sample-navigation">
-          <div class="samples-row">
-            <div class="samples-indicator">
-            <button *ngFor="let num of [1,2,3,4]" 
-                    class="sample-indicator"
-                    [class.active]="currentSample === num"
-                    [class.completed]="sampleStates[num].completed"
-                    (click)="selectSample(num)"
-                    [attr.aria-label]="'Go to Sample ' + getSampleLetter(num)">
-              <img [src]="getSampleIndicatorImage(num)" 
-                  [alt]="'Sample ' + getSampleLetter(num)">
-            </button>
-          </div>
-          </div>
-        </div>-->
-
-          <!-- Submit Button
-          <div class="submit-button-container">
-            <img *ngIf="showSubmitAllButton()"
-              src="assets/images/Submit_All_Guesses_Button.png"
-              class="submit-button"
-              (click)="submitGuesses()"
-              (mouseenter)="buttonHover('submit', true)"
-              (mouseleave)="buttonHover('submit', false)">
-          </div> -->
-        </div>
+      </div>
 
     </div>
   </div>
 
-    <!-- Results Component -->
-  <app-results 
-    *ngIf="gameCompleted && showResults"
-    [quarterData]="quarterData"
-    [guesses]="guesses"
-    [scores]="scores"
-    [totalScore]="totalScore"
-    (playAgain)="playAgain()"
-    (shareResults)="share()"
-    (submitScore)="submitScore()">
+  <!-- Results Component -->
+  <app-results *ngIf="gameCompleted && showResults" [quarterData]="quarterData" [guesses]="guesses" [scores]="scores"
+    [totalScore]="totalScore" (playAgain)="playAgain()" (shareResults)="share()" (submitScore)="submitScore()">
   </app-results>
 </div>
