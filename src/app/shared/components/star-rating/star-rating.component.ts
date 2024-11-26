@@ -19,17 +19,21 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 .star-rating-container {
   display: grid;
   grid-template-columns: repeat(10, auto);
-  gap: 4px;
+  gap: 0;
   justify-content: start;
   align-items: center;
   position: relative;
-  margin: 0.5rem 0;
+  margin: 0;
+
+  .star-button {
+    margin-top:0;
+  }
   
   .star-button {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 4px;
+    padding: 1px;
     font-size: 24px;
     line-height: 1;
     color: rgba(255, 215, 0, 0.3); 
@@ -48,7 +52,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 .rating-value {
   font-family: Hermona, sans-serif;
   color: #FFD700;
-  margin-left: 1rem;
+  margin-left: 0;
 }
 
   `]

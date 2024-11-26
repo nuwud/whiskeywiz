@@ -10,37 +10,63 @@ import { LeaderboardComponent } from './shared/leaderboard/leaderboard.component
 import { ShopifyCallbackComponent } from './auth/shopify-callback/shopify-callback.component';
 
 const routes: Routes = [
-  { path: 'admin', 
+  { 
+    path: 'admin', 
     component: AdminComponent, 
     canActivate: [combineGuards(canActivateAuth, canActivateAdmin)], 
     children: [
       { path: 'quarter/:id', component: PlayerComponent }
     ] 
   },
-  { path: 'player', 
+  { 
+    path: 'player', 
     component: PlayerComponent, 
     canActivate: [canActivateAuth],
     children: [
       { path: 'quarter/:id', component: PlayerComponent }
     ] 
   },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'game', 
+  { 
+    path: 'login', component: LoginComponent 
+  },
+  { 
+    path: 'register', component: RegisterComponent 
+  },
+  { 
+    path: 'game', 
     component: GameComponent,
     children: [
       { path: ':quarter', component: GameComponent }
     ] 
   },
-  { path: 'leaderboard', 
-    component: LeaderboardComponent, 
+  { 
+    path: 'game', 
+    component: GameComponent,
+    runGuardsAndResolvers: 'always'
+  },
+  { 
+    path: 'leaderboard', 
+    component: LeaderboardComponent,
+    runGuardsAndResolvers: 'always', 
     canActivate: [canActivateAuth] 
   },
-  { path: 'auth/callback', component: ShopifyCallbackComponent},
-  { path: '', redirectTo: '/game', pathMatch: 'full'},
-  { path: 'unauthorized', redirectTo: '/player' }, 
-  { path: '**', redirectTo: '/game'}
-
+  { 
+    path: 'auth/callback', 
+    component: ShopifyCallbackComponent
+  },
+  { 
+    path: '', 
+    redirectTo: '/game', 
+    pathMatch: 'full'
+  },
+  { 
+    path: 'unauthorized', 
+    redirectTo: '/player' 
+  }, 
+  { 
+    path: '**', 
+    redirectTo: '/game'
+  }
 ];
 
 const routerOptions: ExtraOptions = {
@@ -54,7 +80,12 @@ const routerOptions: ExtraOptions = {
 };
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, routerOptions)],
+  imports: [RouterModule.forRoot(routes, {
+    onSameUrlNavigation: 'reload',
+    paramsInheritanceStrategy: 'always',
+    urlUpdateStrategy: 'eager',
+    scrollPositionRestoration: 'enabled'
+  })],
   exports: [RouterModule]
 })
   export class AppRoutingModule { }

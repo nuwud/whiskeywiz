@@ -178,7 +178,7 @@ export class FirebaseService {
     return this.firestore
       .collection<Quarter>('quarters', ref => 
         ref.where('active', '==', true)
-           .orderBy('name', 'desc')
+            .orderBy('name', 'desc')
       )
       .valueChanges({ idField: 'id' })
       .pipe(
@@ -329,7 +329,6 @@ export class FirebaseService {
       // Implement the logic to save game progress
   
   }
-
   
 }
 

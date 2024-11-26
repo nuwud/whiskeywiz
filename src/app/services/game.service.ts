@@ -1,92 +1,120 @@
 import { Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { AuthService } from './auth.service';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, switchMap, take } from 'rxjs/operators';
-import { GameState } from '../shared/models/game.model'; 
 import { Router } from '@angular/router';
+import { BehaviorSubject, Observable, from, throwError } from 'rxjs';
+import { map, switchMap, take, catchError, tap } from 'rxjs/operators';
+import { GameState, Quarter } from '../shared/models/quarter.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
-  private currentQuarterSubject = new BehaviorSubject<any>(null);
-  currentQuarter$ = this.currentQuarterSubject.asObservable();
-  private gameState = new BehaviorSubject<GameState>({
-    currentSample: 0,
-    guesses: {},
-    isComplete: false,
-    scores: {},
-    totalScore: 0 
-  });
-  private currentScores = new BehaviorSubject<{[key: string]: number}>({});
-  scores$ = this.currentScores.asObservable();
-  
+  private currentQuarter = new BehaviorSubject<Quarter | null>(null);
+  private gameState = new BehaviorSubject<GameState | null>(null);
+  private navigationLock = false;
+
   constructor(
     private firebaseService: FirebaseService,
     private authService: AuthService,
     private router: Router
   ) {}
 
-  updateScore(sampleId: string, score: number): void {
-    const currentScores = this.currentScores.value;
-    this.currentScores.next({
-      ...currentScores,
-      [sampleId]: score
-    });
+  getCurrentQuarter(): Observable<Quarter | null> {
+    return this.currentQuarter.asObservable();
   }
 
-  getTotalScore(): number {
-    return Object.values(this.currentScores.value).reduce((sum, score) => sum + score, 0);
+  getCurrentQuarterId(): string | null {
+    return this.currentQuarter.value?.id || null;
   }
 
-  loadQuarter(quarterId: string): void {
-    this.firebaseService.getQuarterGameData(quarterId).subscribe(data => {
-      this.currentQuarterSubject.next(data);
-    });
-  }
-
-  shareScore(score: number, quarter: string): void {
-    const shareText = `I scored ${score} points in the Whiskey Wiz ${quarter} challenge!`;
-    // Implement sharing logic here
-  }
-
-  navigateToSample(sampleIndex: number): void {
-    if (sampleIndex >= 0 && sampleIndex < 4) {
-      this.gameState.next({
-        ...this.gameState.value,
-        currentSample: sampleIndex
-      });
-      this.saveGameProgress();
+  async loadQuarter(quarterId: string): Promise<void> {
+    try {
+      const quarter = await this.firebaseService.getQuarterById(quarterId)
+        .pipe(take(1))
+        .toPromise();
+        
+      if (quarter) {
+        this.currentQuarter.next(quarter);
+        localStorage.setItem('lastPlayedQuarter', quarterId);
+      } else {
+        throw new Error('Quarter not found');
+      }
+    } catch (error) {
+      console.error('Error loading quarter:', error);
+      throw error;
     }
   }
 
-  private saveGameProgress(): void {
-    this.authService.getCurrentUserId().pipe(
-      take(1),
-      switchMap(authId => {
-        if (!authId) return of(null);
-        return this.firebaseService.gameProgressSet(authId, this.gameState.value);
-      })
-    ).subscribe();
+  clearGameState(): void {
+    this.gameState.next(null);
+    this.currentQuarter.next(null);
   }
 
-  loadQuarterData(quarterId: string) {
-    return this.firebaseService.getQuarterById(quarterId);
-  }
-
-  navigateToGame(quarterId: string) {
-    if (!quarterId) return;
+  async navigateToGame(quarterId: string): Promise<boolean> {
+    if (this.navigationLock) return false;
     
-    localStorage.setItem('lastPlayedQuarter', quarterId);
-    return this.router.navigate(['/game'], {
-      queryParams: { quarter: quarterId }
-    });
+    try {
+      this.navigationLock = true;
+      
+      // Clear existing game state
+      localStorage.removeItem(`gameState_${quarterId}`);
+      this.clearGameState();
+      
+      // Navigate to game
+      return await this.router.navigate(['/game'], {
+        queryParams: { quarter: quarterId },
+        replaceUrl: true
+      });
+    } finally {
+      this.navigationLock = false;
+    }
   }
 
-  navigateToLeaderboard(quarterId: string) {
-    return this.router.navigate(['/leaderboard'], {
-      queryParams: { quarter: quarterId }
-    });
+  async navigateToLeaderboard(quarterId: string): Promise<boolean> {
+    if (this.navigationLock) return false;
+    
+    try {
+      this.navigationLock = true;
+      
+      return await this.router.navigate(['/leaderboard'], {
+        queryParams: { quarter: quarterId }
+      });
+    } finally {
+      this.navigationLock = false;
+    }
+  }
+
+  async handlePlayAgain(quarterId: string): Promise<void> {
+    if (this.navigationLock) return;
+    
+    try {
+      this.navigationLock = true;
+      
+      // Clear game state
+      this.clearGameState();
+      localStorage.removeItem(`gameState_${quarterId}`);
+      
+      // Load quarter and navigate
+      await this.loadQuarter(quarterId);
+      await this.navigateToGame(quarterId);
+    } finally {
+      this.navigationLock = false;
+    }
+  }
+
+  getGameState(): Observable<GameState | null> {
+    return this.gameState.asObservable();
+  }
+
+  saveGameState(state: GameState): Observable<void> {
+    return this.authService.getPlayerId().pipe(
+      take(1),
+      switchMap(playerId => {
+        if (!playerId) return throwError(() => new Error('No player ID'));
+        return this.firebaseService.gameProgressSet(playerId, state);
+      }),
+      tap(() => this.gameState.next(state))
+    );
   }
 }

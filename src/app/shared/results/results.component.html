@@ -1,79 +1,71 @@
 <div class="results-container">
+    <!-- Header Section -->
     <div class="results-header">
-        <img src="assets/images/header-panel.png" class="panel-background">
-        <div class="content">
-            <h3 class="font-hermona-2xl">Game Completed!</h3>
-            <div class="total-score font-hermona-4xl">Total Score: {{ totalScore }}</div>
-            <div class="score-quip">{{ getScoreQuip(totalScore) }}</div>
-        </div>
+        <h2 class="game-completed">Game Completed!</h2>
+        <div class="total-score">Total Score: {{ totalScore }}</div>
+        <div class="score-quip">{{ scoreService.getScoreQuip(totalScore) }}</div>
     </div>
 
+    <!-- Results Grid -->
     <div class="results-grid">
-        <div class="result-card" *ngFor="let num of [1,2,3,4]">
-            <img [src]="getResultPanelImage()" class="results-panel-background">
-            <div class="content">
-                <div class="score-display">
-                    Score: {{ scores['sample' + num] }} {{ getEmojiScore(scores['sample' + num]) }}
+        <div class="result-card" *ngFor="let sampleNum of sampleNumbers">
+            <div class="score-display">
+                Score: {{ getSampleScore(sampleNum) }}
+                <span class="emoji-score">{{ scoreService.getEmojiScore(getSampleScore(sampleNum)) }}</span>
+            </div>
+
+            <h3 class="sample-title">Sample {{ sampleNum }}</h3>
+
+            <div class="comparison-grid">
+                <div class="guess-column">
+                    <h5>Your Guess</h5>
+                    <p>Age: {{ getGuessValue(sampleNum, 'age') }} years</p>
+                    <p>Proof: {{ getGuessValue(sampleNum, 'proof') }}</p>
+                    <p>Type: {{ getGuessValue(sampleNum, 'mashbill') }}</p>
                 </div>
 
-                <h4  class="sample-result-header font-hermona-2xl">Sample {{ num }}</h4>
-
-                <div class="comparison-grid">
-                    <div class="guess-column">
-                        <h5 class="#your-guess font-hermona">Your Guess</h5>
-                        <p>Age: {{ guesses['sample' + num]?.age || 0 }} years</p>
-                        <p>Proof: {{ guesses['sample' + num]?.proof || 0 }}</p>
-                        <p>Type: {{ guesses['sample' + num]?.mashbill || 'None' }}</p>
-                        <div class="rating-container"><h5 class="font-hermona"></h5>
-                            <app-star-rating 
-                                [rating]="guesses['sample' + num]?.rating || 0" 
-                                [readonly]="true">
-                            </app-star-rating>
-                        </div>
-                    </div>
-
-                    <div class="actual-column">
-                        <h5 class="font-hermona">Actual</h5>
-                        <p>Age: {{ quarterData?.samples['sample' + num]?.age || 0 }} years</p>
-                        <p>Proof: {{ quarterData?.samples['sample' + num]?.proof || 0 }}</p>
-                        <p>Type: {{ quarterData?.samples['sample' + num]?.mashbill || 'None' }}</p>
-                    </div>
+                <div class="actual-column">
+                    <h5>Actual</h5>
+                    <p>Age: {{ getActualValue(sampleNum, 'age') }} years</p>
+                    <p>Proof: {{ getActualValue(sampleNum, 'proof') }}</p>
+                    <p>Type: {{ getActualValue(sampleNum, 'mashbill') }}</p>
                 </div>
+            </div>
+
+            <div class="rating-container" *ngIf="showRatings">
+                <h5>Your Rating</h5>
+                <app-star-rating [rating]="getGuessValue(sampleNum, 'rating') || 0" [readonly]="true">
+                </app-star-rating>
             </div>
         </div>
     </div>
 
+    <!-- Action Buttons -->
     <div class="results-actions">
         <div class="button-container">
-          <img [src]="getButtonImage('Share_Score_Button', shareHovered)"
-               (mouseenter)="shareHovered = true"
-               (mouseleave)="shareHovered = false"
-               (click)="handleShare()"
-               class="action-button">
+            <img [src]="getButtonImage('share', shareHovered)" (mouseover)="shareHovered = true"
+                (mouseout)="shareHovered = false" (click)="handleShare()" alt="Share Results">
         </div>
 
         <div class="button-container">
-          <img [src]="getButtonImage('Play_Again_Button', playAgainHovered)"
-               (mouseenter)="playAgainHovered = true"
-               (mouseleave)="playAgainHovered = false"
-               (click)="handlePlayAgain()"
-               class="action-button">
+            <img [src]="getButtonImage('play-again', playAgainHovered)" (mouseover)="playAgainHovered = true"
+                (mouseout)="playAgainHovered = false" (click)="handlePlayAgain()" alt="Play Again">
         </div>
 
-    <div class="button-container">
-        <img [src]="getButtonImage('Leaderboard_Button', leaderboardHovered)"
-             (mouseenter)="leaderboardHovered = true"
-             (mouseleave)="leaderboardHovered = false"
-             (click)="handleLeaderboard()"
-             class="action-button">
-      </div>
+        <div class="button-container">
+            <img [src]="getButtonImage('leaderboard', leaderboardHovered)" (mouseover)="leaderboardHovered = true"
+                (mouseout)="leaderboardHovered = false" (click)="handleLeaderboard()" alt="View Leaderboard">
+        </div>
     </div>
 
+    <!-- Footer -->
     <div class="results-footer">
-        <img src="assets/images/footer-panel.png" class="panel-background">
-        <div class="content">
-            <p class="font-hermona">Thanks for playing!</p>
-            <p class="font-hermona">Check out the leaderboard to see how you stack up against other players.</p>
-        </div>
-        </div>
+        <p>Thanks for playing!</p>
+        <p>Check out the leaderboard to see how you stack up against other players.</p>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" *ngIf="isLoading">
+        <div class="spinner"></div>
+    </div>
 </div>
