@@ -24,6 +24,7 @@
 				"priority": 4
 			}
 		],
-		"gitProjectManager.displayProjectPath": true
+		"gitProjectManager.displayProjectPath": true,
+		"DockerRun.DisableDockerrc": true
 	}
 }
