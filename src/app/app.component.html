@@ -1,0 +1,15 @@
+<!-- app.component.html -->
+<div class="app-container">
+  <!-- Show header only once at the top level -->
+  <header class="app-header">
+    <h1 class="text-center text-green-600">Whiskey Wiz</h1>
+    <nav *ngIf="authService.isAuthenticated() | async">
+      <a routerLink="/logout" class="logout-link">Logout</a>
+    </nav>
+  </header>
+
+  <!-- Main content area -->
+  <main class="app-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

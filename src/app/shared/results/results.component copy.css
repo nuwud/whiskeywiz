@@ -1,0 +1,277 @@
+/* src/app/shared/results/results.component.css */
+.results-container {
+  position: relative;
+  /*width: 100%;*/
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.results-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.header-panel {
+  height: 120px; 
+  
+  @media (max-width: 768px) {
+    height: 80px; 
+  }
+}
+
+.results-actions {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+.button-container {
+  position: relative;
+  
+  .action-button {
+    width: 250px;
+    height: auto;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    
+    &:hover {
+      transform: scale(1.05);
+    }
+    
+    @media (max-width: 768px) {
+      width: 80%; 
+      text-align: center;
+    }
+  }
+}
+
+.total-score {
+  font-size: 3rem;
+  color: #FFD700;
+  margin: 0.5rem 0;
+}
+
+.score-quip {
+  font-size: 1.5rem;
+  color: #FFD700;
+  margin: 0.5rem 0;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.panel-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  object-fit: fill;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+.results-panel-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 0;
+  opacity: 0.4;
+
+  @media (max-width: 768px) {
+    object-fit: fill; 
+  }
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+}
+
+.rating-container {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-top: 1px solid rgba(255, 215, 0, 0.3); /* subtle gold separator */
+  grid-column: span 2; /* span both columns */
+  position: absolute;
+  bottom: -30px; /* Adjust as needed */
+  left: 50%;
+  transform: translateX(-50%) scale(0.7);
+  width: 100%;
+  text-align: center;
+  z-index: 2;
+}
+
+.rating-container app-star-rating {
+  display: inline-block;
+  margin-top: 0.5rem;
+}
+
+.result-card {
+  position: relative;
+  margin: 0.5rem;
+  padding: 0.5rem;
+  padding-bottom: 40px;
+
+  @media (max-width: 768px) {
+    margin: 0.5rem;
+    padding: 0.5rem;
+    min-height: 250px;
+  }
+  
+}
+
+.results-panel-background {
+  z-index: 0;
+}
+
+.content {
+  z-index: 1;
+  position: relative;
+}
+
+.score-display {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #FFD700;
+  margin: 0.5rem 0;
+}
+
+.score-panel {
+  position: relative;
+  
+  .star-rating {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    
+    @media (min-width: 768px) {
+      left: 20px;
+      transform: none;
+    }
+  }
+}
+
+.comparison-grid {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.sample-title {
+  margin-top: 0;
+}
+
+.sample-result-header {
+  text-align: center;
+}
+
+.guess-column, .actual-column {
+  padding: 0.5rem;
+  background: rgba(51, 51, 51, 0.7);
+  border-radius: 4px;
+}
+
+h3, h4, h5 { 
+  color: #FFD700;
+  margin-bottom: 0.5rem;
+  margin-top:0;
+}
+
+p {
+  color: #ffffff;
+  margin: 0.25rem 0;
+}
+
+.results-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.standard-button {
+    background: none;
+    border: 2px solid #FFD700;
+    color: #FFD700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-family: 'Hermona', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 0 0.5rem;
+  }
+  
+  .standard-button:hover {
+    background: #FFD700;
+    color: #1A1A1A;
+    transform: scale(1.05);
+  }
+
+.secondary {
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.secondary:hover {
+  background: #ffffff;
+  color: #1A1A1A;
+}
+
+.leaderboard-button {
+  width: 250px;
+}
+
+.leaderboard-button-container {
+  width: 250px;
+}
+
+@media (max-width: 768px) {
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .results-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .standard-button {
+    width: 100%;
+    max-width: 300px;
+    margin: 0.5rem 0;
+  }
+}
+
+.rating-display {
+  margin-top: 1rem;
+  color: #FFD700;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rating-display app-star-rating {
+  transform: scale(0.5); /* Make stars slightly smaller in results view */
+}
+

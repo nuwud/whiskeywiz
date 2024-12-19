@@ -1,0 +1,11 @@
+<!-- src/app/shared/components/game-banner/game-banner.component.html -->
+<div class="banner" [class.expanded]="isExpanded">
+    <div class="banner-header" (click)="toggleExpand()">
+      <h2 class="banner-title font-hermona-2xl">Whiskey Wiz Challenge</h2>
+      <span class="expand-icon">{{ isExpanded ? '▼' : '▲' }}</span>
+    </div>
+    
+    <div class="game-container" *ngIf="isExpanded">
+      <app-game [quarterId]="currentQuarter"></app-game>
+    </div>
+  </div>

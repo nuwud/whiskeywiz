@@ -1,0 +1,15 @@
+﻿<nav *ngIf="isAdmin$ | async" class="admin-nav">
+  <a routerLink="/admin" routerLinkActive="active">Admin Panel</a>
+  <a routerLink="/player" routerLinkActive="active">Play Game</a>
+  
+  <div class="quarter-links" *ngIf="quarters$ | async as quarters">
+    <select title="Select Quarter" (change)="navigateToQuarter($event)">
+      <option value="">Select Quarter</option>
+      <option *ngFor="let quarter of quarters" [value]="quarter.id">
+        {{quarter.name}}
+      </option>
+    </select>
+  </div>
+  
+  <button (click)="logout()" class="logout-btn">Logout</button>
+</nav>

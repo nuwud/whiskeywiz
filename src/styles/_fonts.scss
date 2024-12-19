@@ -1,0 +1,122 @@
+/* src/styles/_fonts.scss */
+@forward 'variables';
+
+@font-face {
+  font-family: 'Hermona';
+  src: url('../assets/fonts/Hermona.woff2') format('woff2'),
+       url('../assets/fonts/Hermona.woff') format('woff'),
+       url('../assets/fonts/Hermona.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica';
+  src: url('../assets/fonts/HELVETICA.woff2') format('woff2'),
+       url('../assets/fonts/HELVETICA.woff') format('woff'),
+       url('../assets/fonts/HELVETICA-BOLD.woff2') format('woff2'),
+       url('../assets/fonts/HELVETICA-BOLD.woff') format('woff'),
+       url('../assets/fonts/HELVETICA-BOLDOBLIQUE.woff2') format('woff2'),
+       url('../assets/fonts/HELVETICA-BOLDOBLIQUE.woff') format('woff'),
+       url('../assets/fonts/HELVETICA-COMPRESSED-5871D14B6903A.woff2') format('woff2'),
+       url('../assets/fonts/HELVETICA-COMPRESSED-5871D14B6903A.woff') format('woff'),
+       url('../assets/fonts/HELVETICA-LIGHT-587EBE5A59211.woff2') format('woff2'),
+       url('../assets/fonts/HELVETICA-LIGHT-587EBE5A59211.woff') format('woff'),
+       url('../assets/fonts/HELVETICA-OBLIQUE.woff2') format('woff2'),
+       url('../assets/fonts/HELVETICA-OBLIQUE.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Hermona-Extras';
+  src: url('../assets/fonts/Hermona-Extras.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+  
+@mixin font-hermona($size) {
+  font-family: 'Hermona', sans-serif;
+  @if $size == 'base' {
+    font-size: 1.2rem;
+  } @else if $size == 'sm' {
+    font-size: 0.875rem;
+  } @else if $size == 'lg' {
+    font-size: 1.5rem;
+  } @else if $size == 'xl' {
+    font-size: 1.875rem;
+  } @else if $size == '2xl' {
+    font-size: 2.25rem;
+  } @else if $size == '3xl' {
+    font-size: 3rem;
+  } @else if $size == '4xl' {
+    font-size: 3.75rem;
+  }
+  line-height: 1.5;
+}
+
+  /* Font Variables */
+  :root {
+    --font-primary: Helvetica, Arial, sans-serif;
+    --font-headings: 'Hermona', Helvetica, Arial, sans-serif;
+  }
+  
+  /* Global Typography */
+  body {
+    font-family: var(--font-primary);
+  }
+  
+  h1, h2, h3, h4, h5, h6,
+  .heading {
+    font-family: var(--font-headings);
+  }
+  
+  /* Utility Classes */
+  .font-hermona {
+    @include font-hermona('base');
+    margin: 0 0 0 0;
+  }
+  
+  .font-hermona-sm {
+    @include font-hermona('sm');
+    margin: 0 0 0 0;
+  }
+  
+  .font-hermona-lg {
+    @include font-hermona('lg');
+    margin: 0 0 0 0;
+  }
+  
+  .font-hermona-xl {
+    @include font-hermona('xl');
+    margin: 0 0 0 0;
+  }
+  
+  .font-hermona-2xl {
+    @include font-hermona('2xl');
+    margin: 0 0 0 0;
+  }
+  
+  .font-hermona-3xl {
+    @include font-hermona('3xl');
+    margin: 0 0 0 0;
+  }
+  
+  .font-hermona-4xl {
+    @include font-hermona('4xl');
+    margin: 0 0 0 0;
+  }
+  
+  .font-helvetica {
+    font-family: var(--font-primary) !important;
+  }
+
+  .font-hermona-extras {
+    font-family: 'Hermona-Extras', sans-serif;
+  }
+
+  .helvetica-text {
+    font-family: Helvetica, Arial, sans-serif;
+    color: white;
+  }

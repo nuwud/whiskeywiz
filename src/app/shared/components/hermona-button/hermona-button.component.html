@@ -1,0 +1,9 @@
+// src/app/shared/components/hermona-button/hermona-button.component.html
+<button 
+  class="hermona-button" 
+  [class.animate]="animate"
+  [class.disabled]="disabled"
+  (click)="onClick()">
+  <span class="glyph-background font-hermona-extras">{{ glyphChar }}</span>
+  <span class="button-text font-hermona">{{ text }}</span>
+</button>

@@ -1,0 +1,138 @@
+{
+  "$schema": "node_modules/nx/schemas/project-schema.json",
+  "name": "whiskey-wiz",
+  "projectType": "application",
+  "generators": {},
+  "sourceRoot": "src",
+  "prefix": "app",
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:browser",
+      "options": {
+        "outputPath": "dist/whiskey-wiz",
+        "index": "src/index.html",
+        "main": "src/main.ts",
+        "polyfills": "src/polyfills.ts",
+        "tsConfig": "tsconfig.app.json",
+        "aot": true,
+        "assets": [
+          "src/favicon.ico",
+          "src/assets",
+          {
+            "glob": "**/*",
+            "input": "src/assets/fonts",
+            "output": "/assets/fonts"
+          }
+        ],
+        "styles": [
+          "src/styles.scss"
+        ],
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "src/styles"
+          ]
+        },
+        "scripts": [],
+        "outputHashing": "none",
+        "sourceMap": false,
+        "namedChunks": false,
+        "vendorChunk": false,
+        "commonChunk": false,
+        "buildOptimizer": true,
+        "budgets": [
+          {
+            "type": "initial",
+            "maximumWarning": "2mb",
+            "maximumError": "5mb"
+          }
+        ]
+      },
+      "configurations": {
+        "production": {
+          "optimization": {
+            "scripts": true,
+            "styles": {
+              "minify": true,
+              "inlineCritical": false
+            }
+          },
+          "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+        }
+      },
+      "outputs": [
+        "{options.outputPath}"
+      ]
+    },
+    "build:elements": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx build whiskey-wiz --configuration=production"
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "firebase deploy --only hosting"
+      }
+    },
+    "lint": {
+      "executor": "@angular-eslint/builder:lint",
+      "options": {
+        "eslintConfig": ".eslintrc.json",
+        "lintFilePatterns": [
+          "src/**/*.ts",
+          "src/**/*.html"
+        ]
+      },
+      "outputs": [
+        "{options.outputFile}"
+      ]
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "browserTarget": "whiskey-wiz:build:production"
+        }
+      },
+      "options": {
+        "browserTarget": "whiskey-wiz:build"
+      }
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "whiskey-wiz:build"
+      }
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "main": "src/test.ts",
+        "polyfills": "src/polyfills.ts",
+        "tsConfig": "tsconfig.spec.json",
+        "karmaConfig": "karma.conf.js",
+        "assets": [
+          "src/favicon.ico",
+          "src/assets"
+        ],
+        "styles": [
+          "src/styles.css"
+        ],
+        "scripts": []
+      }
+    }
+  }
+}
