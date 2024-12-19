@@ -23,6 +23,7 @@
 				"command": "extension.execute",
 				"priority": 4
 			}
-		]
+		],
+		"gitProjectManager.displayProjectPath": true
 	}
 }
