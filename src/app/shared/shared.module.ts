@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { GameComponent } from './game/game.component';
-import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { ResultsComponent } from './results/results.component';
 import { StarRatingComponent } from './components/star-rating/star-rating.component';
 import { HermonaButtonComponent } from './components/hermona-button/hermona-button.component';
@@ -13,7 +12,6 @@ import { GameBannerComponent } from './components/game-banner/game-banner.compon
   declarations: [
     GameComponent,
     GameBannerComponent,
-    LeaderboardComponent,
     ResultsComponent,
     HermonaButtonComponent,
     StarRatingComponent
@@ -26,7 +24,6 @@ import { GameBannerComponent } from './components/game-banner/game-banner.compon
   exports: [
     GameComponent,
     GameBannerComponent,
-    LeaderboardComponent,
     ResultsComponent,
     FormsModule,
     CommonModule,
