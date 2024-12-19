@@ -14,6 +14,7 @@ import { ScoreService } from '../../services/score.service';
 import { GameService } from '../../services/game.service';
 import { take, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 
 interface SampleGuess {
   age: number;
@@ -25,7 +26,23 @@ interface SampleGuess {
 @Component({
   selector: 'app-results',
   templateUrl: './results.component.html',
-  styleUrls: ['./results.component.scss']
+  styleUrls: ['./results.component.scss'],
+  animations: [
+    trigger('expandCollapse', [
+      state('collapsed', style({
+        height: '0',
+        overflow: 'hidden',
+        opacity: '0'
+      })),
+      state('expanded', style({
+        height: '*',
+        opacity: '1'
+      })),
+      transition('collapsed <=> expanded', [
+        animate('300ms ease-in-out')
+      ])
+    ])
+  ]
 })
 export class ResultsComponent implements OnInit, OnDestroy {
   @Input() quarterData: Quarter | null = null;
@@ -41,13 +58,17 @@ export class ResultsComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   error: string | null = null;
   sampleNumbers: number[] = [1, 2, 3, 4];
-  private destroy$ = new Subject<void>();
-  private navigationInProgress = false;
+  showScoreDetails: boolean = false;
+  showScoringInfo: boolean = false;
+  videoUrl: string = 'https://youtu.be/tcqLTMiksDw?si=pcFL-64Aecc-oLC6';
   
   // Button hover states
   shareHovered: boolean = false;
   playAgainHovered: boolean = false;
   leaderboardHovered: boolean = false;
+
+  private destroy$ = new Subject<void>();
+  private navigationInProgress = false;
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
@@ -60,11 +81,47 @@ export class ResultsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.validateInputs();
     this.setupNavigationHandling();
+    this.loadVideo();
   }
   
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  private loadVideo(): void {
+    // Load video URL from quarter data if available
+    this.videoUrl = this.quarterData?.videoUrl || '';
+  }
+
+  toggleScoreDetails(): void {
+    this.showScoreDetails = !this.showScoreDetails;
+  }
+
+  toggleScoringInfo(): void {
+    this.showScoringInfo = !this.showScoringInfo;
+  }
+
+  getScoringExplanation(): string {
+    return `
+      Scoring is calculated based on three factors:
+      
+      1. Age Statement (0-30 points):
+          • Exact match: 30 points
+          • Within 1 year: 20 points
+          • Points decrease by 4 for each year off
+      
+      2. Proof (0-30 points):
+          • Exact match: 30 points
+          • Within 2 proof points: 20 points
+          • Points decrease by 2 for each proof point off
+      
+      3. Mashbill Type (10 points):
+          • Correct mashbill type: 10 points
+          • Incorrect: 0 points
+      
+      Maximum possible score: 280 points (70 points per sample)
+    `;
   }
 
   private setupNavigationHandling(): void {
@@ -87,9 +144,13 @@ export class ResultsComponent implements OnInit, OnDestroy {
     }
   }
 
+  getSampleLetter(num: number): string {
+    return String.fromCharCode(64 + num); // Converts 1 to A, 2 to B, etc.
+  }
+
   getSampleScore(sampleNum: number): number {
     return this.scores[`sample${sampleNum}`] || 0;
-  }
+  }  
 
   getGuessValue(sampleNum: number, field: keyof SampleGuess): any {
     const guess = this.guesses[`sample${sampleNum}`];
@@ -158,32 +219,12 @@ export class ResultsComponent implements OnInit, OnDestroy {
       this.isLoading = true;
       this.navigationInProgress = true;
       const quarterId = await this.getQuarterId();
-      
       // Use game service to handle play again
       await this.gameService.handlePlayAgain(quarterId);
       this.playAgain.emit();
     } catch (error) {
       console.error('Error starting new game:', error);
       this.error = 'Unable to start new game';
-    } finally {
-      this.isLoading = false;
-      this.navigationInProgress = false;
-    }
-  }
-
-  async handleLeaderboard(): Promise<void> {
-    if (this.isLoading || this.navigationInProgress) return;
-    
-    try {
-      this.isLoading = true;
-      this.navigationInProgress = true;
-      const quarterId = await this.getQuarterId();
-      
-      // Use game service for navigation
-      await this.gameService.navigateToLeaderboard(quarterId);
-    } catch (error) {
-      console.error('Error navigating to leaderboard:', error);
-      this.error = 'Unable to view leaderboard';
     } finally {
       this.isLoading = false;
       this.navigationInProgress = false;
@@ -199,13 +240,13 @@ export class ResultsComponent implements OnInit, OnDestroy {
     if (!quarterId) {
       throw new Error('No quarter ID available');
     }
-    
+
     return quarterId;
   }
 
   private showMessage(message: string, duration: number = 3000): void {
     this.error = null;
-    // TODO: Implement toast notification
+    // TODO: Implement toast notification here if desired
     console.log(message);
   }
 
@@ -216,5 +257,10 @@ export class ResultsComponent implements OnInit, OnDestroy {
       this.error = null;
       this.changeDetectorRef.detectChanges();
     }, 5000);
+  }
+
+  // Helper method to determine if a guess was perfect
+  isPerfectGuess(sampleNum: number): boolean {
+    return this.getSampleScore(sampleNum) === 70; // Maximum possible score per sample
   }
 }

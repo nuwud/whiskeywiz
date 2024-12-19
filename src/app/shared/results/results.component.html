@@ -1,71 +1,97 @@
 <div class="results-container">
     <!-- Header Section -->
     <div class="results-header">
-        <h2 class="game-completed">Game Completed!</h2>
-        <div class="total-score">Total Score: {{ totalScore }}</div>
+        <h2 class="game-completed font-hermona-2xl">Game Completed!</h2>
+        <div class="total-score">{{ totalScore }}</div>
         <div class="score-quip">{{ scoreService.getScoreQuip(totalScore) }}</div>
     </div>
 
-    <!-- Results Grid -->
-    <div class="results-grid">
-        <div class="result-card" *ngFor="let sampleNum of sampleNumbers">
-            <div class="score-display">
-                Score: {{ getSampleScore(sampleNum) }}
-                <span class="emoji-score">{{ scoreService.getEmojiScore(getSampleScore(sampleNum)) }}</span>
+    <!-- Video Section -->
+    <div class="video-section" *ngIf="quarterData?.videoUrl">
+        <h3 class="font-hermona-xl">Watch the Reveal</h3>
+        <video 
+            class="reveal-video" 
+            [src]="quarterData?.videoUrl" 
+            controls 
+            poster="assets/images/video-placeholder.png">
+        </video>
+    </div>
+
+    <!-- Score Overview -->
+    <div class="score-overview">
+        <div class="score-header" (click)="toggleScoreDetails()">
+            <h3 class="font-hermona-xl">Your Guesses</h3>
+            <button class="info-button" (click)="toggleScoringInfo(); $event.stopPropagation()">
+                <img src="assets/images/info-icon.png" alt="Scoring Info">
+            </button>
+            <div class="expand-icon">{{ showScoreDetails ? '▼' : '▲' }}</div>
+        </div>
+
+        <!-- Scoring Info Tooltip -->
+        <div class="scoring-info" *ngIf="showScoringInfo">
+            <div class="info-content">
+                <h4>How Scoring Works</h4>
+                <div class="info-text" [innerHTML]="getScoringExplanation()"></div>
             </div>
+        </div>
 
-            <h3 class="sample-title">Sample {{ sampleNum }}</h3>
-
-            <div class="comparison-grid">
-                <div class="guess-column">
-                    <h5>Your Guess</h5>
-                    <p>Age: {{ getGuessValue(sampleNum, 'age') }} years</p>
-                    <p>Proof: {{ getGuessValue(sampleNum, 'proof') }}</p>
-                    <p>Type: {{ getGuessValue(sampleNum, 'mashbill') }}</p>
+        <!-- Detailed Scores -->
+        <div class="score-details" [@expandCollapse]="showScoreDetails ? 'expanded' : 'collapsed'">
+            <div class="result-card" *ngFor="let sampleNum of sampleNumbers">
+                <div class="score-display">
+                    <span class="label">Sample {{ getSampleLetter(sampleNum) }}</span>
+                    <span class="score">{{ getSampleScore(sampleNum) }}</span>
+                    <span class="emoji-score">{{ scoreService.getEmojiScore(getSampleScore(sampleNum)) }}</span>
                 </div>
 
-                <div class="actual-column">
-                    <h5>Actual</h5>
-                    <p>Age: {{ getActualValue(sampleNum, 'age') }} years</p>
-                    <p>Proof: {{ getActualValue(sampleNum, 'proof') }}</p>
-                    <p>Type: {{ getActualValue(sampleNum, 'mashbill') }}</p>
-                </div>
-            </div>
+                <div class="comparison-grid">
+                    <div class="guess-column">
+                        <h5>Your Guess</h5>
+                        <p>Age: {{ getGuessValue(sampleNum, 'age') }} years</p>
+                        <p>Proof: {{ getGuessValue(sampleNum, 'proof') }}</p>
+                        <p>Type: {{ getGuessValue(sampleNum, 'mashbill') }}</p>
+                        <p *ngIf="showRatings">Rating: {{ getGuessValue(sampleNum, 'rating') }}/10</p>
+                    </div>
 
-            <div class="rating-container" *ngIf="showRatings">
-                <h5>Your Rating</h5>
-                <app-star-rating [rating]="getGuessValue(sampleNum, 'rating') || 0" [readonly]="true">
-                </app-star-rating>
+                    <div class="actual-column">
+                        <h5>Actual</h5>
+                        <p>Age: {{ getActualValue(sampleNum, 'age') }} years</p>
+                        <p>Proof: {{ getActualValue(sampleNum, 'proof') }}</p>
+                        <p>Type: {{ getActualValue(sampleNum, 'mashbill') }}</p>
+                    </div>
+                </div>
+
+                <div class="perfect-score" *ngIf="isPerfectGuess(sampleNum)">
+                    🎯 Perfect Score!
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Action Buttons -->
     <div class="results-actions">
-        <div class="button-container">
-            <img [src]="getButtonImage('share', shareHovered)" (mouseover)="shareHovered = true"
-                (mouseout)="shareHovered = false" (click)="handleShare()" alt="Share Results">
-        </div>
+        <button class="action-button" 
+                (mouseover)="shareHovered = true"
+                (mouseout)="shareHovered = false"
+                (click)="handleShare()">
+            <img [src]="getButtonImage('share', shareHovered)" alt="Share Results">
+        </button>
 
-        <div class="button-container">
-            <img [src]="getButtonImage('play-again', playAgainHovered)" (mouseover)="playAgainHovered = true"
-                (mouseout)="playAgainHovered = false" (click)="handlePlayAgain()" alt="Play Again">
-        </div>
-
-        <div class="button-container">
-            <img [src]="getButtonImage('leaderboard', leaderboardHovered)" (mouseover)="leaderboardHovered = true"
-                (mouseout)="leaderboardHovered = false" (click)="handleLeaderboard()" alt="View Leaderboard">
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <div class="results-footer">
-        <p>Thanks for playing!</p>
-        <p>Check out the leaderboard to see how you stack up against other players.</p>
+        <button class="action-button"
+                (mouseover)="playAgainHovered = true"
+                (mouseout)="playAgainHovered = false"
+                (click)="handlePlayAgain()">
+            <img [src]="getButtonImage('play-again', playAgainHovered)" alt="Play Again">
+        </button>
     </div>
 
     <!-- Loading Overlay -->
     <div class="loading-overlay" *ngIf="isLoading">
         <div class="spinner"></div>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="error">
+        {{ error }}
     </div>
 </div>

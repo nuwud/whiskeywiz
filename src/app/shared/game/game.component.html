@@ -25,50 +25,37 @@
           [alt]="isGuest ? 'Login' : 'Logout'" title="Logout Button Image">
       </button>
     </div>
-
   </div>
 
   <!-- Game Content -->
   <div *ngIf="!gameCompleted" [@fadeInOut] class="game-content">
+      <!-- Quarter Title -->
+      <h4 class="quarter-title font-hermona-2xl">{{ getQuarterTitle() }}</h4>
 
-    <!-- Quarter Title and Sample Title -->
-    <div class="titles-container">
-      <h4 class="quarter-title font-hermona-2xl">
-        {{ getQuarterTitle() }}
-      </h4>
-      <h2 class="sample-title font-hermona-4xl">
-        Sample {{ getSampleLetter(currentSample) }}
-      </h2>
+    <!-- Sample Navigation Buttons -->
+    <div class="sample-navigation">
+      <button *ngFor="let button of sampleButtons; let i = index"
+              class="sample-button"
+              [class.active]="button.active"
+              [class.completed]="button.completed"
+              (click)="selectSample(i)"
+              [attr.aria-label]="getSampleAriaLabel(i + 1)">
+        Sample {{ button.letter }}
+      </button>
     </div>
 
-    <!-- Navigation Controls with Panel Background -->
-    <div class="navigation-controls">
-
-      <!--Previous Sample Button-->
-      <button class="nav-button previous" [disabled]="currentSample === 1" (click)="changeSampleDirection(-1)"
-        [class.disabled]="currentSample === 1">
-        <img [src]="getButtonImage('Previous_Sample_Button')" alt="Previous Sample Button" class="nav-button">
-      </button>
-      <button class="nav-button next" [disabled]="currentSample === 4" *ngIf="!showSubmitAllButton()" title="Next Sample"
-        (click)="changeSampleDirection(1)">
-        <img [src]="getButtonImage('Next_Sample_Button')" class="nav-button" title="Next Sample Button">
-      </button>
-      <button class="submit-button" *ngIf="showSubmitAllButton()" (click)="submitGuesses()" title="Submit All Guesses">
-        <img src="assets/images/Submit_All_Guesses_Button.png" class="nav-button" title="Submit All Guesses Button">
-      </button>
-
+    <!-- Sample Instructions -->
+    <div class="sample-instructions">
+      Take your first sip of Sample {{ getSampleLetter(currentSample) }} and see how good your whiskey taste buds are...
     </div>
 
     <!-- Main Form Area -->
     <div class="guess-form">
-
-      <!-- Form Content -->
-      <div class="form-content">
-
         <!-- Age Statement -->
         <div class="form-group">
           <div class="label-group">
-            <h3 class="font-hermona-2xl age">Age Statement:
+            <h3 class="font-hermona-2xl age">
+              What do you think the age statement is?
               <span class="value font-hermona-2xl">
                 {{ getSampleData(currentSample)?.age || 5 }} Years
               </span>
@@ -84,7 +71,8 @@
         <!-- Proof -->
         <div class="form-group">
           <span class="label-group">
-            <h3 class="font-hermona-2xl">Proof:
+            <h3 class="font-hermona-2xl">
+              What do you think the proof is?
               <span class="value font-hermona-2xl">
                 {{ getSampleData(currentSample)?.proof || 100 }} Proof
               </span>
@@ -99,7 +87,7 @@
 
         <!-- Mashbill -->
         <div class="form-group">
-          <h3 class="font-hermona-2xl">Mashbill:</h3>
+          <h3 class="font-hermona-2xl">What do you think the mashbill is?</h3>
           <div class="mashbill-options">
             <div *ngFor="let type of mashbillTypes" class="mashbill-option">
               <input type="radio" [id]="'mashbill-' + type" [value]="type" title="Mashbill Type: {{ type }}"
@@ -117,7 +105,7 @@
         <div class="form-group">
           <span class="label-group">
             <h3 class="font-hermona-2xl">
-              Rating:
+              How do you rate this whiskey?
               <span class="value font-hermona-2xl" *ngIf="starRatings['sample'+currentSample]">
                 {{ starRatings['sample'+currentSample] }}/10
               </span>
@@ -130,13 +118,23 @@
           </div>
         </div>
 
+              <!-- Submit Button (only shown on last sample) -->
+      <div class="submit-section" *ngIf="showSubmitAllButton()">
+        <button class="submit-button" (click)="submitGuesses()">
+          <img src="assets/images/Submit_All_Guesses_Button.png" alt="Submit All Guesses">
+        </button>
       </div>
-
     </div>
   </div>
 
   <!-- Results Component -->
-  <app-results *ngIf="gameCompleted && showResults" [quarterData]="quarterData" [guesses]="guesses" [scores]="scores"
-    [totalScore]="totalScore" (playAgain)="playAgain()" (shareResults)="share()" (submitScore)="submitScore()">
+  <app-results *ngIf="gameCompleted && showResults" 
+    [quarterData]="quarterData" 
+    [guesses]="guesses" 
+    [scores]="scores"
+    [totalScore]="totalScore" 
+    (playAgain)="playAgain()" 
+    (shareResults)="share()" 
+    (submitScore)="submitScore()">
   </app-results>
 </div>

@@ -21,6 +21,7 @@ export interface Quarter {
   startDate?: string;  // Add this based on your Firestore data
   endDate?: string;    // Add this based on your Firestore data
   samples: QuarterSamples;
+  videoUrl?: string;
 }
 
 export interface PlayerScore {

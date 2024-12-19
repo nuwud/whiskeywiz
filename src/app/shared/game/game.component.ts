@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, Inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FirebaseService } from '../../services/firebase.service';
 import { Quarter, PlayerScore } from '../../shared/models/quarter.model';
@@ -27,25 +27,11 @@ interface GuessUpdate {
   rating?: number;
 }
 
-// Button state interface
-interface ButtonState {
-  isHovered: boolean;
-  isPressed: boolean;
-  isDisabled?: boolean;
-}
-
-// Sample state interface
-interface SampleState {
+// Button state interface.
+interface SampleNavButton {
+  letter: string;
   active: boolean;
-  hover: boolean;
   completed: boolean;
-}
-
-interface Sample {
-  age: number;
-  proof: number;
-  mashbill: string;
-  rating?: number;
 }
 
 // Game component
@@ -96,15 +82,6 @@ interface Sample {
         style({ opacity: 0 }),
         animate('300ms ease-out', style({ opacity: 0.2 }))
       ])
-    ]),
-    trigger('fadeInOut', [
-      transition(':enter', [
-        style({ opacity: 0 }),
-        animate('300ms ease-out', style({ opacity: 1 }))
-      ]),
-      transition(':leave', [
-        animate('300ms ease-in', style({ opacity: 0 }))
-      ])
     ])
   ]
 })
@@ -151,6 +128,14 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
   loading: boolean = false;
   error: string | null = null;
 
+    // Sample navigation buttons
+    sampleButtons: SampleNavButton[] = [
+      { letter: 'A', active: true, completed: false },
+      { letter: 'B', active: false, completed: false },
+      { letter: 'C', active: false, completed: false },
+      { letter: 'D', active: false, completed: false }
+    ];
+
   // Game constructor
   constructor(
     private route: ActivatedRoute,
@@ -159,7 +144,8 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
     private authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
-    private router: Router
+    private router: Router,
+    @Inject('DataCollectionService') private dataCollectionService: any
   ) {
     this.isLoggedIn$ = this.authService.isAuthenticated();
     // Initialize auth state
@@ -171,22 +157,7 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
       }
     });
   }
-
-  // Button and sample states
-  buttonStates: { [key: string]: ButtonState } = {
-    previous: { isHovered: false, isPressed: false, isDisabled: true },
-    next: { isHovered: false, isPressed: false, isDisabled: false },
-    submit: { isHovered: false, isPressed: false, isDisabled: false }
-  };
-
-  // Sample states
-  sampleStates: { [key: number]: SampleState } = {
-    1: { active: true, hover: false, completed: false },
-    2: { active: false, hover: false, completed: false },
-    3: { active: false, hover: false, completed: false },
-    4: { active: false, hover: false, completed: false }
-  };
-
+  
   // Game options
   mashbillCategories: Mashbill[] = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
   mashbillTypes = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
@@ -203,7 +174,8 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
       totalScore: this.totalScore,
       quarterData: this.quarterData,
       guesses: this.guesses,
-      showResults: this.showResults
+      showResults: this.showResults,
+      sampleButtons: this.sampleButtons // Add this to save button states
     };
     localStorage.setItem(this.getStorageKey(), JSON.stringify(gameState));
   }
@@ -226,6 +198,7 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
               this.quarterData = gameState.quarterData;
               this.guesses = gameState.guesses;
               this.gameCompleted = true;
+              this.restoreGameState(gameState);
               this.showResults = true;
               this.changeDetectorRef.detectChanges();
               return; // Don't continue with normal game initialization
@@ -236,6 +209,7 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
         }
         
         // Initialize new game for this quarter
+        this.initializeGame();
         this.initializeRatings();
         this.loadQuarterData();
       }
@@ -249,6 +223,47 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
     this.authService.isAuthenticated().subscribe(isAuth => {
       console.log('Is authenticated:', isAuth);
     });
+  }
+
+  private restoreGameState(gameState: any) {
+    this.scores = gameState.scores;
+    this.totalScore = gameState.totalScore;
+    this.quarterData = gameState.quarterData;
+    this.guesses = gameState.guesses;
+    this.gameCompleted = true;
+    this.showResults = true;
+    this.changeDetectorRef.detectChanges();
+  }
+
+  private initializeGame() {
+    this.initializeRatings();
+    this.initializeGuesses();
+    this.loadQuarterData();
+  }
+
+  selectSample(index: number) {
+    if (this.navigationInProgress) return;
+    
+    this.navigationInProgress = true;
+    const previousSample = this.currentSample;
+    
+    // Update button states with animation
+    this.sampleButtons[previousSample - 1].active = false;
+    
+    setTimeout(() => {
+      this.currentSample = index + 1;
+      this.sampleButtons[index].active = true;
+      this.navigationInProgress = false;
+      this.updateSampleCompletion();
+      this.changeDetectorRef.detectChanges();
+    }, this.ANIMATION_DELAY);
+  }
+
+  updateSampleCompletion() {
+    const currentGuess = this.guesses[`sample${this.currentSample}`];
+    if (currentGuess?.mashbill && currentGuess?.age > 0 && currentGuess?.proof > 0) {
+      this.sampleButtons[this.currentSample - 1].completed = true;
+    }
   }
 
   async login() {
@@ -310,37 +325,6 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
   }
 
   // Sample navigation
-  // Method for directional navigation (Previous/Next buttons)
-  changeSampleDirection(direction: number) {
-    const newSample = this.currentSample + direction;
-    if (newSample >= 1 && newSample <= 4) {
-
-      // Animate sample transition
-      this.sampleStates[this.currentSample].active = false;
-
-      setTimeout(() => {
-        this.currentSample = newSample;
-        this.sampleStates[newSample].active = true;
-
-        // Update completion status
-        this.updateSampleCompletion();
-        this.changeDetectorRef.detectChanges();
-      }, this.ANIMATION_DELAY);
-    }
-  }
-
-  // Simplified direct sample selection
-  selectSample(num: number): void {
-    if (num === this.currentSample) return;
-    if (num < 1 || num > 4) return;
-
-    this.sampleStates[this.currentSample].active = false;
-    this.currentSample = num;
-    this.sampleStates[num].active = true;
-
-    this.updateSampleCompletion();
-    this.changeDetectorRef.detectChanges();
-  }
 
   // Button image helper
   getButtonImage(type: string): string {
@@ -361,41 +345,6 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
   // Sample management
   getSampleLetter(num: number): string {
     return String.fromCharCode(64 + num); // Converts 1 to A, 2 to B, etc.
-  }
-
-  // Button state management
-  buttonHover(buttonId: string, isHovered: boolean): void {
-    if (this.buttonStates[buttonId]) {
-      this.buttonStates[buttonId].isHovered = isHovered;
-      if (isHovered) {
-        this.buttonStates[buttonId].isPressed = false;
-      }
-    }
-  }
-
-  // Button press handling
-  buttonPress(buttonId: string, isPressed: boolean): void {
-    if (this.buttonStates[buttonId] && !this.buttonStates[buttonId].isDisabled) {
-      this.buttonStates[buttonId].isPressed = isPressed;
-    }
-  }
-
-  // Button click handling
-  getButtonState(buttonId: string): string {
-    const state = this.buttonStates[buttonId];
-    if (state.isDisabled) return 'disabled';
-    if (state.isPressed) return 'pressed';
-    if (state.isHovered) return 'hovered';
-    return 'normal';
-  }
-
-  // Sample state management
-  getSampleState(sampleNum: number): string {
-    const state = this.sampleStates[sampleNum];
-    if (state.active) return 'active';
-    if (state.hover) return 'hover';
-    if (state.completed) return 'completed';
-    return 'normal';
   }
 
   // Add safe navigation for guesses
@@ -486,22 +435,6 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
       };
     }
     return this.guesses[sampleKey];
-  }
-
-  // Sample hover management
-  onSampleHover(sampleNum: number, isHovered: boolean): void {
-    this.sampleStates[sampleNum].hover = isHovered;
-  }
-
-  // Sample completion management
-  updateSampleCompletion(): void {
-    const currentGuess = this.guesses[`sample${this.currentSample}`];
-    if (currentGuess &&
-      currentGuess.mashbill &&
-      currentGuess.age > 0 &&
-      currentGuess.proof > 0) {
-      this.sampleStates[this.currentSample].completed = true;
-    }
   }
 
   // Firebase interactions
@@ -608,39 +541,6 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
   }
 
   // Guess submission
-  // Submit guesses
-  submitGuesses() {
-    if (!this.areAllGuessesFilled()) {
-      this.error = 'Please complete all guesses';
-      return;
-    }
-
-    try {
-      // Calculate scores
-      this.calculateScores();
-
-      // Update game state
-      this.gameCompleted = true;
-      this.showResults = true;
-
-      this.submitScore();
-
-      // Force view update
-      this.changeDetectorRef.detectChanges();
-
-      console.log('Game completed:', {
-        scores: this.scores,
-        totalScore: this.totalScore,
-        showResults: this.showResults,
-        gameCompleted: this.gameCompleted
-      });
-    } catch (error) {
-      console.error('Error submitting guesses:', error);
-      this.error = 'An error occurred while submitting guesses';
-      this.showResults = false;
-      this.gameCompleted = false;
-    }
-  }
 
   submitScore() {
     // Check for quarter ID
@@ -805,16 +705,6 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
     this.initializeGuesses();
     this.initializeRatings();
     
-    // Reset sample states
-    Object.keys(this.sampleStates).forEach(key => {
-      const sampleNum = parseInt(key);
-      this.sampleStates[sampleNum] = {
-        active: sampleNum === 1,
-        hover: false,
-        completed: false
-      };
-    });
-  
     // Re-load quarter data
     this.loadQuarterData();
     
@@ -933,15 +823,6 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
     return this.currentSample === sampleNum ? 'active' : 'inactive';
   }
 
-  // Button transition states
-  getButtonTransitionState(buttonId: string): string {
-    const state = this.buttonStates[buttonId];
-    if (state.isDisabled) return 'disabled';
-    if (state.isPressed) return 'pressed';
-    if (state.isHovered) return 'hovered';
-    return 'normal';
-  }
-
   // Accessibility helpers
   getSampleAriaLabel(sampleNum: number): string {
     return `Sample ${this.getSampleLetter(sampleNum)}${this.currentSample === sampleNum ? ' (current)' : ''}`;
@@ -1031,6 +912,44 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
   handleError(error: any, context: string) {
     console.error(`Error in ${context}:`, error);
     this.error = `Failed to ${context.toLowerCase()}`;
+  }
+
+  private async collectGameData() {
+    try {
+      await this.dataCollectionService.collectGameData({
+        quarterId: this._quarterId,
+        guesses: this.guesses,
+        scores: this.scores,
+        ratings: this._starRatings
+      });
+    } catch (error) {
+      console.error('Error collecting game data:', error);
+    }
+  }
+
+  // Modify the submitGuesses method to include data collection
+  async submitGuesses() {
+    if (!this.areAllGuessesFilled()) {
+      this.error = 'Please complete all guesses';
+      return;
+    }
+
+    try {
+      this.calculateScores();
+      this.gameCompleted = true;
+      this.showResults = true;
+      
+      // Collect game data before submitting score
+      await this.collectGameData();
+      await this.submitScore();
+
+      this.changeDetectorRef.detectChanges();
+    } catch (error) {
+      console.error('Error submitting guesses:', error);
+      this.error = 'An error occurred while submitting guesses';
+      this.showResults = false;
+      this.gameCompleted = false;
+    }
   }
 
 }
