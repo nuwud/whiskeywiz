@@ -20,6 +20,7 @@ import { getAnalytics, provideAnalytics } from '@angular/fire/analytics';
 import { getDatabase, provideDatabase } from '@angular/fire/database';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
+import { AnalyticsComponent } from './admin/analytics/analytics.component';
 import { BaseQuarterComponent } from './quarters/base-quarter.component';
 import { QuarterComponent } from './quarters/quarter.component';
 import { getAuth, provideAuth } from '@angular/fire/auth';
@@ -62,6 +63,7 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 @NgModule({
   declarations: [
     AppComponent,
+    AnalyticsComponent,
     BaseQuarterComponent,
     QuarterComponent,
     AdminComponent,

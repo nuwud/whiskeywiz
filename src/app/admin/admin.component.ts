@@ -17,6 +17,7 @@ export class AdminComponent implements OnInit {
   sampleNumbers = [1, 2, 3, 4];
   error: string | null = null;
   successMessage: string | null = null;
+  showingAnalytics: boolean = false;
 
   scoringRules: ScoringRules = {
     agePerfectScore: 20,
@@ -64,10 +65,10 @@ export class AdminComponent implements OnInit {
       this.quarters = quarters
         .filter((q): q is Quarter => {
           return q !== null && 
-                 typeof q === 'object' && 
-                 'id' in q && 
-                 typeof q.name === 'string' && 
-                 typeof q.active === 'boolean';
+                typeof q === 'object' && 
+                'id' in q && 
+                typeof q.name === 'string' && 
+                typeof q.active === 'boolean';
         })
         .sort((a, b) => {
           // Parse quarter and year from the name (e.g., "Q1 2024")
@@ -150,8 +151,14 @@ export class AdminComponent implements OnInit {
     this.successMessage = null;
   }
 
+  showAnalytics() {
+    this.showingAnalytics = true;
+    this.selectedQuarter = null;
+  }
+
   showScoringRules() {
     this.selectedQuarter = null;
+    this.showingAnalytics = false;
   }
 
   async updateQuarter() {
@@ -225,8 +232,5 @@ export class AdminComponent implements OnInit {
   getSampleKey(num: number): string {
     return `sample${num}`;
   }
-
- 
-
   
 }

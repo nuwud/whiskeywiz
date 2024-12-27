@@ -1,5 +1,6 @@
 ﻿<nav *ngIf="isAdmin$ | async" class="admin-nav">
   <a routerLink="/admin" routerLinkActive="active">Admin Panel</a>
+  <a routerLink="/admin/analytics" routerLinkActive="active">Analytics</a>
   <a routerLink="/player" routerLinkActive="active">Play Game</a>
   
   <div class="quarter-links" *ngIf="quarters$ | async as quarters">
