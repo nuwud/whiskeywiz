@@ -2,6 +2,12 @@
 @use 'styles/fonts';
 @use 'styles/typography';
 
+@font-face {
+  font-family: 'Hermona';
+  src: url('/assets/fonts/hermona/Hermona.woff2') format('woff2'),
+        url('/assets/fonts/hermona/Hermona.woff') format('woff');
+}
+
 /* General styles for both admin and player pages */
 body {
   font-family: var(--font-primary);

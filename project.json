@@ -14,7 +14,6 @@
         "main": "src/main.ts",
         "polyfills": "src/polyfills.ts",
         "tsConfig": "tsconfig.app.json",
-        "aot": true,
         "assets": [
           "src/favicon.ico",
           "src/assets",
@@ -32,73 +31,34 @@
             "src/styles"
           ]
         },
-        "scripts": [],
-        "outputHashing": "none",
-        "sourceMap": false,
-        "namedChunks": false,
-        "vendorChunk": false,
-        "commonChunk": false,
-        "buildOptimizer": true,
-        "budgets": [
-          {
-            "type": "initial",
-            "maximumWarning": "2mb",
-            "maximumError": "5mb"
-          }
+        "scripts": [
+          "node_modules/chart.js/dist/chart.umd.js"
         ]
       },
       "configurations": {
         "production": {
-          "optimization": {
-            "scripts": true,
-            "styles": {
-              "minify": true,
-              "inlineCritical": false
+          "fileReplacements": [
+            {
+              "replace": "src/environments/environment.ts",
+              "with": "src/environments/environment.prod.ts"
             }
-          },
+          ],
+          "optimization": true,
           "outputHashing": "all",
-              "sourceMap": false,
-              "namedChunks": false,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
-                }
-              ]
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false,
+          "buildOptimizer": true,
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "2mb",
+              "maximumError": "5mb"
+            }
+          ]
         }
-      },
-      "outputs": [
-        "{options.outputPath}"
-      ]
-    },
-    "build:elements": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "nx build whiskey-wiz --configuration=production"
       }
-    },
-    "deploy": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "firebase deploy --only hosting"
-      }
-    },
-    "lint": {
-      "executor": "@angular-eslint/builder:lint",
-      "options": {
-        "eslintConfig": ".eslintrc.json",
-        "lintFilePatterns": [
-          "src/**/*.ts",
-          "src/**/*.html"
-        ]
-      },
-      "outputs": [
-        "{options.outputFile}"
-      ]
     },
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
@@ -111,30 +71,37 @@
         "browserTarget": "whiskey-wiz:build"
       }
     },
+    "deploy": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "nx build whiskey-wiz --configuration=production",
+          "firebase deploy"
+        ],
+        "parallel": false
+      }
+    },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
         "browserTarget": "whiskey-wiz:build"
       }
     },
-    "test": {
-      "executor": "@angular-devkit/build-angular:karma",
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
       "options": {
-        "main": "src/test.ts",
-        "polyfills": "src/polyfills.ts",
-        "tsConfig": "tsconfig.spec.json",
-        "karmaConfig": "karma.conf.js",
-        "assets": [
-          "src/favicon.ico",
-          "src/assets"
-        ],
-        "styles": [
-          "src/styles.css"
-        ],
-        "scripts": [
-          "node_modules/chart.js/dist/chart.umd.js"
+        "lintFilePatterns": [
+          "src/**/*.ts",
+          "src/**/*.html"
         ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "options": {
+        "jestConfig": "jest.config.js",
+        "passWithNoTests": true
       }
     }
   }
-}
+ }

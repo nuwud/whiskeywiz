@@ -1,12 +1,11 @@
-import { NgModule, Injector, DoBootstrap, ApplicationRef, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef } from '@angular/core';
+import { NgModule, Injector, DoBootstrap, ApplicationRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthButtonComponent } from './auth/auth-button/auth-button.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from './shared/shared.module';
 import { createCustomElement } from '@angular/elements';
-import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireModule, FIREBASE_OPTIONS } from '@angular/fire/compat';
 import { AngularFirestoreModule, SETTINGS } from '@angular/fire/compat/firestore';
 import { CACHE_SIZE_UNLIMITED } from 'firebase/firestore'; 
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
@@ -25,13 +24,14 @@ import { BaseQuarterComponent } from './quarters/base-quarter.component';
 import { QuarterComponent } from './quarters/quarter.component';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { AuthButtonComponent } from './auth/auth-button/auth-button.component';
 import { AdminComponent } from './admin/admin.component';
 import { AdminNavComponent } from './admin-nav/admin-nav.component';
 import { PlayerComponent } from './player/player.component';
 import { LoginComponent } from './auth/login/login.component';
 import { GameService } from './services/game.service';
 import { FirebaseService } from './services/firebase.service';
-import { FIREBASE_OPTIONS } from '@angular/fire/compat';
+import * as Chart from 'chart.js';
 
 // Quarter components imports
 import { Q0122Component } from './quarters/0122/0122.component'; 
@@ -46,7 +46,7 @@ import { Q0624Component } from './quarters/0624/0624.component';
 import { Q0625Component } from './quarters/0625/0625.component'; 
 import { Q0626Component } from './quarters/0626/0626.component'; 
 import { Q0922Component } from './quarters/0922/0922.component'; 
-import { Q0923Component } from './quarters/0923/0923.component';
+import { Q0923Component } from './quarters/0923/0923.component'; 
 import { Q0924Component } from './quarters/0924/0924.component'; 
 import { Q0925Component } from './quarters/0925/0925.component'; 
 import { Q0926Component } from './quarters/0926/0926.component'; 
@@ -104,17 +104,17 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
+    AngularFireAnalyticsModule,
     AngularFireStorageModule,
     AngularFireDatabaseModule,
-    AngularFireFunctionsModule,
-    AngularFireAnalyticsModule
+    AngularFireFunctionsModule
   ],
   exports: [
     AuthButtonComponent
   ],
   providers: [
     GameService, 
-    FirebaseService, 
+    FirebaseService,
     QuarterPopulationService, 
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),

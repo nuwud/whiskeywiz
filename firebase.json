@@ -5,7 +5,7 @@
   },
   "hosting": {
     "predeploy": [
-      "npm run build"
+      "nx build whiskey-wiz --configuration=production"
     ],
     "public": "dist/whiskey-wiz",
     "headers": [
@@ -14,32 +14,15 @@
         "headers": [
           {
             "key": "Cache-Control",
-            "value": "no-cache, no-store, must-revalidate"
-          }
-        ]
-      },
-      {
-        "source": "/elements/**",
-        "headers": [
-          {
-            "key": "Access-Control-Allow-Origin",
-            "value": "*"
+            "value": "private, no-cache, no-store, must-revalidate"
           },
           {
-            "key": "Content-Type",
-            "value": "application/javascript"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "no-cache"
+            "key": "Expires",
+            "value": "-1"
           },
           {
             "key": "Pragma",
             "value": "no-cache"
-          },
-          {
-            "key": "Expires",
-            "value": "0"
           }
         ]
       }
@@ -51,17 +34,12 @@
     ],
     "rewrites": [
       {
-        "source": "/elements/game-elements.js",
-        "destination": "/elements/game-elements.js"
-      },
-      {
         "source": "**",
         "destination": "/index.html"
       }
-    ]
-  },
-  "remoteconfig": {
-    "template": "remoteconfig.template.json"
+    ],
+    "cleanUrls": true,
+    "trailingSlash": false
   },
   "database": {
     "rules": "database.rules.json"

@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FirebaseService } from '../../services/firebase.service';
-import { Chart, ChartConfiguration } from 'chart.js/auto';
+import { Form } from '@angular/forms';
+import { Chart, ChartConfiguration } from 'chart.js';
 import { map } from 'rxjs/operators';
 
 @Component({
