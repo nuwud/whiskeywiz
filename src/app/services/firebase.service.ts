@@ -12,7 +12,8 @@ import { map, switchMap, tap, catchError } from 'rxjs/operators';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanActivateFn } from '@angular/router';
 import { AuthService } from './auth.service';        
 import { Quarter, PlayerScore, ScoringRules, GameState } from '../shared/models/quarter.model';
-import firebase from 'firebase/compat';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 
 @Injectable({
   providedIn: 'root'
