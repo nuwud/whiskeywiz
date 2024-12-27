@@ -1,17 +1,11 @@
-import { 
-  Component, 
-  Input, 
-  Output, 
-  EventEmitter, 
-  OnInit, 
-  OnDestroy,
-  ChangeDetectorRef 
-} from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Quarter } from '../models/quarter.model';
 import { GameGuess } from '../models/game.model';
+import { DataCollectionService } from '../../services/data-collection.service';      
 import { ScoreService } from '../../services/score.service';
 import { GameService } from '../../services/game.service';
+import { FieldValue } from '@angular/fire/firestore'; // Ensure this import is correct
 import { take, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { trigger, state, style, animate, transition } from '@angular/animations';
@@ -61,7 +55,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   showScoreDetails: boolean = false;
   showScoringInfo: boolean = false;
   videoUrl: string = 'https://youtu.be/tcqLTMiksDw?si=pcFL-64Aecc-oLC6';
-  
+
   // Button hover states
   shareHovered: boolean = false;
   playAgainHovered: boolean = false;
@@ -69,21 +63,23 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
   private navigationInProgress = false;
+  private sessionStartTime: number = Date.now();
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
     private router: Router,
     private route: ActivatedRoute,
     private gameService: GameService,
-    public scoreService: ScoreService
-  ) {}
+    public scoreService: ScoreService,
+    private dataCollection: DataCollectionService
+  ) { }
 
   ngOnInit(): void {
     this.validateInputs();
     this.setupNavigationHandling();
     this.loadVideo();
   }
-  
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -150,7 +146,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   getSampleScore(sampleNum: number): number {
     return this.scores[`sample${sampleNum}`] || 0;
-  }  
+  }
 
   getGuessValue(sampleNum: number, field: keyof SampleGuess): any {
     const guess = this.guesses[`sample${sampleNum}`];
@@ -180,41 +176,44 @@ export class ResultsComponent implements OnInit, OnDestroy {
     return `assets/images/${baseName}${suffix}.png`;
   }
 
-  async handleShare(): Promise<void> {
-    try {
-      this.isLoading = true;
-      const shareText = this.generateShareText();
-      
-      if (navigator.share) {
-        await navigator.share({
-          title: 'My Whiskey Wiz Score',
-          text: shareText,
-          url: window.location.href
-        });
-      } else {
-        await navigator.clipboard.writeText(shareText);
-        // You might want to show a toast notification here
-        this.showMessage('Results copied to clipboard!');
-      }
-    } catch (error) {
-      console.error('Error sharing results:', error);
-      this.error = 'Unable to share results';
-    } finally {
-      this.isLoading = false;
+// Update handleShare
+async handleShare(): Promise<void> {
+  try {
+    this.isLoading = true;
+    await this.dataCollection.recordInteraction('share_attempt');
+    const shareText = this.generateShareText();
+    
+    if (navigator.share) {
+      await navigator.share({
+        title: 'My Whiskey Wiz Score',
+        text: shareText,
+        url: window.location.href
+      });
+      await this.dataCollection.recordInteraction('share_success', { method: 'native' });
+    } else {
+      await navigator.clipboard.writeText(shareText);
+      await this.dataCollection.recordInteraction('share_success', { method: 'clipboard' });
     }
+  } catch (err) {
+    const error = err as Error;
+    await this.dataCollection.recordInteraction('share_failed', { error: error.message });
+    this.error = 'Unable to share results';
+  } finally {
+    this.isLoading = false;
   }
+}
 
   private generateShareText(): string {
-    const emojiScores = this.sampleNumbers.map(num => 
+    const emojiScores = this.sampleNumbers.map(num =>
       this.scoreService.getEmojiScore(this.getSampleScore(num))
     );
-    
+
     return `Whiskey Wiz Score: ${this.totalScore}\n${emojiScores.join('')}`;
   }
 
   async handlePlayAgain(): Promise<void> {
     if (this.isLoading || this.navigationInProgress) return;
-    
+
     try {
       this.isLoading = true;
       this.navigationInProgress = true;
@@ -233,9 +232,9 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   private async getQuarterId(): Promise<string> {
     // Try multiple sources for quarter ID
-    const quarterId = this.quarterData?.id || 
-                    this.route.snapshot.queryParamMap.get('quarter') ||
-                    localStorage.getItem('lastPlayedQuarter');
+    const quarterId = this.quarterData?.id ||
+      this.route.snapshot.queryParamMap.get('quarter') ||
+      localStorage.getItem('lastPlayedQuarter');
 
     if (!quarterId) {
       throw new Error('No quarter ID available');

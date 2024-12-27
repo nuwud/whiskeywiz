@@ -1,6 +1,7 @@
-import { Component, Input, OnInit, ChangeDetectorRef, Inject } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, Inject, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FirebaseService } from '../../services/firebase.service';
+import { DataCollectionService } from '../../services/data-collection.service';
 import { Quarter, PlayerScore } from '../../shared/models/quarter.model';
 import { GameService } from '../../services/game.service';
 import { AuthService } from '../../services/auth.service';
@@ -104,6 +105,7 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
   private _quarterId: string = '';
   private readonly ANIMATION_DELAY = 200;
   private readonly DEBUG_PATHS = !environment.production;
+  private guessStartTime: number = 0;
   private navigationInProgress = false;
   private _starRatings: { [key: string]: number } = {
     'sample1': 0,
@@ -140,6 +142,7 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
   constructor(
     private route: ActivatedRoute,
     private firebaseService: FirebaseService,
+    private dataCollection: DataCollectionService,
     private gameService: GameService,
     private authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,
@@ -181,7 +184,11 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
   }
 
   // Lifecycle
-  ngOnInit() {
+  async ngOnInit() {
+    // Initialize analytics session when game starts
+    const quarterId = this.route.snapshot.queryParams['quarter'];
+    await this.dataCollection.initializeSession(this.quarterId);
+    this.guessStartTime = Date.now();
     // First check for stored game state for this specific quarter
     this.route.queryParams.subscribe(params => {
       const quarterId = params['quarter'];
@@ -242,6 +249,7 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
   }
 
   selectSample(index: number) {
+    this.dataCollection.recordInteraction('sample_selection', { index });
     if (this.navigationInProgress) return;
     
     this.navigationInProgress = true;
@@ -412,12 +420,12 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
 
     return `
       <svg xmlns="http://www.w3.org/2000/svg" 
-           viewBox="0 0 24 24" 
-           width="24" 
-           height="24" 
-           fill="${fillColor}" 
-           stroke="${strokeColor}" 
-           stroke-width="1.5">
+            viewBox="0 0 24 24" 
+            width="24" 
+            height="24" 
+            fill="${fillColor}" 
+            stroke="${strokeColor}" 
+            stroke-width="1.5">
         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
       </svg>
     `;
@@ -523,7 +531,11 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
     }
     (this.guesses[sampleKey][field] as any) = value;
     this.updateSampleCompletion();
-
+    this.dataCollection.recordInteraction('guess_update', {
+      sample: sampleNum,
+      field,
+      value
+    });
   }
 
   // Validation and submission
@@ -542,7 +554,8 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
 
   // Guess submission
 
-  submitScore() {
+  async submitScore() {
+    await this.dataCollection.finalizeSession(this.totalScore, false);
     // Check for quarter ID
     if (!this._quarterId) {
       this.error = 'Quarter ID is missing';
@@ -602,13 +615,6 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
         console.error('Error submitting score:', error);
         this.error = 'Failed to submit score';
       }
-    });
-  }
-
-  navigateToLeaderboard() {
-    // Don't check auth status, just navigate directly
-    this.router.navigate(['/leaderboard'], {
-      queryParams: { quarter: this._quarterId } 
     });
   }
 

@@ -10,8 +10,9 @@ import * as functions from 'firebase-functions';
 import { CallableRequest } from 'firebase-functions/v2/https';
 import { map, switchMap, tap, catchError } from 'rxjs/operators';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanActivateFn } from '@angular/router';
-import { AuthService } from './auth.service';
+import { AuthService } from './auth.service';        
 import { Quarter, PlayerScore, ScoringRules, GameState } from '../shared/models/quarter.model';
+import firebase from 'firebase/compat';
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +36,21 @@ export class FirebaseService {
     this.scoringRulesDoc = this.firestore.doc('config/scoringRules');
     this.customEventsCollection = this.firestore.collection('customEvents');
   }
+
+  // Add to existing FirebaseService
+saveAnalyticsSession(sessionData: any): Observable<void> {
+  return from(this.firestore.collection('analytics').doc(sessionData.sessionId).set(sessionData));
+}
+
+updateAnalyticsSession(sessionId: string, updates: any): Observable<void> {
+  return from(this.firestore.collection('analytics').doc(sessionId).update(updates));
+}
+
+linkAnalyticsToUser(userId: string, sessionId: string): Observable<void> {
+  return from(this.firestore.collection('users').doc(userId).update({
+    analyticsSessions: firebase.firestore.FieldValue.arrayUnion(sessionId)
+  }));
+}
 
   getAuthState(): Observable<any> {
     return this.auth.authState;
@@ -208,27 +224,6 @@ export class FirebaseService {
         return throwError(() => error);
       })
     );
-  }
-
-  getLeaderboard(quarterId: string): Observable<PlayerScore[]> {
-    console.log('Getting leaderboard for quarter:', quarterId);
-    return this.firestore
-      .collection<PlayerScore>('scores', ref => 
-        ref.where('quarterId', '==', quarterId)
-        .orderBy('score', 'desc')
-        .limit(10)
-      ).valueChanges({ idField: 'id' }).pipe(
-        tap(scores => {
-          console.log('Fetched scores:', scores);
-          if (scores.length === 0) {
-            console.log('No scores found for quarter:', quarterId);
-          }
-        }),
-        catchError(error => {
-          console.error('Error fetching leaderboard:', error);
-          return throwError(() => error);
-        })
-      );
   }
 
   private generateQuarterId(quarterName: string): string {

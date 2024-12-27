@@ -6,7 +6,6 @@ import { PlayerComponent } from './player/player.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { GameComponent } from './shared/game/game.component';
-import { LeaderboardComponent } from './shared/leaderboard/leaderboard.component';
 import { ShopifyCallbackComponent } from './auth/shopify-callback/shopify-callback.component';
 
 const routes: Routes = [
@@ -43,12 +42,6 @@ const routes: Routes = [
     path: 'game', 
     component: GameComponent,
     runGuardsAndResolvers: 'always'
-  },
-  { 
-    path: 'leaderboard', 
-    component: LeaderboardComponent,
-    runGuardsAndResolvers: 'always', 
-    canActivate: [canActivateAuth] 
   },
   { 
     path: 'auth/callback', 

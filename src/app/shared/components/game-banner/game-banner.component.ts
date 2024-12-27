@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { GameService } from '../../../services/game.service';
 import { FirebaseService } from '../../../services/firebase.service';
+import { DataCollectionService } from 'src/app/services/data-collection.service';  
 
 @Component({
   selector: 'app-game-banner',
@@ -57,7 +58,8 @@ export class GameBannerComponent implements OnInit {
   
   constructor(
     private gameService: GameService,
-    private firebaseService: FirebaseService
+    private firebaseService: FirebaseService,
+    private dataCollection: DataCollectionService
   ) {}
   
   ngOnInit() {
@@ -73,8 +75,12 @@ export class GameBannerComponent implements OnInit {
     }
   }
 
-  toggleExpand() {
+  async toggleExpand() {
     this.isExpanded = !this.isExpanded;
+    await this.dataCollection.recordInteraction('banner_toggle', {
+      quarterId: this.quarterId,
+      state: this.isExpanded ? 'expanded' : 'collapsed'
+    });
     
     // Save state
     localStorage.setItem(`banner_${this.quarterId}_expanded`, this.isExpanded.toString());
