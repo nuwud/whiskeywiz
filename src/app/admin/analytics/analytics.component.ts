@@ -1,8 +1,6 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { FirebaseService } from '../../services/firebase.service';
-import { Form } from '@angular/forms';
-import { Chart, ChartConfiguration } from 'chart.js';
-import { map } from 'rxjs/operators';
+import { Chart } from 'chart.js';
 
 @Component({
   selector: 'app-analytics',
@@ -51,7 +49,10 @@ export class AnalyticsComponent implements OnInit {
   selectedPeriod: string = '7';
   charts: any = {};
 
-  constructor(private firebaseService: FirebaseService) {}
+  constructor(
+    private firebaseService: FirebaseService,
+    private changeDetectorRef: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.initializeCharts();

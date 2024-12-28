@@ -31,7 +31,7 @@ import { PlayerComponent } from './player/player.component';
 import { LoginComponent } from './auth/login/login.component';
 import { GameService } from './services/game.service';
 import { FirebaseService } from './services/firebase.service';
-import * as Chart from 'chart.js';
+import { Chart, registerables } from 'chart.js';
 
 // Quarter components imports
 import { Q0122Component } from './quarters/0122/0122.component'; 
@@ -63,17 +63,17 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 @NgModule({
   declarations: [
     AppComponent,
+    AuthButtonComponent,
     AnalyticsComponent,
     BaseQuarterComponent,
     QuarterComponent,
     AdminComponent,
     AdminNavComponent,
-    PlayerComponent, 
-    LoginComponent, 
-    RegisterComponent,
-    AuthButtonComponent,
-    Q0122Component, 
-    Q0322Component, 
+    PlayerComponent,
+    LoginComponent,
+    Q0122Component,
+    Q0322Component,
+    // other components
     Q0323Component, 
     Q0324Component, 
     Q0325Component, 
@@ -137,12 +137,19 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
         host: 'firestore.googleapis.com',
         ssl: true
       }
+    },
+    {
+      provide: Chart,
+      useFactory: () => {
+        const chart = Chart;
+        Chart.register(...registerables);
+        return chart;
+      }
     }
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-
 export class AppModule implements DoBootstrap {
   constructor(private injector: Injector) {}
   
