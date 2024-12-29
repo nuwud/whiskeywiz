@@ -1,0 +1,5 @@
+# Node.js configuration
+export NODE_OPTIONS="--max-old-space-size=4096 --max-http-header-size=16384"
+export UV_THREADPOOL_SIZE=32
+# Increase event listener limit
+require('events').EventEmitter.defaultMaxListeners = 25;
