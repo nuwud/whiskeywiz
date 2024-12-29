@@ -1,7 +1,12 @@
 {
+  "name": "whiskey-wiz",
+  "version": "1.0.0",
   "scripts": {
+    "ng": "nx",
+    "start": "nx serve",
+    "build": "nx build --prod",
+    "build:elements": "nx build && mkdir -p dist/whiskey-wiz/elements && node scripts/bundle-elements.js",
     "verify": "node scripts/verify-deployment.js",
-    "predeploy": "npm run verify",
-    "deploy": "firebase deploy --only hosting"
+    "deploy": "nx build --prod && firebase deploy --only hosting"
   }
 }
