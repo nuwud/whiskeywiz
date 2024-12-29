@@ -8,4 +8,14 @@ $ErrorActionPreference = "Stop"
 $env:NODE_OPTIONS = "--max-old-space-size=4096 --max-http-header-size=16384"
 $env:UV_THREADPOOL_SIZE = "32"
 
+# Utility Functions
+function Write-ColorOutput($ForegroundColor) {
+    $fc = $host.UI.RawUI.ForegroundColor
+    $host.UI.RawUI.ForegroundColor = $ForegroundColor
+    if ($args) {
+        Write-Output $args
+    }
+    $host.UI.RawUI.ForegroundColor = $fc
+}
+
 ...
