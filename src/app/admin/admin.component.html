@@ -1,132 +1,144 @@
 <div class="admin-container">
-  <div class="admin-layout">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="quarters-list">
-        <div class="quarters-header">
-          <h3>Quarters</h3>
-        </div>
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+    <button (click)="clearError()">Dismiss</button>
+  </div>
 
-        <div class="quarter-items">
-          <div *ngFor="let quarter of quarters" 
-               class="quarter-item"
-               [class.active]="selectedQuarter?.id === quarter.id"
-               (click)="selectQuarter(quarter)">
-            <div class="quarter-content">
-              <span>{{quarter.name}}</span>
-              <span class="quarter-status" [class.active]="quarter.active">
-                {{quarter.active ? 'Active' : 'Inactive'}}
-              </span>
-            </div>
+  <div class="scoring-rules">
+    <h2>Scoring Rules</h2>
+    <div class="rules-form">
+      <div class="form-group">
+        <label>Perfect Age Score:</label>
+        <input 
+          type="number" 
+          [(ngModel)]="scoringRules.agePerfectScore" 
+          [ngModelOptions]="{standalone: true}"
+          title="Perfect Age Score">
+      </div>
+
+      <div class="form-group">
+        <label>Age Bonus:</label>
+        <input 
+          type="number" 
+          [(ngModel)]="scoringRules.ageBonus"
+          [ngModelOptions]="{standalone: true}"
+          title="Age Bonus">
+      </div>
+
+      <div class="form-group">
+        <label>Age Penalty Per Year:</label>
+        <input 
+          type="number" 
+          [(ngModel)]="scoringRules.agePenaltyPerYear"
+          [ngModelOptions]="{standalone: true}"
+          title="Age Penalty Per Year">
+      </div>
+
+      <div class="form-group">
+        <label>Perfect Proof Score:</label>
+        <input 
+          type="number" 
+          [(ngModel)]="scoringRules.proofPerfectScore"
+          [ngModelOptions]="{standalone: true}"
+          title="Perfect Proof Score">
+      </div>
+
+      <div class="form-group">
+        <label>Proof Bonus:</label>
+        <input 
+          type="number" 
+          [(ngModel)]="scoringRules.proofBonus"
+          [ngModelOptions]="{standalone: true}"
+          title="Proof Bonus">
+      </div>
+
+      <div class="form-group">
+        <label>Proof Penalty Per Point:</label>
+        <input 
+          type="number" 
+          [(ngModel)]="scoringRules.proofPenaltyPerPoint"
+          [ngModelOptions]="{standalone: true}"
+          title="Proof Penalty Per Point">
+      </div>
+
+      <div class="form-group">
+        <label>Mashbill Correct Score:</label>
+        <input 
+          type="number" 
+          [(ngModel)]="scoringRules.mashbillCorrectScore"
+          [ngModelOptions]="{standalone: true}"
+          title="Correct Mashbill Score">
+      </div>
+
+      <button (click)="saveScoringRules()">Save Rules</button>
+    </div>
+  </div>
+
+  <div class="quarters-section">
+    <h2>Quarters Management</h2>
+    
+    <div class="quarters-list">
+      <div *ngFor="let quarter of quarters" 
+           class="quarter-item"
+           (click)="selectQuarter(quarter)">
+        {{ quarter.name }}
+      </div>
+    </div>
+
+    <div *ngIf="selectedQuarter" class="quarter-edit">
+      <h3>Editing {{ selectedQuarter.name }}</h3>
+      
+      <div class="form-group">
+        <label>Active:</label>
+        <input 
+          type="checkbox" 
+          [(ngModel)]="selectedQuarter.active"
+          [ngModelOptions]="{standalone: true}">
+      </div>
+
+      <div class="samples-section">
+        <h4>Samples</h4>
+        <div *ngFor="let num of [1,2,3,4]" class="sample-edit">
+          <h5>Sample {{ num }}</h5>
+          
+          <div class="form-group">
+            <label>Mashbill:</label>
+            <select 
+              [(ngModel)]="selectedQuarter.samples['sample' + num].mashbill"
+              [ngModelOptions]="{standalone: true}"
+              title="Mashbill">
+              <option value="Bourbon">Bourbon</option>
+              <option value="Rye">Rye</option>
+              <option value="Wheat">Wheat</option>
+              <option value="Single Malt">Single Malt</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Proof:</label>
+            <input 
+              type="number" 
+              [(ngModel)]="selectedQuarter.samples['sample' + num].proof"
+              [ngModelOptions]="{standalone: true}"
+              title="Proof">
+          </div>
+
+          <div class="form-group">
+            <label>Age:</label>
+            <input 
+              type="number" 
+              [(ngModel)]="selectedQuarter.samples['sample' + num].age"
+              [ngModelOptions]="{standalone: true}"
+              title="Age"
+              placeholder="Enter age">
           </div>
         </div>
       </div>
-    </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <!-- Scoring Rules -->
-      <section class="scoring-rules" *ngIf="!selectedQuarter">
-        <h3>Scoring Rules</h3>
-
-        <div class="scoring-rules-grid">
-          <div class="form-group">
-            <label>Perfect Age Score:</label>
-            <input type="number" [(ngModel)]="scoringRules.agePerfectScore" title="Perfect Age Score">
-          </div>
-
-          <div class="form-group">
-            <label>Age Bonus:</label>
-            <input type="number" [(ngModel)]="scoringRules.ageBonus" title="Age Bonus">
-          </div>
-
-          <div class="form-group">
-            <label>Age Penalty Per Year:</label>
-            <input type="number" [(ngModel)]="scoringRules.agePenaltyPerYear" title="Age Penalty Per Year">
-          </div>
-
-          <div class="form-group">
-            <label>Perfect Proof Score:</label>
-            <input type="number" [(ngModel)]="scoringRules.proofPerfectScore" title="Perfect Proof Score">
-          </div>
-
-          <div class="form-group">
-            <label>Proof Bonus:</label>
-            <input type="number" [(ngModel)]="scoringRules.proofBonus" title="Proof Bonus">
-          </div>
-
-          <div class="form-group">
-            <label>Proof Penalty Per Point:</label>
-            <input type="number" [(ngModel)]="scoringRules.proofPenaltyPerPoint" title="Proof Penalty Per Point">
-          </div>
-
-          <div class="form-group">
-            <label>Correct Mashbill Score:</label>
-            <input type="number" [(ngModel)]="scoringRules.mashbillCorrectScore" title="Correct Mashbill Score">
-          </div>
-        </div>
-
-        <button class="btn btn-primary" (click)="updateScoringRules()">
-          Update Scoring Rules
-        </button>
-
-        <div class="integration-instructions">
-          <h3>Integration Instructions</h3>
-          <div class="instruction-section">
-            <h4>1. Required Script</h4>
-            <div class="code-block">
-              <code>&lt;script src="https://whiskeywiz2.firebaseapp.com/whiskey-wiz.js" defer&gt;&lt;/script&gt;</code>
-              <button (click)="copyToClipboard('script')">Copy</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Quarter Editor -->
-      <section class="quarter-editor" *ngIf="selectedQuarter">
-        <div class="editor-header">
-          <h3>Editing {{selectedQuarter.name}}</h3>
-          <button (click)="showScoringRules()">Return to Scoring Rules</button>
-        </div>
-
-        <div class="editor-section">
-          <label class="active-toggle">
-            <input type="checkbox" [(ngModel)]="selectedQuarter.active">
-            Active Quarter
-          </label>
-
-          <div class="samples-container">
-            <div class="sample-card" *ngFor="let num of sampleNumbers">
-              <h4>Sample {{num}}</h4>
-              
-              <div class="form-group">
-                <label>Mashbill:</label>
-                <select [(ngModel)]="selectedQuarter.samples['sample' + num].mashbill" title="Mashbill">
-                  <option value="Bourbon">Bourbon</option>
-                  <option value="Rye">Rye</option>
-                  <option value="Wheat">Wheat</option>
-                  <option value="Single Malt">Single Malt</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label>Proof:</label>
-                <input type="number" [(ngModel)]="selectedQuarter.samples['sample' + num].proof" title="Proof">
-              </div>
-
-              <div class="form-group">
-                <label>Age:</label>
-                <input type="number" [(ngModel)]="selectedQuarter.samples['sample' + num].age" title="Age" placeholder="Enter age">
-              </div>
-            </div>
-          </div>
-
-          <div class="button-group">
-            <button (click)="updateQuarter()">Save Changes</button>
-            <button (click)="navigateToQuarter(selectedQuarter.id)">Play Quarter</button>
-          </div>
-        </div>
-      </section>
-    </main>
+      <div class="actions">
+        <button (click)="saveQuarter()">Save Quarter</button>
+        <button (click)="navigateToQuarter(selectedQuarter.id)">Play Quarter</button>
+      </div>
+    </div>
   </div>
 </div>
