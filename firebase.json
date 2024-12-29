@@ -5,7 +5,8 @@
   },
   "hosting": {
     "predeploy": [
-      "npm run build"
+      "npm run build",
+      "node scripts/verify-deployment.js"
     ],
     "public": "dist/whiskey-wiz",
     "headers": [
@@ -14,7 +15,7 @@
         "headers": [
           {
             "key": "Cache-Control",
-            "value": "no-cache, no-store, must-revalidate"
+            "value": "public, max-age=300"
           }
         ]
       },
@@ -23,7 +24,7 @@
         "headers": [
           {
             "key": "Access-Control-Allow-Origin",
-            "value": "*"
+            "value": "https://blind-barrels.myshopify.com"
           },
           {
             "key": "Content-Type",
@@ -31,15 +32,7 @@
           },
           {
             "key": "Cache-Control",
-            "value": "no-cache"
-          },
-          {
-            "key": "Pragma",
-            "value": "no-cache"
-          },
-          {
-            "key": "Expires",
-            "value": "0"
+            "value": "public, max-age=3600"
           }
         ]
       }
@@ -59,11 +52,5 @@
         "destination": "/index.html"
       }
     ]
-  },
-  "remoteconfig": {
-    "template": "remoteconfig.template.json"
-  },
-  "database": {
-    "rules": "database.rules.json"
   }
 }

@@ -42,13 +42,6 @@ async function verifyDeployment() {
       throw new Error('Missing required environment variables');
     }
     
-    // 6. Cache header verification
-    console.log('Checking cache headers...');
-    const cacheControl = mainResponse.headers.get('cache-control');
-    if (!cacheControl.includes('no-cache')) {
-      console.warn('Warning: Cache headers might need review');
-    }
-    
     console.log('✅ Deployment verification completed successfully!');
     return true;
   } catch (error) {
@@ -57,10 +50,8 @@ async function verifyDeployment() {
   }
 }
 
-// Export for use in npm scripts
 module.exports = verifyDeployment;
 
-// Run directly if called from command line
 if (require.main === module) {
   verifyDeployment().catch(() => process.exit(1));
 }
