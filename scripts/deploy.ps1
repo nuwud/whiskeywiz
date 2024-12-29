@@ -4,19 +4,8 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-# Utility Functions
-function Write-ColorOutput($ForegroundColor) {
-    $fc = $host.UI.RawUI.ForegroundColor
-    $host.UI.RawUI.ForegroundColor = $ForegroundColor
-    if ($args) {
-        Write-Output $args
-    }
-    $host.UI.RawUI.ForegroundColor = $fc
-}
+# Configure Node.js settings to prevent memory leaks
+$env:NODE_OPTIONS = "--max-old-space-size=4096 --max-http-header-size=16384"
+$env:UV_THREADPOOL_SIZE = "32"
 
-function Write-Log($message) {
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    Write-ColorOutput Green "[$timestamp] $message"
-}
-
-# Rest of the script content...
+...
