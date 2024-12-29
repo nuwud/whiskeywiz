@@ -1,91 +1,26 @@
-// auth.guard.ts
-import { inject, Injectable } from '@angular/core';
-import { CanActivateFn, Router, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { Observable, of, from, combineLatest } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
-import { AuthService } from '../services/auth.service';
+import { Injectable } from '@angular/core';
+import { CanActivate, Router } from '@angular/router';
+import { Auth } from '@angular/fire/auth';
+import { Observable } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 
-export const canActivateAuth: CanActivateFn = (
-  route: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot
-): Observable<boolean | UrlTree> => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthGuard implements CanActivate {
+  constructor(private auth: Auth, private router: Router) {}
 
-  return authService.isAuthenticated().pipe(
-    map(isAuthenticated => {
-      if (isAuthenticated) {
-        return true;
-      }
-      router.navigate(['/login']);
-      return false;
-    }),
-    catchError(() => {
-      router.navigate(['/login']);
-      return of(false);
-    })
-  );
-};
-
-export const canActivateGame: CanActivateFn = (
-  route: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot
-): Observable<boolean | UrlTree> => {
-  const router = inject(Router);
-  const authService = inject(AuthService);
-
-  return authService.getPlayerId().pipe(
-    map(playerId => {
-      if (playerId) return true;
-      router.navigate(['/login']);
-      return false;
-    })
-  );
-};
-
-export const canActivateAdmin: CanActivateFn = () => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-
-  return authService.isAdmin().pipe(
-    map(isAdmin => {
-      if (isAdmin) {
-        return true;
-      }
-      router.navigate(['/unauthorized']);
-      return false;
-    }),
-    catchError(() => {
-      router.navigate(['/unauthorized']);
-      return of(false);
-    })
-  );
-};
-
-export const combineGuards = (...guards: CanActivateFn[]): CanActivateFn => {
-  return (route: ActivatedRouteSnapshot, state: RouterStateSnapshot): 
-    Observable<boolean | UrlTree> => {
-    const observables = guards.map(guard => {
-      const result = guard(route, state);
-      if (result instanceof Observable) {
-        return result;
-      }
-      if (result instanceof Promise) {
-        return from(result);
-      }
-      return of(result);
-    });
-
-    return combineLatest(observables).pipe(
-      map(results => {
-        // If any result is a UrlTree, use the first one for navigation
-        const urlTree = results.find(result => result instanceof UrlTree);
-        if (urlTree) {
-          return urlTree;
+  canActivate(): Observable<boolean> {
+    return new Observable<boolean>(observer => {
+      this.auth.onAuthStateChanged(user => {
+        if (user) {
+          observer.next(true);
+        } else {
+          this.router.navigate(['/login']);
+          observer.next(false);
         }
-        // All guards must return true to proceed
-        return results.every(result => result === true);
-      })
-    );
-  };
-};
+        observer.complete();
+      });
+    }).pipe(take(1));
+  }
+}
