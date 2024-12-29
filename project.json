@@ -17,6 +17,7 @@
         "assets": [
           "src/favicon.ico",
           "src/assets",
+          "src/version.json",
           {
             "glob": "**/*",
             "input": "src/assets/fonts",

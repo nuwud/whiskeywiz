@@ -1,31 +1,64 @@
 import { Injectable } from '@angular/core';
+import { FirebaseApp, initializeApp } from 'firebase/app';
+import { FIREBASE_APP } from './../../../firebase.init';  
+import { Firestore, getFirestore } from 'firebase/firestore';
+import { environment } from 'src/environments/environment';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
-import { Observable, from, throwError, of } from 'rxjs';
+import { Observable, from, throwError, of, BehaviorSubject, combineLatest } from 'rxjs';
 import * as functions from 'firebase-functions';
 import { CallableRequest } from 'firebase-functions/v2/https';
 import { map, switchMap, tap, catchError } from 'rxjs/operators';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanActivateFn } from '@angular/router';
-import { AuthService } from './auth.service';        
+import { AuthService } from './auth.service';
 import { Quarter, PlayerScore, ScoringRules, GameState } from '../shared/models/quarter.model';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
+
+export interface FirebaseInitStatus {
+  isInitialized: boolean;
+  error?: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
+  private firestore: AngularFirestore;
+  private initStatus = new BehaviorSubject<FirebaseInitStatus>({ 
+    isInitialized: false 
+  });
+  private firebaseApp: FirebaseApp;
+
+  getAllPlayerStats() {
+    if (!this.firestore) {
+      return Promise.reject(new Error('Firestore is not initialized'));
+    }
+    return this.firestore.collection('players').get().toPromise()
+      .then(snapshot => snapshot?.docs.map(doc => {
+        const data = doc.data() as Record<string, any>;
+        return { id: doc.id, ...data };
+      }) || []);
+  }
+
+  getAllQuarterStats() {
+    return this.firestore.collection('quarters').get().toPromise()
+      .then(snapshot => snapshot?.docs.map(doc => {
+        const data = doc.data() as Record<string, any>;
+        return { id: doc.id, ...data };
+      }) || []);
+  }
+
   private quartersCollection: AngularFirestoreCollection<Quarter>;
   private scoresCollection: AngularFirestoreCollection<PlayerScore>;
   private scoringRulesDoc: AngularFirestoreDocument<any>;
   private customEventsCollection: AngularFirestoreCollection<any>;
 
   constructor(
-    private firestore: AngularFirestore,
     private auth: AngularFireAuth,
     private storage: AngularFireStorage,
     private database: AngularFireDatabase,
@@ -39,19 +72,23 @@ export class FirebaseService {
   }
 
   // Add to existing FirebaseService
-saveAnalyticsSession(sessionData: any): Observable<void> {
-  return from(this.firestore.collection('analytics').doc(sessionData.sessionId).set(sessionData));
-}
+  saveAnalyticsSession(sessionData: any): Observable<void> {
+    return from(this.firestore.collection('analytics').doc(sessionData.sessionId).set(sessionData));
+  }
 
-updateAnalyticsSession(sessionId: string, updates: any): Observable<void> {
-  return from(this.firestore.collection('analytics').doc(sessionId).update(updates));
-}
+  updateAnalyticsSession(sessionId: string, updates: any): Observable<void> {
+    return from(this.firestore.collection('analytics').doc(sessionId).update(updates));
+  }
 
-linkAnalyticsToUser(userId: string, sessionId: string): Observable<void> {
-  return from(this.firestore.collection('users').doc(userId).update({
-    analyticsSessions: firebase.firestore.FieldValue.arrayUnion(sessionId)
-  }));
-}
+  linkAnalyticsToUser(userId: string, sessionId: string): Observable<void> {
+    return from(this.firestore.collection('users').doc(userId).update({
+      analyticsSessions: firebase.firestore.FieldValue.arrayUnion(sessionId)
+    }));
+  }
+
+  logAnalyticsEvent(eventName: string, eventParams: any) {
+    return firebase.analytics().logEvent(eventName, eventParams);
+  }
 
   getAuthState(): Observable<any> {
     return this.auth.authState;
@@ -80,7 +117,7 @@ linkAnalyticsToUser(userId: string, sessionId: string): Observable<void> {
   gameProgressBatch(batch: any): Observable<void> {
     return from(batch.commit()).pipe(map(() => undefined));
   }
-  
+
   gameProgressBatchSet(authId: string, gameState: GameState): any {
     const batch = this.firestore.firestore.batch();
     const docRef = this.firestore.collection('gameProgress').doc(authId).ref;
@@ -103,21 +140,21 @@ linkAnalyticsToUser(userId: string, sessionId: string): Observable<void> {
   }
 
   gameState(authId: string): Observable<GameState> {
-      return this.firestore.collection('gameProgress').doc(authId).valueChanges() as Observable<GameState>;
-    }
-  
+    return this.firestore.collection('gameProgress').doc(authId).valueChanges() as Observable<GameState>;
+  }
+
   gameStateRef(authId: string): AngularFirestoreDocument<GameState> {
-      return this.firestore.collection('gameProgress').doc(authId);
-    }
-  
+    return this.firestore.collection('gameProgress').doc(authId);
+  }
+
   gameStateSet(authId: string, gameState: GameState): Observable<void> {
-      return from(this.firestore.collection('gameProgress').doc(authId).set(gameState));
-    }
-  
+    return from(this.firestore.collection('gameProgress').doc(authId).set(gameState));
+  }
+
   updateQuarter(quarterId: string, quarterData: Partial<Quarter>): Observable<void> {
     console.log('Attempting to update quarter:', { quarterId, quarterData });
     const docRef = this.firestore.collection('quarters').doc(quarterId);
-    
+
     return from(docRef.get()).pipe(
       tap(doc => {
         if (!doc.exists) {
@@ -135,22 +172,22 @@ linkAnalyticsToUser(userId: string, sessionId: string): Observable<void> {
   }
 
   async updateQuarterAndScores(
-    quarterId: string, 
+    quarterId: string,
     quarterData: Partial<Quarter>,
     scores: PlayerScore[]
   ): Promise<void> {
     const batch = this.firestore.firestore.batch();
-    
+
     // Update quarter
     const quarterRef = this.quartersCollection.doc(quarterId).ref;
     batch.update(quarterRef, quarterData);
-    
+
     // Update scores
     scores.forEach(score => {
       const scoreRef = this.scoresCollection.doc(score.id).ref;
       batch.set(scoreRef, score, { merge: true });
     });
-    
+
     return batch.commit();
   }
 
@@ -193,9 +230,9 @@ linkAnalyticsToUser(userId: string, sessionId: string): Observable<void> {
 
   getActiveQuarters(): Observable<string[]> {
     return this.firestore
-      .collection<Quarter>('quarters', ref => 
+      .collection<Quarter>('quarters', ref =>
         ref.where('active', '==', true)
-            .orderBy('name', 'desc')
+          .orderBy('name', 'desc')
       )
       .valueChanges({ idField: 'id' })
       .pipe(
@@ -216,7 +253,7 @@ linkAnalyticsToUser(userId: string, sessionId: string): Observable<void> {
       playerId: score.playerId || 'guest',
       playerName: score.playerName || 'Guest Player'
     };
-    
+
     return from(this.scoresCollection.add(scoreWithTimestamp)).pipe(
       tap(ref => console.log('Score submitted with ID:', ref.id)),
       map(() => undefined),
@@ -236,17 +273,17 @@ linkAnalyticsToUser(userId: string, sessionId: string): Observable<void> {
     const shortYear = year.substring(2);
     return `${month}${shortYear}`;
   }
-  
-  createQuarter(quarter: Quarter): Observable<void> { 
+
+  createQuarter(quarter: Quarter): Observable<void> {
     return from(this.quartersCollection.doc(quarter.id).set(quarter)).pipe(
       map(() => undefined)
     );
-  }  
-  
+  }
+
   getQuarterGameData(quarterId: string): Observable<Quarter | undefined> {
     return this.quartersCollection.doc<Quarter>(quarterId).valueChanges();
   }
-  
+
   createNewQuarter(quarterData: Quarter): Observable<void> {
     return from(this.quartersCollection.doc(quarterData.id).set(quarterData));
   }
@@ -321,11 +358,10 @@ linkAnalyticsToUser(userId: string, sessionId: string): Observable<void> {
 
   // Game state operations
   saveGameProgress(authId: string, gameState: GameState): Promise<void> {
-      return this.firestore.collection('gameProgress').doc(authId).set(gameState);
-      // Implement the logic to save game progress
-  
+    return this.firestore.collection('gameProgress').doc(authId).set(gameState);
+    // Implement the logic to save game progress to Firestore
   }
-  
+
 }
 
 interface SetAdminData {
@@ -342,7 +378,7 @@ interface SetAdminContext {
 }
 
 export class AuthGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   canActivate(
     route: ActivatedRouteSnapshot,

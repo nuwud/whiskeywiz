@@ -7,8 +7,16 @@ import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { GameComponent } from './shared/game/game.component';
 import { ShopifyCallbackComponent } from './auth/shopify-callback/shopify-callback.component';
+import { AnalyticsComponent } from './admin/analytics/analytics.component';
+import { FirebaseInitGuard } from './guards/firebase-init.guard';
+
 
 const routes: Routes = [
+  {
+    path: 'admin/analytics',
+    component: AnalyticsComponent,
+    canActivate: [FirebaseInitGuard, combineGuards(canActivateAuth, canActivateAdmin)]
+  },
   { 
     path: 'admin', 
     component: AdminComponent, 

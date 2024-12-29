@@ -1,8 +1,11 @@
 // src/app/quarters/quarter.component.ts
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Inject } from '@angular/core';
 import { BaseQuarterComponent } from './base-quarter.component';
 import { FirebaseService } from '../services/firebase.service';
 import { AuthService } from '../services/auth.service';
+import { AnalyticsService } from '../services/analytics.service';
+import { FirebaseApp } from '@angular/fire/app';
+import { FIREBASE_APP } from '../app.module';
 
 @Component({
   selector: 'app-quarter',
@@ -11,9 +14,6 @@ import { AuthService } from '../services/auth.service';
       <div *ngIf="quarterData">
         <div class="game-container">
           <whiskey-wiz-game [quarter]="quarterId"></whiskey-wiz-game>
-        </div>
-        <div class="leaderboard-container">
-          <app-leaderboard [quarterId]="quarterId"></app-leaderboard>
         </div>
       </div>
     </div>
@@ -28,17 +28,16 @@ import { AuthService } from '../services/auth.service';
     .game-container {
       margin-bottom: 2rem;
     }
-    .leaderboard-container {
-      margin-top: 2rem;
-    }
   `]
 })
 export class QuarterComponent extends BaseQuarterComponent implements OnInit {
   constructor(
+    @Inject(FIREBASE_APP) app: FirebaseApp,
     firebaseService: FirebaseService,
-    authService: AuthService
+    authService: AuthService,
+    analyticsService: AnalyticsService
   ) {
-    super(firebaseService, authService);
+    super(app, firebaseService, authService, analyticsService);
   }
 
   @Input() override quarterId: string = '';

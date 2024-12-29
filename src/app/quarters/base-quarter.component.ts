@@ -1,140 +1,113 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+﻿import { Component, Input, OnInit, OnDestroy, Inject } from '@angular/core';
+import { Subject, Observable, of } from 'rxjs';
+import { catchError, takeUntil, map } from 'rxjs/operators';
 import { FirebaseService } from '../services/firebase.service';
 import { AuthService } from '../services/auth.service';
-import { Quarter, PlayerScore } from '../shared/models/quarter.model';
+import { Quarter } from '../shared/models/quarter.model';
+import { FirebaseApp } from '@angular/fire/app';
+import { FIREBASE_APP } from '../app.module';
+import { AnalyticsService } from '../services/analytics.service';
 
 @Component({
+  selector: "app-base-quarter",
   template: `
     <app-game-banner 
       [quarterId]="quarterId"
       [quarterName]="quarterData?.name || getDefaultQuarterName()">
     </app-game-banner>
-    
-    <div class="leaderboard-container" *ngIf="showLeaderboard">
-      <app-leaderboard [quarterId]="quarterId"></app-leaderboard>
-    </div>
-  `
+  `,
+  styles: []
 })
-export class BaseQuarterComponent implements OnInit {
+export class BaseQuarterComponent implements OnInit, OnDestroy {
   @Input() quarterId!: string;
+  protected readonly destroyed$ = new Subject<void>();
+  protected app: FirebaseApp;
+
   quarterData: Quarter | null = null;
-  showLeaderboard: boolean = false;
-  guess: { age: number; proof: number; mashbill: string } = { age: 0, proof: 0, mashbill: '' };
+  guess: { age: number; proof: number; mashbill: string } = { age: 0, proof: 0, mashbill: "" };
   isGuest: boolean = true;
-  playerId: string = 'guest';
+  playerId: string = "guest";
   gameCompleted = false;
   playerScore: number = 0;
 
   constructor(
-    protected firebaseService: FirebaseService, 
-    protected authService: AuthService
-  ) {}
+    @Inject(FIREBASE_APP) app: FirebaseApp,
+    protected firebaseService: FirebaseService,
+    protected authService: AuthService,
+    protected analyticsService: AnalyticsService
+  ) {
+    this.app = app;
+    if (!this.app) {
+      throw new Error("Firebase app not initialized");
+    }
+  }
 
   ngOnInit() {
-    this.initializePlayer();
+    this.initializePlayer().pipe(
+      takeUntil(this.destroyed$)
+    ).subscribe();
   }
 
-  protected initializePlayer(): void {
-    this.authService.getCurrentUserId().pipe(
-      catchError((error: Error) => {
-        console.error('Error getting user ID:', error);
-        return of(null);
-      })
-    ).subscribe(userId => {
-      if (userId) {
-        this.isGuest = false;
-        this.playerId = userId;
-        console.log('Authenticated user:', userId);
-      } else {
-        this.isGuest = true;
-        this.playerId = 'guest_' + Math.random().toString(36).substr(2, 9);
-        console.log('Guest player');
-      }
-      this.loadQuarterData();
-    });
+  ngOnDestroy() {
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
-  protected getDefaultQuarterName(): string {
-    if (!this.quarterId) return 'Whiskey Wiz Challenge';
-    
-    const month = parseInt(this.quarterId.substring(0, 2));
-    const year = '20' + this.quarterId.substring(2, 4);
-    
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                        'July', 'August', 'September', 'October', 'November', 'December'];
-    
-    return `${monthNames[month - 1]} ${year}`;
-  }
-
-  loadQuarterData() {
-    this.firebaseService.getQuarterById(this.quarterId).subscribe(
-      quarter => {
-        this.quarterData = quarter;
-      },
-      error => {
-        console.error('Error loading quarter data:', error);
-        // Handle the error appropriately (e.g., show an error message to the user)
-      }
-    );
-  }
-
-  submitGuess(guess: { age: number, proof: number, mashbill: string }) {
+  protected submitGuess(guess: any) {
     if (!this.quarterData) return;
-
+    
     let score = 0;
-    const actualSample = this.quarterData.samples['sample1']; // Assuming we're using the first sample
+    const actualSample = this.quarterData.samples["sample1"];
 
-    // Age scoring
     const ageDiff = Math.abs(actualSample.age - guess.age);
     if (ageDiff === 0) {
-      score += 30; // 20 points + 10 bonus
+      score += 30;
     } else {
       score += Math.max(0, 20 - (ageDiff * 4));
     }
 
-    // Proof scoring
     const proofDiff = Math.abs(actualSample.proof - guess.proof);
     if (proofDiff === 0) {
-      score += 30; // 20 points + 10 bonus
+      score += 30;
     } else {
       score += Math.max(0, 20 - (proofDiff * 2));
     }
 
-    // Mashbill scoring
     if (guess.mashbill === actualSample.mashbill) {
       score += 10;
     }
 
     this.gameCompleted = true;
-    this.submitScore();
+    this.playerScore = score;
   }
 
-  submitScore() {
-    if (!this.quarterData) return;
-
-    const playerScore: PlayerScore = {
-      playerId: this.playerId,
-      playerName: this.isGuest ? 'Guest Player' : 'Authenticated User',
-      score: this.playerScore,
-      quarterId: this.quarterId,
-      isGuest: this.isGuest
-    };
-
-    this.firebaseService.submitScore(playerScore).subscribe(
-      () => {
-        console.log('Score submitted successfully');
-      },
-      error => {
-        console.error('Error submitting score:', error);
-      }
+  protected initializePlayer(): Observable<void> {
+    return this.authService.getCurrentUserId().pipe(
+      catchError(error => {
+        console.error("Error getting user ID:", error);
+        return of(null);
+      }),
+      map(userId => {
+        if (userId) {
+          this.isGuest = false;
+          this.playerId = userId;
+        } else {
+          this.isGuest = true;
+          this.playerId = "guest_" + Math.random().toString(36).substr(2, 9);
+        }
+      })
     );
   }
 
-  resetGame() {
-    this.gameCompleted = false;
-    this.playerScore = 0;
-    this.guess = { age: 0, proof: 0, mashbill: '' };
+  protected getDefaultQuarterName(): string {
+    if (!this.quarterId) return "Whiskey Wiz Challenge";
+    
+    const month = parseInt(this.quarterId.substring(0, 2));
+    const year = "20" + this.quarterId.substring(2, 2);
+    
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+                      "July", "August", "September", "October", "November", "December"];
+    
+    return `${monthNames[month - 1]} ${year}`;
   }
 }

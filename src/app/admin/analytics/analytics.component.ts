@@ -1,114 +1,196 @@
-import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { FirebaseService } from '../../services/firebase.service';
-import { Chart } from 'chart.js';
+// src/app/admin/analytics/analytics.component.ts
+
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { AnalyticsService } from '../../services/analytics.service';
+import { ChartData } from '../../shared/models/analytics.model';
+import { Chart } from 'chart.js/auto';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-analytics',
-  template: `
-    <div class="analytics-container">
-      <div class="analytics-header">
-        <h2>Analytics Dashboard</h2>
-        <select [(ngModel)]="selectedPeriod" (change)="updatePeriod()">
-          <option value="7">Last 7 Days</option>
-          <option value="30">Last 30 Days</option>
-          <option value="90">Last 90 Days</option>
-        </select>
-      </div>
-
-      <div class="analytics-grid">
-        <div class="analytics-card">
-          <h3>Completion Rate</h3>
-          <div class="chart-container">
-            <canvas #completionChart></canvas>
-          </div>
-        </div>
-
-        <div class="analytics-card">
-          <h3>Score Distribution</h3>
-          <div class="chart-container">
-            <canvas #scoreChart></canvas>
-          </div>
-        </div>
-
-        <div class="analytics-card">
-          <h3>Device Usage</h3>
-          <div class="chart-container">
-            <canvas #deviceChart></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
-  `,
+  templateUrl: './analytics.component.html',
   styleUrls: ['./analytics.component.scss']
 })
-export class AnalyticsComponent implements OnInit {
+export class AnalyticsComponent implements OnInit, OnDestroy {
   @ViewChild('completionChart') completionChartRef: ElementRef;
   @ViewChild('scoreChart') scoreChartRef: ElementRef;
   @ViewChild('deviceChart') deviceChartRef: ElementRef;
+  @ViewChild('participationChart') participationChartRef: ElementRef;
 
   selectedPeriod: string = '7';
-  charts: any = {};
+  private subscription: Subscription;
+  private charts: { [key: string]: Chart } = {};
 
-  constructor(
-    private firebaseService: FirebaseService,
-    private changeDetectorRef: ChangeDetectorRef
-  ) {}
-
-  ngOnInit(): void {
-    this.initializeCharts();
-    this.updatePeriod();
-  }
-
-  initializeCharts(): void {
-    this.charts.completion = new Chart(this.completionChartRef.nativeElement, {
-      type: 'bar',
-      data: {
-        labels: ['Sample A', 'Sample B', 'Sample C', 'Sample D'],
-        datasets: [{
-          label: 'Completion Rate',
-          data: [],
-          backgroundColor: '#FFD700'
-        }]
-      }
-    });
-
-    this.charts.score = new Chart(this.scoreChartRef.nativeElement, {
-      type: 'bar',
-      data: {
-        labels: ['Sample A', 'Sample B', 'Sample C', 'Sample D'],
-        datasets: [{
-          label: 'Score Distribution',
-          data: [],
-          backgroundColor: '#DAA520'
-        }]
-      }
-    });
-
-    this.charts.device = new Chart(this.deviceChartRef.nativeElement, {
-      type: 'bar',
-      data: {
-        labels: ['Mobile', 'Desktop', 'Tablet'],
-        datasets: [{
-          label: 'Device Usage',
-          data: [],
-          backgroundColor: '#B8860B'
-        }]
-      }
-    });
-
-    const chartTheme = {
-      backgroundColor: '#FFD700',
-      borderColor: '#000000',
-      pointBackgroundColor: '#000000',
-      gridColor: 'rgba(0,0,0,0.1)'
-    };
-
-    // In initializeCharts():
-    Chart.defaults.color = '#000000';
+  constructor(private analyticsService: AnalyticsService) {
+    // Set global Chart.js defaults
+    Chart.defaults.color = '#FFD700';
     Chart.defaults.font.family = 'Hermona';
   }
 
+  ngOnInit() {
+    this.subscription = this.analyticsService.getAnalyticsData()
+      .subscribe(data => {
+        this.updateCharts(data);
+      });
+
+    this.analyticsService.fetchAnalyticsData();
+  }
+
+  ngOnDestroy() {
+    this.subscription?.unsubscribe();
+    Object.values(this.charts).forEach(chart => chart.destroy());
+  }
+
   updatePeriod(): void {
-    // Logic to update the charts based on the selected period
+    this.analyticsService.fetchAnalyticsData(); // You might want to add period parameter here
+  }
+
+  private updateCharts(data: ChartData) {
+    this.updateParticipationChart(data.participationTrend);
+    this.updateCompletionChart(data.participationTrend);
+    this.updateDeviceChart(data.deviceStats);
+    this.updateAccuracyChart(data.accuracyStats);
+  }
+
+  private updateParticipationChart(data: any[]) {
+    if (!this.participationChartRef?.nativeElement) return;
+
+    if (this.charts.participation) {
+      this.charts.participation.destroy();
+    }
+
+    this.charts.participation = new Chart(this.participationChartRef.nativeElement, {
+      type: 'line',
+      data: {
+        labels: data.map(d => d.quarter),
+        datasets: [
+          {
+            label: 'Participants',
+            data: data.map(d => d.participants),
+            borderColor: '#FFD700',
+            tension: 0.1
+          },
+          {
+            label: 'Average Score',
+            data: data.map(d => d.avgScore),
+            borderColor: '#82ca9d',
+            tension: 0.1
+          }
+        ]
+      },
+      options: this.getChartOptions()
+    });
+  }
+
+  private updateCompletionChart(data: any[]) {
+    if (!this.completionChartRef?.nativeElement) return;
+
+    if (this.charts.completion) {
+      this.charts.completion.destroy();
+    }
+
+    this.charts.completion = new Chart(this.completionChartRef.nativeElement, {
+      type: 'bar',
+      data: {
+        labels: data.map(d => d.quarter),
+        datasets: [{
+          label: 'Completion Rate',
+          data: data.map(d => (d.completed / d.participants) * 100),
+          backgroundColor: '#FFD700'
+        }]
+      },
+      options: this.getChartOptions()
+    });
+  }
+
+  private updateDeviceChart(data: any[]) {
+    if (!this.deviceChartRef?.nativeElement) return;
+
+    if (this.charts.device) {
+      this.charts.device.destroy();
+    }
+
+    this.charts.device = new Chart(this.deviceChartRef.nativeElement, {
+      type: 'doughnut',
+      data: {
+        labels: data.map(d => d.device),
+        datasets: [{
+          data: data.map(d => d.count),
+          backgroundColor: [
+            '#FFD700',
+            '#82ca9d',
+            '#8884d8',
+            '#ffc658'
+          ]
+        }]
+      },
+      options: {
+        ...this.getChartOptions(),
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: { color: '#FFD700' }
+          }
+        }
+      }
+    });
+  }
+
+  private updateAccuracyChart(data: any[]) {
+    if (!this.scoreChartRef?.nativeElement) return;
+  
+    if (this.charts.accuracy) {
+      this.charts.accuracy.destroy();
+    }
+  
+    this.charts.accuracy = new Chart(this.scoreChartRef.nativeElement, {
+      type: 'bar',
+      data: {
+        labels: data.map(d => d.type),
+        datasets: [{
+          label: 'Accuracy %',
+          data: data.map(d => d.accuracy),
+          backgroundColor: '#FFD700'
+        }]
+      },
+      options: {
+        ...this.getChartOptions(),
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+            ticks: { color: '#FFD700' }
+          },
+          x: {
+            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+            ticks: { color: '#FFD700' }
+          }
+        }
+      }
+    });
+  }
+
+  private getChartOptions() {
+    return {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top' as const,
+          labels: { color: '#FFD700' }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(255, 255, 255, 0.1)' },
+          ticks: { color: '#FFD700' }
+        },
+        x: {
+          grid: { color: 'rgba(255, 255, 255, 0.1)' },
+          ticks: { color: '#FFD700' }
+        }
+      }
+    };
   }
 }

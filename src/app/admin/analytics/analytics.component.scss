@@ -59,3 +59,19 @@
       height: 250px;
     }
   }
+
+  .analytics-container {
+    background-color: #1A1A1A;
+    color: #FFD700;
+  }
+  
+  .analytics-card {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    margin: 1rem 0;
+  }

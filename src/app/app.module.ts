@@ -1,4 +1,4 @@
-import { NgModule, Injector, DoBootstrap, ApplicationRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule, Injector, DoBootstrap, ApplicationRef, CUSTOM_ELEMENTS_SCHEMA, InjectionToken, ErrorHandler, Injectable } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -20,6 +20,8 @@ import { getDatabase, provideDatabase } from '@angular/fire/database';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
 import { AnalyticsComponent } from './admin/analytics/analytics.component';
+import { AnalyticsService } from './services/analytics.service';
+import { AuthService } from './services/auth.service';
 import { BaseQuarterComponent } from './quarters/base-quarter.component';
 import { QuarterComponent } from './quarters/quarter.component';
 import { getAuth, provideAuth } from '@angular/fire/auth';
@@ -31,7 +33,10 @@ import { PlayerComponent } from './player/player.component';
 import { LoginComponent } from './auth/login/login.component';
 import { GameService } from './services/game.service';
 import { FirebaseService } from './services/firebase.service';
+import { FirebaseApp } from 'firebase/app';
 import { Chart, registerables } from 'chart.js';
+import { getApp } from 'firebase/app';
+import { APP_INITIALIZER } from '@angular/core';
 
 // Quarter components imports
 import { Q0122Component } from './quarters/0122/0122.component'; 
@@ -59,6 +64,9 @@ import { QuarterPopulationService } from './services/quarter-population.service'
 import { RegisterComponent } from './auth/register/register.component';
 import { AppRoutingModule } from './app-routing.module';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import { firebaseCoreProviders } from 'firebase.init';
+
+export const FIREBASE_APP = new InjectionToken<FirebaseApp>('firebase-app');
 
 @NgModule({
   declarations: [
@@ -91,14 +99,15 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
     Q1222Component, 
     Q1223Component, 
     Q1224Component, 
-    Q1225Component
+    Q1225Component,
+    RegisterComponent // Ensure RegisterComponent is declared here
   ],
   imports: [
     BrowserModule,
     CommonModule,
     RouterModule,
     AppRoutingModule,
-    FormsModule,
+    FormsModule, // Ensure FormsModule is imported here
     ReactiveFormsModule,
     SharedModule,
     AngularFireModule.initializeApp(environment.firebase),
@@ -113,10 +122,39 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
     AuthButtonComponent
   ],
   providers: [
+    ...firebaseCoreProviders,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (app: FirebaseApp) => {
+        return () => new Promise<void>((resolve) => {
+          if (!app) {
+            throw new Error('Firebase app failed to initialize');
+          }
+          resolve();
+        });
+      },
+      deps: [FIREBASE_APP],
+      multi: true
+    },
     GameService, 
     FirebaseService,
+    AnalyticsService,
+    AuthService,
     QuarterPopulationService, 
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    {
+      provide: FIREBASE_APP,
+      useValue: initializeApp(environment.firebase)
+    },
+    {
+      provide: 'AUTH',
+      useFactory: (app: any) => getAuth(app),
+      deps: ['FIREBASE_APP']
+    },
+    {
+      provide: 'FIRESTORE',
+      useFactory: (app: any) => getFirestore(app),
+      deps: ['FIREBASE_APP']
+    },
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage()),
@@ -145,7 +183,7 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
         Chart.register(...registerables);
         return chart;
       }
-    }
+    },
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
