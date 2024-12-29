@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Observable, from, throwError, of } from 'rxjs';
-import { map, switchMap, tap, catchError } from 'rxjs/operators';
-import { Router } from '@angular/router';
-import { AuthService } from './auth.service';
+import { Observable, from, throwError, of, BehaviorSubject } from 'rxjs';
+import { map, switchMap, tap, catchError, retry } from 'rxjs/operators';
 import { Quarter, PlayerScore, ScoringRules, GameState } from '../shared/models/quarter.model';
 
-// Import Firebase instances from initialization file
+// Import Firebase instances
 import { 
   firestore, 
   auth, 
@@ -31,7 +29,8 @@ import {
   writeBatch,
   serverTimestamp,
   DocumentReference,
-  CollectionReference 
+  CollectionReference,
+  Firestore
 } from 'firebase/firestore';
 
 import { 
@@ -62,6 +61,7 @@ export class FirebaseService {
   private scoresRef: CollectionReference;
   private scoringRulesRef: DocumentReference;
   private customEventsRef: CollectionReference;
+  private readonly errorSubject = new BehaviorSubject<string | null>(null);
 
   constructor() {
     this.quartersRef = collection(firestore, 'quarters');
@@ -70,6 +70,18 @@ export class FirebaseService {
     this.customEventsRef = collection(firestore, 'customEvents');
   }
 
+  // Error handling
+  get errors$(): Observable<string | null> {
+    return this.errorSubject.asObservable();
+  }
+
+  private handleError(operation: string, error: any): Observable<never> {
+    console.error(`${operation} failed:`, error);
+    this.errorSubject.next(`Operation ${operation} failed: ${error.message}`);
+    return throwError(() => error);
+  }
+
+  // Authentication
   getAuthState(): Observable<any> {
     return new Observable(observer => {
       return auth.onAuthStateChanged(
@@ -77,95 +89,87 @@ export class FirebaseService {
         error => observer.error(error),
         () => observer.complete()
       );
-    });
+    }).pipe(
+      retry(3),
+      catchError(error => this.handleError('getAuthState', error))
+    );
   }
 
+  // Game Progress
   gameProgress(authId: string): Observable<GameState> {
-    return from(getDoc(doc(firestore, 'gameProgress', authId)))
-      .pipe(map(doc => doc.data() as GameState));
+    return from(getDoc(doc(firestore, 'gameProgress', authId))).pipe(
+      map(doc => doc.data() as GameState),
+      catchError(error => this.handleError('gameProgress', error))
+    );
   }
 
-  async updateQuarter(quarterId: string, quarterData: Partial<Quarter>): Promise<void> {
-    console.log('Attempting to update quarter:', { quarterId, quarterData });
-    const quarterRef = doc(this.quartersRef, quarterId);
-    
-    try {
-      const docSnap = await getDoc(quarterRef);
-      if (!docSnap.exists()) {
-        throw new Error(`Quarter document ${quarterId} does not exist`);
-      }
-      
-      await updateDoc(quarterRef, quarterData);
-      console.log('Quarter update successful');
-    } catch (error) {
-      console.error('Quarter update failed:', error);
-      throw error;
-    }
+  gameProgressSet(authId: string, state: GameState): Observable<void> {
+    return from(setDoc(doc(firestore, 'gameProgress', authId), state)).pipe(
+      catchError(error => this.handleError('gameProgressSet', error))
+    );
   }
 
-  async updateQuarterAndScores(
-    quarterId: string, 
-    quarterData: Partial<Quarter>,
-    scores: PlayerScore[]
-  ): Promise<void> {
-    const batch = writeBatch(firestore);
-    
-    // Update quarter
-    const quarterRef = doc(this.quartersRef, quarterId);
-    batch.update(quarterRef, quarterData);
-    
-    // Update scores
-    scores.forEach(score => {
-      const scoreRef = doc(this.scoresRef, score.id);
-      batch.set(scoreRef, score, { merge: true });
-    });
-    
-    await batch.commit();
-  }
-
+  // Quarters
   getQuarters(): Observable<Quarter[]> {
     return from(getDocs(this.quartersRef)).pipe(
       map(snapshot => 
         snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Quarter))
       ),
-      tap(quarters => console.log('Fetched quarters:', quarters))
+      tap(quarters => console.log('Fetched quarters:', quarters)),
+      catchError(error => this.handleError('getQuarters', error))
     );
   }
 
   getQuarterById(id: string): Observable<Quarter | null> {
-    console.log(`Fetching quarter ${id} from Firestore`);
     return from(getDoc(doc(this.quartersRef, id))).pipe(
       map(doc => {
-        if (doc.exists()) {
-          return { id: doc.id, ...doc.data() } as Quarter;
-        }
-        return null;
+        if (!doc.exists()) return null;
+        return { id: doc.id, ...doc.data() } as Quarter;
       }),
-      catchError(error => {
-        console.error(`Error fetching quarter ${id}:`, error);
-        return throwError(() => error);
-      })
+      catchError(error => this.handleError('getQuarterById', error))
     );
   }
 
-  getActiveQuarters(): Observable<string[]> {
-    const activeQuery = query(
-      this.quartersRef,
-      where('active', '==', true),
-      orderBy('name', 'desc')
-    );
-
-    return from(getDocs(activeQuery)).pipe(
-      map(snapshot => snapshot.docs.map(doc => doc.id)),
-      catchError(error => {
-        console.error('Error fetching active quarters:', error);
-        return of([]);
-      })
+  // Scoring Rules
+  getScoringRules(): Observable<ScoringRules> {
+    return from(getDoc(this.scoringRulesRef)).pipe(
+      map(doc => {
+        const data = doc.data();
+        if (!data) throw new Error('No scoring rules found');
+        return data as ScoringRules;
+      }),
+      catchError(error => this.handleError('getScoringRules', error))
     );
   }
 
-  async submitScore(score: PlayerScore): Promise<void> {
-    console.log('Submitting score:', score);
+  updateScoringRules(rules: ScoringRules): Observable<void> {
+    return from(setDoc(this.scoringRulesRef, rules)).pipe(
+      catchError(error => this.handleError('updateScoringRules', error))
+    );
+  }
+
+  // Generic Collection Operations
+  getCollection(collectionName: string): Observable<any[]> {
+    const collRef = collection(firestore, collectionName);
+    return from(getDocs(collRef)).pipe(
+      map(snapshot => snapshot.docs.map(doc => ({ 
+        id: doc.id, 
+        ...doc.data() 
+      }))),
+      catchError(error => this.handleError('getCollection', error))
+    );
+  }
+
+  getDocument(collectionPath: string, docId: string): Observable<any> {
+    const docRef = doc(firestore, collectionPath, docId);
+    return from(getDoc(docRef)).pipe(
+      map(doc => doc.exists() ? { id: doc.id, ...doc.data() } : null),
+      catchError(error => this.handleError('getDocument', error))
+    );
+  }
+
+  // Score Submission
+  submitScore(score: PlayerScore): Observable<void> {
     const scoreWithTimestamp = {
       ...score,
       timestamp: serverTimestamp(),
@@ -173,69 +177,24 @@ export class FirebaseService {
       playerName: score.playerName || 'Guest Player'
     };
     
-    try {
-      await setDoc(doc(this.scoresRef), scoreWithTimestamp);
-      console.log('Score submitted successfully');
-    } catch (error) {
-      console.error('Error submitting score:', error);
-      throw error;
-    }
-  }
-
-  getLeaderboard(quarterId: string): Observable<PlayerScore[]> {
-    console.log('Getting leaderboard for quarter:', quarterId);
-    const leaderboardQuery = query(
-      this.scoresRef,
-      where('quarterId', '==', quarterId),
-      orderBy('score', 'desc'),
-      limit(10)
-    );
-
-    return from(getDocs(leaderboardQuery)).pipe(
-      map(snapshot => 
-        snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PlayerScore))
-      ),
-      tap(scores => {
-        console.log('Fetched scores:', scores);
-        if (scores.length === 0) {
-          console.log('No scores found for quarter:', quarterId);
-        }
-      }),
-      catchError(error => {
-        console.error('Error fetching leaderboard:', error);
-        return throwError(() => error);
-      })
+    return from(setDoc(doc(this.scoresRef), scoreWithTimestamp)).pipe(
+      tap(() => console.log('Score submitted successfully')),
+      catchError(error => this.handleError('submitScore', error))
     );
   }
 
-  // Helper function for uploading files to storage
+  // Utilities
   async uploadFile(path: string, file: File): Promise<string> {
     const fileRef = storageRef(storage, path);
     await uploadBytes(fileRef, file);
     return getDownloadURL(fileRef);
   }
 
-  // Helper function for database operations
-  async getDatabaseValue(path: string): Promise<any> {
-    const dbRef = databaseRef(database, path);
-    const snapshot = await getDatabaseRef(dbRef);
-    return snapshot.val();
-  }
-
-  // Helper function for calling Firebase Functions
-  callFunction(name: string, data: any): Promise<any> {
-    const func = httpsCallable(functions, name);
-    return func(data);
-  }
-
-  // Helper function for logging analytics events
   logAnalyticsEvent(eventName: string, eventParams: any): void {
-    logEvent(analytics, eventName, eventParams);
-  }
-
-  // Game state operations
-  async saveGameProgress(authId: string, gameState: GameState): Promise<void> {
-    const progressRef = doc(firestore, 'gameProgress', authId);
-    await setDoc(progressRef, gameState);
+    try {
+      logEvent(analytics, eventName, eventParams);
+    } catch (error) {
+      console.error('Analytics error:', error);
+    }
   }
 }
