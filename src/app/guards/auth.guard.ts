@@ -35,7 +35,7 @@ export const canActivateGame: CanActivateFn = (route, state) => {
   const router = inject(Router);
   
   return authService.isAuthenticated().pipe(
-    map(isAuthenticated => true) // Allow both authenticated and guest users
+    map(isAuthenticated => true)
   );
 };
 
