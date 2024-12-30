@@ -7,7 +7,7 @@ export interface Sample {
 }
 
 export interface QuarterSamples {
-  [key: string]: Sample;  // Allow string indexing
+  [key: string]: Sample;
   sample1: Sample;
   sample2: Sample;
   sample3: Sample;
@@ -18,8 +18,8 @@ export interface Quarter {
   id?: string;
   name: string;
   active: boolean;
-  startDate?: string;  // Add this based on your Firestore data
-  endDate?: string;    // Add this based on your Firestore data
+  startDate?: string;
+  endDate?: string;
   samples: QuarterSamples;
 }
 
