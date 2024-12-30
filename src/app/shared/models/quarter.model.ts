@@ -1,13 +1,12 @@
-// src/app/shared/models/quarter.model.ts
 export interface Sample {
   age: number;
   proof: number;
-  mashbill: 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt' | 'Specialty'; 
+  mashbill: 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt' | 'Specialty';
   rating?: number;
 }
 
 export interface QuarterSamples {
-  [key: string]: Sample;  // Allow string indexing
+  [key: string]: Sample;
   sample1: Sample;
   sample2: Sample;
   sample3: Sample;
@@ -18,10 +17,9 @@ export interface Quarter {
   id?: string;
   name: string;
   active: boolean;
-  startDate?: string;  // Add this based on your Firestore data
-  endDate?: string;    // Add this based on your Firestore data
+  startDate?: string;
+  endDate?: string;
   samples: QuarterSamples;
-  videoUrl?: string;
 }
 
 export interface PlayerScore {
@@ -44,10 +42,50 @@ export interface ScoringRules {
   mashbillCorrectScore: number;
 }
 
+export interface GameGuess {
+  age: number;
+  proof: number;
+  mashbill: Sample['mashbill'];
+  rating?: number;
+}
+
 export interface GameState {
-  currentSample: number;
-  guesses: {[key: string]: any};
+  currentSample: 1 | 2 | 3 | 4;
+  guesses: {
+    [key: `sample${1|2|3|4}`]: GameGuess;
+  };
   isComplete: boolean;
-  scores: {[key: string]: number};
+  scores: {
+    [key: `sample${1|2|3|4}`]: number;
+  };
   totalScore: number;
 }
+
+// Validation helpers
+export const isValidQuarter = (quarter: unknown): quarter is Quarter => {
+  if (!quarter || typeof quarter !== 'object') return false;
+  
+  const q = quarter as Quarter;
+  return (
+    typeof q.name === 'string' &&
+    typeof q.active === 'boolean' &&
+    q.samples !== undefined &&
+    typeof q.samples === 'object' &&
+    Object.keys(q.samples).length === 4 &&
+    Object.entries(q.samples).every(([key, sample]) => 
+      key.startsWith('sample') && 
+      isValidSample(sample)
+    )
+  );
+};
+
+export const isValidSample = (sample: unknown): sample is Sample => {
+  if (!sample || typeof sample !== 'object') return false;
+  
+  const s = sample as Sample;
+  return (
+    typeof s.age === 'number' &&
+    typeof s.proof === 'number' &&
+    ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'].includes(s.mashbill)
+  );
+};
