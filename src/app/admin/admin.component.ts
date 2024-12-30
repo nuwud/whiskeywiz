@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FirebaseService } from '../services/firebase.service';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
-import { Quarter, Sample, ScoringRules } from '../shared/models/quarter.model';
+import { firstValueFrom, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { Quarter, Sample, ScoringRules, isValidQuarter } from '../shared/models/quarter.model';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -11,12 +12,14 @@ import { environment } from 'src/environments/environment';
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.css']
 })
-export class AdminComponent implements OnInit {
+export class AdminComponent implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
   quarters: Quarter[] = [];
   selectedQuarter: Quarter | null = null;
   sampleNumbers = [1, 2, 3, 4];
   error: string | null = null;
   successMessage: string | null = null;
+  isMenuCollapsed = false;
 
   scoringRules: ScoringRules = {
     agePerfectScore: 20,
@@ -28,13 +31,39 @@ export class AdminComponent implements OnInit {
     mashbillCorrectScore: 10
   };
 
+  private resizeListener = () => {
+    if (window.innerWidth > 768) {
+      this.isMenuCollapsed = false;
+    }
+  };
+
   constructor(
     private firebaseService: FirebaseService,
     private authService: AuthService,
     private router: Router
   ) {}
 
-  isMenuCollapsed = false;
+  ngOnInit() {
+    this.loadQuarters();
+    this.loadScoringRules();
+    
+    window.addEventListener('resize', this.resizeListener);
+    
+    // Subscribe to auth state changes
+    this.authService.authState$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        if (!user) {
+          this.router.navigate(['/login']);
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    window.removeEventListener('resize', this.resizeListener);
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   toggleMenu() {
     if (window.innerWidth <= 768) {
@@ -42,35 +71,13 @@ export class AdminComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
-    this.loadQuarters();
-    this.loadScoringRules();
-
-    window.addEventListener('resize', () => {
-      if (window.innerWidth > 768) {
-        this.isMenuCollapsed = false;
-      }
-    });
-  }
-
-  ngOnDestroy() {
-    window.removeEventListener('resize', () => {});
-  }
-
   async loadQuarters() {
     try {
       const quarters = await firstValueFrom(this.firebaseService.getQuarters());
       console.log('Loaded quarters:', quarters);
       this.quarters = quarters
-        .filter((q): q is Quarter => {
-          return q !== null && 
-                 typeof q === 'object' && 
-                 'id' in q && 
-                 typeof q.name === 'string' && 
-                 typeof q.active === 'boolean';
-        })
+        .filter(isValidQuarter)
         .sort((a, b) => {
-          // Parse quarter and year from the name (e.g., "Q1 2024")
           const parseQuarter = (name: string) => {
             const [q, y] = name.split(' ');
             return {
@@ -82,7 +89,6 @@ export class AdminComponent implements OnInit {
           const quarterA = parseQuarter(a.name);
           const quarterB = parseQuarter(b.name);
           
-          // Sort by year first, then by quarter
           if (quarterA.year !== quarterB.year) {
             return quarterA.year - quarterB.year;
           }
@@ -103,6 +109,7 @@ export class AdminComponent implements OnInit {
       }
     } catch (error) {
       console.error('Error loading scoring rules:', error);
+      this.error = 'Failed to load scoring rules. Please try again.';
     }
   }
 
@@ -115,7 +122,6 @@ export class AdminComponent implements OnInit {
     }
   }
 
-  // Non-null assertion method for use in template
   getQuarterId(): string {
     if (!this.selectedQuarter?.id) {
       throw new Error('Quarter ID is undefined');
@@ -123,7 +129,6 @@ export class AdminComponent implements OnInit {
     return this.selectedQuarter.id;
   }
   
-  // Safe navigation method for use in component
   navigateToQuarter(quarterId: string | undefined) {
     if (!quarterId) {
       console.error('No quarter ID provided');
@@ -139,19 +144,36 @@ export class AdminComponent implements OnInit {
     }
     const textToCopy = `<whiskey-wiz-${quarterId}></whiskey-wiz-${quarterId}>`;
     navigator.clipboard.writeText(textToCopy)
-      .then(() => console.log('Copied to clipboard'))
-      .catch(err => console.error('Failed to copy:', err));
+      .then(() => this.successMessage = 'Component tag copied to clipboard')
+      .catch(err => {
+        console.error('Failed to copy:', err);
+        this.error = 'Failed to copy to clipboard';
+      });
   }
 
   async selectQuarter(quarter: Quarter) {
-    if (!quarter) return;
-    this.selectedQuarter = { ...quarter };
-    this.error = null;
-    this.successMessage = null;
+    if (!quarter?.id) {
+      this.error = 'Invalid quarter selected';
+      return;
+    }
+    
+    try {
+      const quarterData = await firstValueFrom(this.firebaseService.getQuarterById(quarter.id));
+      if (!quarterData) {
+        throw new Error('Quarter not found');
+      }
+      this.selectedQuarter = { ...quarterData };
+      this.error = null;
+      this.successMessage = null;
+    } catch (error) {
+      this.error = `Failed to load quarter details: ${(error as Error).message}`;
+      this.selectedQuarter = null;
+    }
   }
 
   showScoringRules() {
     this.selectedQuarter = null;
+    this.clearMessages();
   }
 
   async updateQuarter() {
@@ -159,34 +181,35 @@ export class AdminComponent implements OnInit {
       this.error = 'No quarter selected';
       return;
     }
-  
+
     try {
       const isAdmin = await firstValueFrom(this.authService.isAdmin());
       if (!isAdmin) {
-        this.error = 'You do not have permission to update quarters';
-        return;
+        throw new Error('You do not have permission to update quarters');
       }
-  
-      // Simply update the selected quarter without affecting others
+
+      if (!isValidQuarter(this.selectedQuarter)) {
+        throw new Error('Invalid quarter data');
+      }
+
       await firstValueFrom(
         this.firebaseService.updateQuarter(
           this.selectedQuarter.id,
           this.selectedQuarter
         )
       );
-  
+
       await this.loadQuarters();
       
       const updatedQuarter = this.quarters.find(q => q.id === this.selectedQuarter?.id);
       if (updatedQuarter) {
         this.selectedQuarter = { ...updatedQuarter };
       }
-  
+
       this.successMessage = 'Quarter updated successfully';
       this.error = null;
     } catch (error) {
-      console.error('Failed to update quarter:', error);
-      this.error = 'Failed to update quarter. Please try again.';
+      this.error = `Failed to update quarter: ${(error as Error).message}`;
       this.successMessage = null;
     }
   }
@@ -200,16 +223,15 @@ export class AdminComponent implements OnInit {
   async updateScoringRules() {
     try {
       if (!await firstValueFrom(this.authService.isAdmin())) {
-        this.error = 'You do not have permission to update scoring rules';
-        return;
+        throw new Error('You do not have permission to update scoring rules');
       }
 
       await firstValueFrom(this.firebaseService.updateScoringRules(this.scoringRules));
       this.successMessage = 'Scoring rules updated successfully';
       this.error = null;
     } catch (error) {
-      console.error('Error updating scoring rules:', error);
-      this.error = 'Failed to update scoring rules. Please try again.';
+      this.error = `Failed to update scoring rules: ${(error as Error).message}`;
+      this.successMessage = null;
     }
   }
 
@@ -225,8 +247,4 @@ export class AdminComponent implements OnInit {
   getSampleKey(num: number): string {
     return `sample${num}`;
   }
-
- 
-
-  
 }
