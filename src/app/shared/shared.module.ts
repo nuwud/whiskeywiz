@@ -1,31 +1,31 @@
-import { NgModule, Injector } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
 import { GameComponent } from './game/game.component';
 import { ResultsComponent } from './results/results.component';
-import { StarRatingComponent } from './components/star-rating/star-rating.component';
 import { GameBannerComponent } from './components/game-banner/game-banner.component';
+import { HermonaButtonComponent } from './components/hermona-button/hermona-button.component';
+import { StarRatingComponent } from './components/star-rating/star-rating.component';
 
 @NgModule({
   declarations: [
     GameComponent,
-    GameBannerComponent,
     ResultsComponent,
+    GameBannerComponent,
+    HermonaButtonComponent,
     StarRatingComponent
   ],
   imports: [
     CommonModule,
-    FormsModule,
-    RouterModule
+    FormsModule
   ],
   exports: [
     GameComponent,
-    GameBannerComponent,
     ResultsComponent,
-    FormsModule,
-    CommonModule,
-    StarRatingComponent
+    GameBannerComponent,
+    HermonaButtonComponent,
+    StarRatingComponent,
+    FormsModule
   ]
 })
 export class SharedModule { }
