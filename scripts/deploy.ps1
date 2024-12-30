@@ -1,50 +1,43 @@
-# WhiskeyWiz Deployment Script
-
 $ErrorActionPreference = "Stop"
 
-# Write colored status messages
-function Write-Status($Message) {
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    Write-Host "[$timestamp] $Message" -ForegroundColor Green
+function Write-Log($msg) {
+    Write-Host "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')] $msg" -ForegroundColor Green
 }
 
-# Main deployment script
 try {
-    Write-Status "Starting deployment"
-    
-    # Check Node.js installation
-    Write-Status "Checking prerequisites"
+    Write-Log "Starting deployment"
+
+    # Prerequisites check
+    Write-Log "Checking Node.js"
     if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
         throw "Node.js is required but not installed"
     }
 
-    # Clean up old files
-    Write-Status "Cleaning up"
+    # Cleanup
+    Write-Log "Cleaning environment"
     Remove-Item -Recurse -Force "dist" -ErrorAction SilentlyContinue
     Remove-Item -Recurse -Force "node_modules" -ErrorAction SilentlyContinue
     
-    # Install dependencies
-    Write-Status "Installing dependencies"
+    # Dependencies
+    Write-Log "Installing dependencies"
     & npm ci
     if ($LASTEXITCODE -ne 0) { throw "npm ci failed" }
 
-    # Build application
-    Write-Status "Building web components"
+    # Build
+    Write-Log "Building components"
     & npm run build:elements
     if ($LASTEXITCODE -ne 0) { throw "build:elements failed" }
 
-    Write-Status "Building application"
+    Write-Log "Building application"
     & nx build whiskey-wiz --configuration=production
     if ($LASTEXITCODE -ne 0) { throw "nx build failed" }
 
     # Deploy
-    Write-Status "Deploying to Firebase"
+    Write-Log "Deploying"
     & firebase deploy --non-interactive
     if ($LASTEXITCODE -ne 0) { throw "Firebase deployment failed" }
 
-    Write-Status "Deployment completed successfully"
-    
-    # Final instructions
+    Write-Log "Deployment successful!"
     Write-Host "`nPlease verify:" -ForegroundColor Yellow
     Write-Host "1. Visit https://whiskeywiz2.web.app"
     Write-Host "2. Test Shopify integration"
