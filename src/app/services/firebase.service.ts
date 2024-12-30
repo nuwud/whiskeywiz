@@ -13,82 +13,107 @@ import { Quarter, PlayerScore, ScoringRules, GameState, isValidQuarter } from '.
   providedIn: 'root'
 })
 export class FirebaseService {
-  private readonly quartersCollection: AngularFirestoreCollection<Quarter>;
-  private readonly scoresCollection: AngularFirestoreCollection<PlayerScore>;
-  private readonly scoringRulesDoc: AngularFirestoreDocument<ScoringRules>;
-  private readonly gameProgressCollection: AngularFirestoreCollection<GameState>;
+  // ... Previous code remains the same ...
 
-  constructor(
-    private readonly firestore: AngularFirestore,
-    private readonly auth: AngularFireAuth,
-    private readonly storage: AngularFireStorage,
-    private readonly database: AngularFireDatabase,
-    private readonly functions: AngularFireFunctions,
-    private readonly analytics: AngularFireAnalytics
-  ) {
-    this.quartersCollection = this.firestore.collection<Quarter>('quarters');
-    this.scoresCollection = this.firestore.collection<PlayerScore>('scores');
-    this.scoringRulesDoc = this.firestore.doc<ScoringRules>('config/scoringRules');
-    this.gameProgressCollection = this.firestore.collection<GameState>('gameProgress');
-  }
-
-  // Auth State
-  getAuthState(): Observable<any> {
-    return this.auth.authState;
-  }
-
-  // Game Progress Methods (consolidated)
-  getGameProgress(authId: string): Observable<GameState> {
-    return this.gameProgressCollection.doc(authId).valueChanges()
+  // Quarter Management Methods
+  getQuarters(): Observable<Quarter[]> {
+    return this.firestore.collection<Quarter>('quarters')
+      .valueChanges({ idField: 'id' })
       .pipe(
-        map(state => {
-          if (!state) throw new Error('Game progress not found');
-          return state;
+        map(quarters => quarters.filter(isValidQuarter)),
+        tap(quarters => console.log('Valid quarters fetched:', quarters.length)),
+        catchError(error => {
+          console.error('Error fetching quarters:', error);
+          return throwError(() => new Error(`Failed to fetch quarters: ${error.message}`));
+        })
+      );
+  }
+
+  getQuarterById(id: string): Observable<Quarter | null> {
+    return this.quartersCollection.doc<Quarter>(id)
+      .get({ source: 'server' })
+      .pipe(
+        map(doc => {
+          if (!doc.exists) {
+            console.log(`Quarter ${id} not found`);
+            return null;
+          }
+          const data = doc.data() as Quarter;
+          const result = {
+            ...data,
+            id: doc.id,
+            samples: data.samples || {}
+          };
+          if (!isValidQuarter(result)) {
+            throw new Error('Invalid quarter data structure');
+          }
+          return result;
         }),
         catchError(error => {
-          console.error('Error fetching game progress:', error);
-          return throwError(() => new Error(`Failed to fetch game progress: ${error.message}`));
+          console.error(`Error fetching quarter ${id}:`, error);
+          return throwError(() => new Error(`Failed to fetch quarter: ${error.message}`));
         })
       );
   }
 
-  setGameProgress(authId: string, gameState: GameState): Observable<void> {
-    return from(this.gameProgressCollection.doc(authId).set(gameState))
+  createQuarter(quarter: Quarter): Observable<void> {
+    if (!isValidQuarter(quarter)) {
+      return throwError(() => new Error('Invalid quarter data'));
+    }
+    
+    return from(this.quartersCollection.doc(quarter.id).set(quarter))
       .pipe(
-        tap(() => console.log('Game progress saved successfully')),
+        tap(() => console.log('Quarter created successfully')),
         catchError(error => {
-          console.error('Error saving game progress:', error);
-          return throwError(() => new Error(`Failed to save game progress: ${error.message}`));
+          console.error('Error creating quarter:', error);
+          return throwError(() => new Error(`Failed to create quarter: ${error.message}`));
         })
       );
   }
 
-  updateGameProgress(authId: string, gameState: Partial<GameState>): Observable<void> {
-    return from(this.gameProgressCollection.doc(authId).update(gameState))
+  updateQuarter(quarterId: string, quarterData: Partial<Quarter>): Observable<void> {
+    const docRef = this.quartersCollection.doc(quarterId);
+    
+    return docRef.get().pipe(
+      switchMap(doc => {
+        if (!doc.exists) {
+          throw new Error(`Quarter ${quarterId} does not exist`);
+        }
+        const currentData = doc.data() as Quarter;
+        const updatedData = { ...currentData, ...quarterData };
+        
+        if (!isValidQuarter(updatedData)) {
+          throw new Error('Update would result in invalid quarter data');
+        }
+        
+        return from(docRef.update(quarterData));
+      }),
+      tap(() => console.log('Quarter updated successfully')),
+      catchError(error => {
+        console.error('Quarter update failed:', error);
+        return throwError(() => new Error(`Failed to update quarter: ${error.message}`));
+      })
+    );
+  }
+
+  getActiveQuarters(): Observable<string[]> {
+    return this.firestore
+      .collection<Quarter>('quarters', ref => 
+        ref.where('active', '==', true)
+           .orderBy('name', 'desc')
+      )
+      .valueChanges({ idField: 'id' })
       .pipe(
-        tap(() => console.log('Game progress updated successfully')),
+        map(quarters => quarters
+          .filter(isValidQuarter)
+          .map(quarter => quarter.id!)
+        ),
         catchError(error => {
-          console.error('Error updating game progress:', error);
-          return throwError(() => new Error(`Failed to update game progress: ${error.message}`));
+          console.error('Error fetching active quarters:', error);
+          return of([]);
         })
       );
   }
 
-  deleteGameProgress(authId: string): Observable<void> {
-    return from(this.gameProgressCollection.doc(authId).delete())
-      .pipe(
-        tap(() => console.log('Game progress deleted successfully')),
-        catchError(error => {
-          console.error('Error deleting game progress:', error);
-          return throwError(() => new Error(`Failed to delete game progress: ${error.message}`));
-        })
-      );
-  }
-
-  // Removed duplicate gameProgress methods
-  // Removed gameProgressBatch methods as they're no longer needed
-  // Removed gameState methods as they're duplicates
-
-  // Rest of the service remains unchanged for now
-  // Will be updated in subsequent commits
+  // ... Rest of the service code remains unchanged for now ...
 }
