@@ -3,14 +3,16 @@ import { RouterModule, Routes } from '@angular/router';
 import { AdminComponent } from './admin/admin.component';
 import { PlayerComponent } from './player/player.component';
 import { LoginComponent } from './auth/login/login.component';
-import { AuthGuard } from './guards/auth.guard';
+import { RegisterComponent } from './auth/register/register.component';
+import { canActivateAdmin, canActivateAuth, canActivateGame } from './guards/auth.guard';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/admin', pathMatch: 'full' },
-  { path: 'admin', component: AdminComponent },
+  { path: '', redirectTo: '/player', pathMatch: 'full' },
+  { path: 'admin', component: AdminComponent, canActivate: [canActivateAdmin] },
   { path: 'player', component: PlayerComponent },
   { path: 'login', component: LoginComponent },
-  { path: '**', redirectTo: '/admin' }
+  { path: 'register', component: RegisterComponent },
+  { path: 'game', loadChildren: () => import('./shared/game/game.module').then(m => m.GameModule), canActivate: [canActivateGame] }
 ];
 
 @NgModule({
