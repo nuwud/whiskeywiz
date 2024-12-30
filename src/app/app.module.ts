@@ -1,33 +1,41 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { SharedModule } from './shared/shared.module';
-import { environment } from '../environments/environment';
 
-// Firebase imports
+import { environment } from '../environments/environment';
 import { AngularFireModule } from '@angular/fire/compat';
-import { AngularFirestoreModule, SETTINGS } from '@angular/fire/compat/firestore';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 import { AngularFireFunctionsModule } from '@angular/fire/compat/functions';
 import { AngularFireAnalyticsModule } from '@angular/fire/compat/analytics';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AuthGuard } from './guards/auth.guard';
-import { FirebaseService } from './services/firebase.service';
-import { CACHE_SIZE_UNLIMITED } from '@angular/fire/firestore';
+import { AdminComponent } from './admin/admin.component';
+import { PlayerComponent } from './player/player.component';
+import { LoginComponent } from './auth/login/login.component';
+import { RegisterComponent } from './auth/register/register.component';
+import { AuthButtonComponent } from './auth/auth-button/auth-button.component';
+import { AdminNavComponent } from './admin-nav/admin-nav.component';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    // ... other component declarations
+    AdminComponent,
+    PlayerComponent,
+    LoginComponent,
+    RegisterComponent,
+    AuthButtonComponent,
+    AdminNavComponent
   ],
   imports: [
     BrowserModule,
-    SharedModule,
     AppRoutingModule,
+    FormsModule,
+    SharedModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
@@ -36,22 +44,7 @@ import { CACHE_SIZE_UNLIMITED } from '@angular/fire/firestore';
     AngularFireFunctionsModule,
     AngularFireAnalyticsModule
   ],
-  exports: [
-    SharedModule
-    ],
-  providers: [
-    FirebaseService,
-    AuthGuard,
-    {
-      provide: SETTINGS,
-      useValue: {
-        ignoreUndefinedProperties: true,
-        cacheSizeBytes: CACHE_SIZE_UNLIMITED,
-        experimentalForceLongPolling: true,
-        merge: true
-      }
-    }
-  ],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
