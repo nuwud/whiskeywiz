@@ -1,13 +1,23 @@
-# WhiskeyWiz Deployment Script
+# deploy.ps1
 
+# Enable strict mode
+Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-function Write-Status($message) {
-    Write-Host "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')] $message" -ForegroundColor Green
+# Configure Node.js settings to prevent memory leaks
+$env:NODE_OPTIONS = "--max-old-space-size=4096 --max-http-header-size=16384"
+$env:UV_THREADPOOL_SIZE = "32"
+
+# Utility Functions
+function Write-ColorOutput($ForegroundColor) {
+    $fc = $host.UI.RawUI.ForegroundColor
+    $host.UI.RawUI.ForegroundColor = $ForegroundColor
+    if ($args) {
+        Write-Output $args
+    }
+    $host.UI.RawUI.ForegroundColor = $fc
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 function Write-Log($message) {
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     Write-ColorOutput Green "[$timestamp] $message"
@@ -177,60 +187,3 @@ function Start-WhiskeyWizDeployment {
 
 # Execute deployment
 Start-WhiskeyWizDeployment
-||||||| adb8179
-...
-=======
-function Write-Error($message) {
-||||||| 43f167d
-function Write-Error($message) {
-=======
-function Write-ErrorMessage($message) {
->>>>>>> c227ec9c0e86443d41016f7dc3d38fa06cd0d6fa
-    Write-Host "[ERROR] $message" -ForegroundColor Red
-    exit 1
-}
-
-try {
-    Write-Status "Starting WhiskeyWiz deployment..."
-
-    # Check Node.js
-    Write-Status "Checking Node.js..."
-    if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
-        Write-ErrorMessage "Node.js is required but not installed"
-    }
-
-    # Clean up
-    Write-Status "Cleaning environment..."
-    if (Test-Path "dist") { 
-        Remove-Item -Recurse -Force "dist" 
-    }
-    if (Test-Path "node_modules") { 
-        Remove-Item -Recurse -Force "node_modules" 
-    }
-    npm cache clean --force
-
-    # Install dependencies
-    Write-Status "Installing dependencies..."
-    npm ci --no-audit
-
-    # Build
-    Write-Status "Building web components..."
-    npm run build:elements
-
-    Write-Status "Building production application..."
-    nx build whiskey-wiz --configuration=production
-
-    # Deploy
-    Write-Status "Deploying to Firebase..."
-    firebase deploy --non-interactive
-
-    Write-Status "Deployment completed successfully!"
-    Write-Host "Please verify:"
-    Write-Host "1. Visit https://whiskeywiz2.web.app"
-    Write-Host "2. Test Shopify integration"
-    Write-Host "3. Verify game functionality"
-
-} catch {
-    Write-ErrorMessage "Deployment failed: $($_.Exception.Message)"
-}
->>>>>>> 43f167ddb510d349f4d0c211affd28493606f7fa
