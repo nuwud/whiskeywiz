@@ -2,235 +2,55 @@
 
 $ErrorActionPreference = "Stop"
 
-function Write-Status($message) {
-    Write-Host "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')] $message" -ForegroundColor Green
-}
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-function Write-Log($message) {
+# Write colored status messages
+function Write-Status($Message) {
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    Write-ColorOutput Green "[$timestamp] $message"
+    Write-Host "[$timestamp] $Message" -ForegroundColor Green
 }
 
-function Write-ErrorLog($message) {
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    Write-ColorOutput Red "[ERROR] $message"
-    exit 1
-}
-
-function Write-WarningLog($message) {
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    Write-ColorOutput Yellow "[WARNING] $message"
-}
-
-# Initial setup
-function Initialize-NodeEnvironment {
-    Write-Log "Configuring Node.js environment..."
-    
-    try {
-        # Increase event listener limit through npm config
-        npm config set maxsockets 25
-        
-        # Create .npmrc if it doesn't exist
-        if (-not (Test-Path ".npmrc")) {
-            @"
-maxsockets=25
-registry=https://registry.npmjs.org/
-"@ | Set-Content ".npmrc"
-        }
-        
-        Write-Log "Node.js environment configured ✓"
-    }
-    catch {
-        Write-ErrorLog "Failed to configure Node.js environment: $_"
-    }
-}
-
-# Check prerequisites
-function Test-Prerequisites {
-    Write-Log "Checking prerequisites..."
-    
-    try {
-        # Check Node.js
-        $nodeVersion = node --version
-        if (-not $nodeVersion) {
-            Write-ErrorLog "Node.js is required but not installed"
-        }
-        
-        $versionNumber = $nodeVersion.Replace('v', '')
-        if ([version]$versionNumber -lt [version]"16.0.0") {
-            Write-ErrorLog "Node.js version must be 16.0.0 or higher. Current version: $versionNumber"
-        }
-        
-        # Check npm
-        $null = npm --version
-        
-        # Verify Firebase CLI globally
-        if (-not (Get-Command firebase -ErrorAction SilentlyContinue)) {
-            Write-Log "Firebase CLI not found globally, installing..."
-            npm install -g firebase-tools
-        }
-        
-        Write-Log "Prerequisites check passed ✓"
-    }
-    catch {
-        Write-ErrorLog "Prerequisites check failed: $_"
-    }
-}
-
-# Clean environment
-function Clear-Environment {
-    Write-Log "Cleaning environment..."
-    
-    try {
-        # Clear npm cache
-        npm cache clean --force
-        
-        # Remove problematic folders
-        $foldersToRemove = @(
-            "node_modules",
-            "dist",
-            ".angular/cache"
-        )
-        
-        foreach ($folder in $foldersToRemove) {
-            if (Test-Path $folder) {
-                Write-Log "Removing $folder..."
-                Remove-Item -Recurse -Force $folder
-            }
-        }
-        
-        Write-Log "Environment cleaned ✓"
-    }
-    catch {
-        Write-ErrorLog "Failed to clean environment: $_"
-    }
-}
-
-# Build process with memory management
-function Start-Build {
-    Write-Log "Starting build process..."
-    
-    try {
-        # Clean install dependencies
-        Write-Log "Installing dependencies..."
-        npm ci --no-audit --no-fund
-        
-        # Build elements
-        Write-Log "Building web components..."
-        npm run build:elements
-        
-        # Production build
-        Write-Log "Building production application..."
-        nx build whiskey-wiz --configuration=production
-        
-        Write-Log "Build process completed ✓"
-    }
-    catch {
-        Write-ErrorLog "Build failed: $_"
-    }
-}
-
-# Deployment with verification
-function Start-FirebaseDeployment {
-    Write-Log "Starting Firebase deployment..."
-    
-    try {
-        # Verify Firebase login
-        $loginStatus = firebase login:list
-        if (-not ($loginStatus -match "nuwudorder@gmail.com")) {
-            Write-ErrorLog "Not logged in to Firebase. Please run 'firebase login' first."
-        }
-        
-        # Deploy
-        firebase deploy --non-interactive
-        
-        Write-Log "Deployment completed ✓"
-    }
-    catch {
-        Write-ErrorLog "Deployment failed: $_"
-    }
-}
-
-# Main deployment flow
-function Start-WhiskeyWizDeployment {
-    Write-Log "Starting WhiskeyWiz deployment process..."
-    
-    try {
-        Initialize-NodeEnvironment
-        Test-Prerequisites
-        Clear-Environment
-        Start-Build
-        Start-FirebaseDeployment
-        
-        Write-Log "Deployment completed successfully! 🎉"
-        Write-Log "Please verify:"
-        Write-Output "1. Visit https://whiskeywiz2.web.app"
-        Write-Output "2. Test Shopify integration"
-        Write-Output "3. Verify game functionality"
-    }
-    catch {
-        Write-ErrorLog "Deployment failed: $_"
-    }
-}
-
-# Execute deployment
-Start-WhiskeyWizDeployment
-||||||| adb8179
-...
-=======
-function Write-Error($message) {
-||||||| 43f167d
-function Write-Error($message) {
-=======
-function Write-ErrorMessage($message) {
->>>>>>> c227ec9c0e86443d41016f7dc3d38fa06cd0d6fa
-    Write-Host "[ERROR] $message" -ForegroundColor Red
-    exit 1
-}
-
+# Main deployment script
 try {
-    Write-Status "Starting WhiskeyWiz deployment..."
-
-    # Check Node.js
-    Write-Status "Checking Node.js..."
+    Write-Status "Starting deployment"
+    
+    # Check Node.js installation
+    Write-Status "Checking prerequisites"
     if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
-        Write-ErrorMessage "Node.js is required but not installed"
+        throw "Node.js is required but not installed"
     }
 
-    # Clean up
-    Write-Status "Cleaning environment..."
-    if (Test-Path "dist") { 
-        Remove-Item -Recurse -Force "dist" 
-    }
-    if (Test-Path "node_modules") { 
-        Remove-Item -Recurse -Force "node_modules" 
-    }
-    npm cache clean --force
-
+    # Clean up old files
+    Write-Status "Cleaning up"
+    Remove-Item -Recurse -Force "dist" -ErrorAction SilentlyContinue
+    Remove-Item -Recurse -Force "node_modules" -ErrorAction SilentlyContinue
+    
     # Install dependencies
-    Write-Status "Installing dependencies..."
-    npm ci --no-audit
+    Write-Status "Installing dependencies"
+    & npm ci
+    if ($LASTEXITCODE -ne 0) { throw "npm ci failed" }
 
-    # Build
-    Write-Status "Building web components..."
-    npm run build:elements
+    # Build application
+    Write-Status "Building web components"
+    & npm run build:elements
+    if ($LASTEXITCODE -ne 0) { throw "build:elements failed" }
 
-    Write-Status "Building production application..."
-    nx build whiskey-wiz --configuration=production
+    Write-Status "Building application"
+    & nx build whiskey-wiz --configuration=production
+    if ($LASTEXITCODE -ne 0) { throw "nx build failed" }
 
     # Deploy
-    Write-Status "Deploying to Firebase..."
-    firebase deploy --non-interactive
+    Write-Status "Deploying to Firebase"
+    & firebase deploy --non-interactive
+    if ($LASTEXITCODE -ne 0) { throw "Firebase deployment failed" }
 
-    Write-Status "Deployment completed successfully!"
-    Write-Host "Please verify:"
+    Write-Status "Deployment completed successfully"
+    
+    # Final instructions
+    Write-Host "`nPlease verify:" -ForegroundColor Yellow
     Write-Host "1. Visit https://whiskeywiz2.web.app"
     Write-Host "2. Test Shopify integration"
     Write-Host "3. Verify game functionality"
 
 } catch {
-    Write-ErrorMessage "Deployment failed: $($_.Exception.Message)"
+    Write-Host "`n[ERROR] $($_.Exception.Message)" -ForegroundColor Red
+    exit 1
 }
->>>>>>> 43f167ddb510d349f4d0c211affd28493606f7fa
