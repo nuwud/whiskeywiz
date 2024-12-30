@@ -112,7 +112,7 @@ export class GameService {
       take(1),
       switchMap(playerId => {
         if (!playerId) return throwError(() => new Error('No player ID'));
-        return this.firebaseService.gameProgressSet(playerId, state);
+        return this.firebaseService.saveGameProgress(playerId, state);
       }),
       tap(() => this.gameState.next(state))
     );
