@@ -1,131 +1,154 @@
 import { Injectable } from '@angular/core';
-import { FirebaseService } from './firebase.service';
-import { ScoringRules, Quarter, Sample } from '../shared/models/quarter.model';
-import { GameGuess } from '../shared/models/game.model';
 import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+import { FirebaseService } from './firebase.service';
+import { 
+  ScoringRules, 
+  GameScore, 
+  SampleScore, 
+  DEFAULT_SCORING_RULES,
+  SCORE_QUIPS 
+} from '../shared/models/scoring.model';
+import { 
+  Quarter, 
+  Sample, 
+  SampleKey,
+  GameState,
+  GameGuess 
+} from '../shared/models/quarter.model';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class ScoreService {
-    private scoringRules$ = new BehaviorSubject<ScoringRules>({
-        agePerfectScore: 20,
-        ageBonus: 10,
-        agePenaltyPerYear: 4,
-        proofPerfectScore: 20,
-        proofBonus: 10,
-        proofPenaltyPerPoint: 2,
-        mashbillCorrectScore: 10
+  private scoringRules$ = new BehaviorSubject<ScoringRules>(DEFAULT_SCORING_RULES);
+  private readonly EMOJI_SCORE_THRESHOLDS = [
+    { score: 30, emoji: '🟦' },
+    { score: 20, emoji: '🟨' },
+    { score: 10, emoji: '⬜' },
+    { score: 0, emoji: '⬛' }
+  ] as const;
+
+  constructor(private firebaseService: FirebaseService) {
+    this.loadScoringRules();
+  }
+
+  private async loadScoringRules(): Promise<void> {
+    try {
+      const rules = await firstValueFrom(this.firebaseService.getScoringRules());
+      if (rules) {
+        this.scoringRules$.next(rules);
+      }
+    } catch (error) {
+      console.error('Error loading scoring rules:', error);
+    }
+  }
+
+  getScoringRules(): Observable<ScoringRules> {
+    return this.scoringRules$.asObservable();
+  }
+
+  calculateSampleScore(guess: GameGuess, actual: Sample): SampleScore {
+    const rules = this.scoringRules$.value;
+    
+    const ageDiff = Math.abs(actual.age - guess.age);
+    const agePoints = ageDiff === 0 
+      ? rules.agePerfectScore + rules.ageBonus
+      : Math.max(0, rules.agePerfectScore - (ageDiff * rules.agePenaltyPerYear));
+
+    const proofDiff = Math.abs(actual.proof - guess.proof);
+    const proofPoints = proofDiff === 0
+      ? rules.proofPerfectScore + rules.proofBonus
+      : Math.max(0, rules.proofPerfectScore - (proofDiff * rules.proofPenaltyPerPoint));
+
+    const mashbillPoints = guess.mashbill === actual.mashbill 
+      ? rules.mashbillCorrectScore 
+      : 0;
+
+    return {
+      agePoints,
+      proofPoints,
+      mashbillPoints,
+      total: agePoints + proofPoints + mashbillPoints,
+      details: {
+        ageAccuracy: ageDiff,
+        proofAccuracy: proofDiff,
+        mashbillCorrect: guess.mashbill === actual.mashbill
+      }
+    };
+  }
+
+  calculateGameScore(gameState: GameState, quarter: Quarter): GameScore {
+    const sampleScores: { [K in SampleKey]: SampleScore } = {
+      sample1: this.getInitialSampleScore(),
+      sample2: this.getInitialSampleScore(),
+      sample3: this.getInitialSampleScore(),
+      sample4: this.getInitialSampleScore()
+    };
+
+    let totalScore = 0;
+
+    Object.keys(gameState.guesses).forEach((key) => {
+      const sampleKey = key as SampleKey;
+      const guess = gameState.guesses[sampleKey];
+      const actual = quarter.samples[sampleKey];
+
+      const score = this.calculateSampleScore(guess, actual);
+      sampleScores[sampleKey] = score;
+      totalScore += score.total;
     });
 
-    constructor(private firebaseService: FirebaseService) {
-        this.loadScoringRules();
+    return {
+      totalScore,
+      samples: sampleScores,
+      quip: this.getScoreQuip(totalScore),
+      shareText: this.generateShareText(totalScore, sampleScores)
+    };
+  }
+
+  private getInitialSampleScore(): SampleScore {
+    return {
+      agePoints: 0,
+      proofPoints: 0,
+      mashbillPoints: 0,
+      total: 0,
+      details: {
+        ageAccuracy: 0,
+        proofAccuracy: 0,
+        mashbillCorrect: false
+      }
+    };
+  }
+
+  private getScoreQuip(score: number): string {
+    return SCORE_QUIPS.find(q => score >= q.score)?.text ?? SCORE_QUIPS[SCORE_QUIPS.length - 1].text;
+  }
+
+  private getEmojiScore(score: number): string {
+    return this.EMOJI_SCORE_THRESHOLDS.find(t => score >= t.score)?.emoji ?? '⬛';
+  }
+
+  generateShareText(totalScore: number, sampleScores: { [K in SampleKey]: SampleScore }): string {
+    const emojiScores = Object.values(sampleScores).map(score => this.getEmojiScore(score.total));
+    const quip = this.getScoreQuip(totalScore);
+    return `🥃 Whiskey Wiz Score: ${totalScore}\n${quip}\n${emojiScores.join('')}`;
+  }
+
+  getMaxPossibleScore(): number {
+    const rules = this.scoringRules$.value;
+    const sampleMaxScore = (rules.agePerfectScore + rules.ageBonus) +
+      (rules.proofPerfectScore + rules.proofBonus) +
+      rules.mashbillCorrectScore;
+    return sampleMaxScore * 4;
+  }
+
+  async updateScoringRules(rules: ScoringRules): Promise<void> {
+    try {
+      await firstValueFrom(this.firebaseService.updateScoringRules(rules));
+      this.scoringRules$.next(rules);
+    } catch (error) {
+      console.error('Error updating scoring rules:', error);
+      throw error;
     }
-
-    private async loadScoringRules(): Promise<void> {
-        try {
-            const rules = await firstValueFrom(this.firebaseService.getScoringRules());
-            if (rules) {
-                this.scoringRules$.next(rules);
-            }
-        } catch (error) {
-            console.error('Error loading scoring rules:', error);
-        }
-    }
-
-    getScoringRules(): Observable<ScoringRules> {
-        return this.scoringRules$.asObservable();
-    }
-
-    calculateSampleScore(guess: GameGuess, actual: Sample): number {
-        if (!guess || !actual) return 0;
-
-        const rules = this.scoringRules$.value;
-        let score = 0;
-
-        // Age scoring
-        const ageDiff = Math.abs(actual.age - (guess.age || 0));
-        if (ageDiff === 0) {
-            score += rules.agePerfectScore + rules.ageBonus;
-        } else {
-            score += Math.max(0, rules.agePerfectScore - (ageDiff * rules.agePenaltyPerYear));
-        }
-
-        // Proof scoring
-        const proofDiff = Math.abs(actual.proof - (guess.proof || 0));
-        if (proofDiff === 0) {
-            score += rules.proofPerfectScore + rules.proofBonus;
-        } else {
-            score += Math.max(0, rules.proofPerfectScore - (proofDiff * rules.proofPenaltyPerPoint));
-        }
-
-        // Mashbill scoring
-        if (guess.mashbill === actual.mashbill) {
-            score += rules.mashbillCorrectScore;
-        }
-
-        return score;
-    }
-
-    calculateTotalScore(guesses: { [key: string]: GameGuess }, quarterData: Quarter): {
-        sampleScores: { [key: string]: number },
-        totalScore: number
-    } {
-        const sampleScores: { [key: string]: number } = {};
-        let totalScore = 0;
-
-        for (let i = 1; i <= 4; i++) {
-            const sampleKey = `sample${i}`;
-            const guess = guesses[sampleKey];
-            const actual = quarterData.samples[sampleKey];
-
-            if (guess && actual) {
-                const score = this.calculateSampleScore(guess, actual);
-                sampleScores[sampleKey] = score;
-                totalScore += score;
-            }
-        }
-
-        return { sampleScores, totalScore };
-    }
-
-    getScoreQuip(score: number): string {
-        if (!score) return "🌱 Keep Tasting!";
-        if (score >= 240) return "🌟 Master Distiller Status!";
-        if (score >= 200) return "🥃 Whiskey Connoisseur!";
-        if (score >= 160) return "👍 Solid Palate!";
-        if (score >= 120) return "🎯 Good Start!";
-        return "🌱 Keep Tasting!";
-    }
-
-    getEmojiScore(score: number): string {
-        if (score >= 30) return '🟦'; // High score
-        if (score >= 20) return '🟨'; // Medium score
-        if (score >= 10) return '⬜'; // Low score
-        return '⬛';                  // Very low score
-    }
-
-    generateShareText(totalScore: number, sampleScores: { [key: string]: number }): string {
-        const emojiScores = Object.values(sampleScores).map(score => this.getEmojiScore(score));
-        const quip = this.getScoreQuip(totalScore);
-        return `🥃 Whiskey Wiz Score: ${totalScore}\n${quip}\n${emojiScores.join('')}`;
-    }
-
-    getMaxPossibleScore(): number {
-        const rules = this.scoringRules$.value;
-        const sampleMaxScore = (rules.agePerfectScore + rules.ageBonus) +
-            (rules.proofPerfectScore + rules.proofBonus) +
-            rules.mashbillCorrectScore;
-        return sampleMaxScore * 4; // 4 samples total
-    }
-
-    async updateScoringRules(rules: ScoringRules): Promise<void> {
-        try {
-            await firstValueFrom(this.firebaseService.updateScoringRules(rules));
-            this.scoringRules$.next(rules);
-        } catch (error) {
-            console.error('Error updating scoring rules:', error);
-            throw error;
-        }
-    }
+  }
 }
