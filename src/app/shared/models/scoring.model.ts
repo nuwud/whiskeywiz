@@ -1,1 +1,51 @@
-{"content": "import { MashbillType, SampleKey } from './quarter.model';\n\nexport interface ScoringRules {\n  agePerfectScore: number;\n  ageBonus: number;\n  agePenaltyPerYear: number;\n  proofPerfectScore: number;\n  proofBonus: number;\n  proofPenaltyPerPoint: number;\n  mashbillCorrectScore: number;\n}\n\nexport interface SampleScore {\n  agePoints: number;\n  proofPoints: number;\n  mashbillPoints: number;\n  total: number;\n  details: {\n    ageAccuracy: number;\n    proofAccuracy: number;\n    mashbillCorrect: boolean;\n  };\n}\n\nexport interface GameScore {\n  totalScore: number;\n  samples: {\n    [K in SampleKey]: SampleScore;\n  };\n  quip: string;\n  shareText: string;\n}\n\nexport const DEFAULT_SCORING_RULES: ScoringRules = {\n  agePerfectScore: 20,\n  ageBonus: 10,\n  agePenaltyPerYear: 4,\n  proofPerfectScore: 20,\n  proofBonus: 10,\n  proofPenaltyPerPoint: 2,\n  mashbillCorrectScore: 10\n};\n\nexport const SCORE_QUIPS = [\n  { score: 240, text: \"🌟 Master Distiller Status!\" },\n  { score: 200, text: \"🥃 Whiskey Connoisseur!\" },\n  { score: 160, text: \"👍 Solid Palate!\" },\n  { score: 120, text: \"🎯 Good Start!\" },\n  { score: 0, text: \"🌱 Keep Tasting!\" }\n] as const;\n\n// Type guard\nexport const isSampleScore = (score: unknown): score is SampleScore => {\n  if (!score || typeof score !== 'object') return false;\n  \n  const s = score as SampleScore;\n  return (\n    typeof s.agePoints === 'number' &&\n    typeof s.proofPoints === 'number' &&\n    typeof s.mashbillPoints === 'number' &&\n    typeof s.total === 'number' &&\n    s.details &&\n    typeof s.details.ageAccuracy === 'number' &&\n    typeof s.details.proofAccuracy === 'number' &&\n    typeof s.details.mashbillCorrect === 'boolean'\n  );\n};", "encoding": "utf8"}
+// Core scoring types
+import { MashbillType, SampleKey } from './quarter.model';
+
+export interface ScoringRules {
+  agePerfectScore: number;
+  ageBonus: number;
+  agePenaltyPerYear: number;
+  proofPerfectScore: number;
+  proofBonus: number;
+  proofPenaltyPerPoint: number;
+  mashbillCorrectScore: number;
+}
+
+export interface SampleScore {
+  agePoints: number;
+  proofPoints: number;
+  mashbillPoints: number;
+  total: number;
+  details: {
+    ageAccuracy: number;
+    proofAccuracy: number;
+    mashbillCorrect: boolean;
+  };
+}
+
+export interface GameScore {
+  totalScore: number;
+  samples: {
+    [K in SampleKey]: SampleScore;
+  };
+  quip: string;
+  shareText: string;
+}
+
+export const DEFAULT_SCORING_RULES = {
+  agePerfectScore: 20,
+  ageBonus: 10,
+  agePenaltyPerYear: 4,
+  proofPerfectScore: 20,
+  proofBonus: 10,
+  proofPenaltyPerPoint: 2,
+  mashbillCorrectScore: 10
+};
+
+export const SCORE_QUIPS = [
+  { score: 240, text: '🌟 Master Distiller Status!' },
+  { score: 200, text: '🥃 Whiskey Connoisseur!' },
+  { score: 160, text: '👍 Solid Palate!' },
+  { score: 120, text: '🎯 Good Start!' },
+  { score: 0, text: '🌱 Keep Tasting!' }
+] as const;
