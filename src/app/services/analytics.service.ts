@@ -1,138 +1,52 @@
-// src/app/services/analytics.service.ts
-
 import { Injectable } from '@angular/core';
-import { FirebaseService } from './firebase.service';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { PlayerAnalytics, ChartData } from '../shared/models/analytics.model';
+import { AngularFireAnalytics } from '@angular/fire/compat/analytics';
+import { PlayerScore, Quarter } from '../shared/models/quarter.model';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class AnalyticsService {
-    private analyticsData = new BehaviorSubject<ChartData>({
-        participationTrend: [],
-        accuracyStats: [],
-        deviceStats: [],
-        locationStats: []
+  constructor(private analytics: AngularFireAnalytics) {}
+
+  logGameStart(quarterId: string): void {
+    this.analytics.logEvent('game_start', {
+      quarterId,
+      timestamp: new Date().toISOString()
     });
+  }
 
-    constructor(private firebaseService: FirebaseService) { }
+  logGameComplete(quarterId: string, score: PlayerScore): void {
+    this.analytics.logEvent('game_complete', {
+      quarterId,
+      score: score.score,
+      playerId: score.playerId,
+      timestamp: new Date().toISOString()
+    });
+  }
 
-    async fetchAnalyticsData(): Promise<void> {
-        try {
-            // Fetch raw data from Firebase
-            const quarterData = await this.firebaseService.getAllQuarterStats();
-            const playerData = await this.firebaseService.getAllPlayerStats();
+  logGuessSubmitted(quarterId: string, sampleNumber: number, guessData: any): void {
+    this.analytics.logEvent('guess_submitted', {
+      quarterId,
+      sampleNumber,
+      guessData,
+      timestamp: new Date().toISOString()
+    });
+  }
 
-            // Process participation trend
-            const participationTrend = this.processParticipationTrend(quarterData);
-            const accuracyStats = this.processAccuracyStats(quarterData);
-            const deviceStats = this.processDeviceStats(playerData);
-            const locationStats = this.processLocationStats(playerData);
+  logQuarterActivated(quarter: Quarter): void {
+    this.analytics.logEvent('quarter_activated', {
+      quarterId: quarter.id,
+      quarterName: quarter.name,
+      timestamp: new Date().toISOString()
+    });
+  }
 
-            this.analyticsData.next({
-                participationTrend,
-                accuracyStats,
-                deviceStats,
-                locationStats
-            });
-        } catch (error) {
-            console.error('Error fetching analytics data:', error);
-            throw error;
-        }
-    }
-
-    getAnalyticsData(): Observable<ChartData> {
-        return this.analyticsData.asObservable();
-    }
-
-    // Firebase Analytics Event Logging
-    logGameStart(quarterId: string): void {
-        this.firebaseService.logAnalyticsEvent('game_start', {
-            quarter_id: quarterId,
-            timestamp: new Date().toISOString()
-        });
-    }
-
-    logGuessSubmitted(quarterId: string, sampleId: string, guessType: string): void {
-        this.firebaseService.logAnalyticsEvent('guess_submitted', {
-            quarter_id: quarterId,
-            sample_id: sampleId,
-            guess_type: guessType
-        });
-    }
-
-    logGameCompleted(quarterId: string, totalScore: number, timeTaken: number): void {
-        this.firebaseService.logAnalyticsEvent('game_completed', {
-            quarter_id: quarterId,
-            score: totalScore,
-            completion_time: timeTaken
-        });
-    }
-
-    private processParticipationTrend(data: any[]): any[] {
-        // Group by quarter and calculate averages
-        const grouped = data.reduce((acc, curr) => {
-            const quarter = curr.quarterId;
-            if (!acc[quarter]) {
-                acc[quarter] = {
-                    participants: 0,
-                    totalScore: 0
-                };
-            }
-            acc[quarter].participants++;
-            acc[quarter].totalScore += curr.score;
-            return acc;
-        }, {});
-
-        return Object.entries(grouped).map(([quarter, stats]: [string, any]) => ({
-            quarter,
-            participants: stats.participants,
-            avgScore: stats.totalScore / stats.participants
-        }));
-    }
-
-    private processAccuracyStats(data: any[]): any[] {
-        // Calculate accuracy percentages for each guess type
-        const accuracyTypes = ['age', 'proof', 'mashbill'];
-        return accuracyTypes.map(type => ({
-            type,
-            accuracy: this.calculateAccuracy(data, type)
-        }));
-    }
-
-    private processDeviceStats(data: any[]): any[] {
-        // Process device type distribution
-        const devices = data.reduce((acc, curr) => {
-            const device = curr.deviceType;
-            acc[device] = (acc[device] || 0) + 1;
-            return acc;
-        }, {});
-
-        return Object.entries(devices).map(([device, count]) => ({
-            device,
-            count
-        }));
-    }
-
-    private processLocationStats(data: any[]): any[] {
-        // Process location distribution
-        const locations = data.reduce((acc, curr) => {
-            const location = curr.location;
-            acc[location] = (acc[location] || 0) + 1;
-            return acc;
-        }, {});
-
-        return Object.entries(locations).map(([location, count]) => ({
-            location,
-            count
-        }));
-    }
-
-    private calculateAccuracy(data: any[], type: string): number {
-        // Calculate accuracy percentage for a specific guess type
-        const total = data.length;
-        const correct = data.filter(item => item[`${type}Correct`]).length;
-        return (correct / total) * 100;
-    }
+  logError(error: Error, context: string): void {
+    this.analytics.logEvent('error_occurred', {
+      errorMessage: error.message,
+      errorName: error.name,
+      context,
+      timestamp: new Date().toISOString()
+    });
+  }
 }
