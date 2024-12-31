@@ -17,9 +17,7 @@ import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { AuthButtonComponent } from './auth/auth-button/auth-button.component';
 import { SharedModule } from './shared/shared.module';
-import { AdminModule } from './admin/admin.module';
-import { PlayerModule } from './player/player.module';
-import { AdminNavModule } from './admin-nav/admin-nav.module';
+import { CoreModule } from './core/core.module';
 
 @NgModule({
   declarations: [
@@ -33,9 +31,7 @@ import { AdminNavModule } from './admin-nav/admin-nav.module';
     AppRoutingModule,
     FormsModule,
     SharedModule,
-    AdminModule,
-    PlayerModule,
-    AdminNavModule,
+    CoreModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
@@ -44,7 +40,6 @@ import { AdminNavModule } from './admin-nav/admin-nav.module';
     AngularFireFunctionsModule,
     AngularFireAnalyticsModule
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
