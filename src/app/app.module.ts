@@ -13,29 +13,29 @@ import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 import { AngularFireFunctionsModule } from '@angular/fire/compat/functions';
 import { AngularFireAnalyticsModule } from '@angular/fire/compat/analytics';
 
-import { AdminComponent } from './admin/admin.component';
-import { PlayerComponent } from './player/player.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { AuthButtonComponent } from './auth/auth-button/auth-button.component';
-import { AdminNavComponent } from './admin-nav/admin-nav.component';
 import { SharedModule } from './shared/shared.module';
+import { AdminModule } from './admin/admin.module';
+import { PlayerModule } from './player/player.module';
+import { AdminNavModule } from './admin-nav/admin-nav.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    AdminComponent,
-    PlayerComponent,
     LoginComponent,
     RegisterComponent,
-    AuthButtonComponent,
-    AdminNavComponent
+    AuthButtonComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     SharedModule,
+    AdminModule,
+    PlayerModule,
+    AdminNavModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
