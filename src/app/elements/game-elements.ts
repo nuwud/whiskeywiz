@@ -1,12 +1,12 @@
 import { Injector, NgModule, Input, Component as NgComponent } from '@angular/core';
-import { createCustomElement } from '@angular/elements';
-import { GameComponent } from '../shared/game/game.component';
 import { BrowserModule } from '@angular/platform-browser';
-import { SharedModule } from '../shared/shared.module';
+import { createCustomElement } from '@angular/elements';
+import { SharedModule } from '../shared/shared.module'; // Ensure this path is correct and the module is properly exported
+import { GameComponent } from '../shared/game/game.component';
 
 @NgModule({
   imports: [
-    BrowserModule, 
+    BrowserModule,
     SharedModule
   ],
   providers: []
@@ -56,11 +56,10 @@ export class QuarterComponent {
 }
 
 export function createGameElement(injector: Injector) {
-
-  // Check if element is already defined
-  if (!customElements.get('whiskey-wiz-game')) {
+  const elementName = 'whiskey-wiz-game';
+  if (!customElements.get(elementName)) {
     const GameElement = createCustomElement(GameComponent, { injector });
-    customElements.define('whiskey-wiz-game', GameElement);
+    customElements.define(elementName, GameElement);
   }
 }
 
@@ -70,3 +69,19 @@ function Component(metadata:any ) {
   };
 }
 
+export function defineQuarterElement(injector: Injector, quarterId: string) {
+  const elementName = `whiskey-wiz-${quarterId}`;
+  if (!customElements.get(elementName)) {
+    const QuarterWrapper = createQuarterWrapper(quarterId);
+    const QuarterElement = createCustomElement(QuarterWrapper, { injector });
+    customElements.define(elementName, QuarterElement);
+  }
+}
+
+function createQuarterWrapper(quarterId: string) {
+  @Component({
+    template: `<whiskey-wiz-game [quarter]="${quarterId}"></whiskey-wiz-game>`
+  })
+  class QuarterWrapper {}
+  return QuarterWrapper;
+}

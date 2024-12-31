@@ -45,9 +45,17 @@ export interface ScoringRules {
 }
 
 export interface GameState {
-  currentSample: number;
-  guesses: {[key: string]: any};
+  currentSample: 'A' | 'B' | 'C' | 'D';
+  guesses: {
+    [key: string]: {
+      age: number;
+      proof: number;
+      mashbill: string | null;
+    };
+  };
+  scores: {
+    [key: string]: number;
+  };
   isComplete: boolean;
-  scores: {[key: string]: number};
-  totalScore: number;
+  timestamp?: any; // Firebase Timestamp
 }

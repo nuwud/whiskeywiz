@@ -47,3 +47,9 @@ export const combineGuards = (...guards: CanActivateFn[]): CanActivateFn =>
     }
     return true;
   };
+
+  export const AuthGuard = {
+    canActivate: canActivateAuth,
+    canActivateAdmin,
+    canActivateGame
+  };
