@@ -10,7 +10,7 @@ Whiskey Wiz is a gamified whiskey tasting application that integrates with Shopi
 
 This project uses Nx for monorepo management and Angular 17.2 with Firebase backend.
 
-```markdown
+```
 src/
 ├── app/
 │   ├── admin/             # Admin feature module (lazy loaded)
@@ -42,7 +42,6 @@ src/
 ## Analytics Implementation
 
 The application tracks:
-
 - Player location data
 - Device and platform information
 - Sample ratings and preferences
@@ -52,7 +51,6 @@ The application tracks:
 - Time-based engagement metrics
 
 Analytics are collected via:
-
 - Firebase Analytics
 - Custom tracking service
 - Shopify customer events
@@ -60,19 +58,16 @@ Analytics are collected via:
 ## Development Setup
 
 1. Install dependencies:
-
 ```bash
 npm install
 ```
 
 2. Serve the application:
-
 ```bash
 nx serve whiskeywiz
 ```
 
 3. Build web components:
-
 ```bash
 npm run build:elements
 ```
@@ -88,7 +83,6 @@ npm run deploy
 ## Shopify Integration
 
 Embed game components in Shopify pages using:
-
 ```html
 <whiskey-wiz-{quarterId}></whiskey-wiz-{quarterId}>
 ```
@@ -96,7 +90,6 @@ Embed game components in Shopify pages using:
 ## Environment Setup
 
 Requires environment.ts with Firebase configuration:
-
 ```typescript
 export const environment = {
   production: false,
@@ -113,7 +106,6 @@ See CONTRIBUTING.md for development guidelines and procedures.
 ## Testing
 
 Run tests:
-
 ```bash
 nx test
 nx e2e
