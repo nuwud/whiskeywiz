@@ -69,7 +69,7 @@ export class FirebaseService {
     );
   }
 
-  // Quarter data retrieval method (already working, included for completeness)
+  // Quarter data retrieval method
   getQuarterById(quarterId: string): Observable<any> {
     const quarterRef = doc(this.firestore, `quarters/${quarterId}`);
     return from(getDoc(quarterRef)).pipe(
