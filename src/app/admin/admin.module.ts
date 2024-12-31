@@ -1,5 +1,21 @@
-{
-    "message": "Create admin feature module",
-    "content": "aW1wb3J0IHsgTmdNb2R1bGUgfSBmcm9tICdAYW5ndWxhci9jb3JlJzsKaW1wb3J0IHsgQ29tbW9uTW9kdWxlIH0gZnJvbSAnQGFuZ3VsYXIvY29tbW9uJzsKaW1wb3J0IHsgRm9ybXNNb2R1bGUgfSBmcm9tICdAYW5ndWxhci9mb3Jtcyc7CmltcG9ydCB7IEFkbWluQ29tcG9uZW50IH0gZnJvbSAnLi9hZG1pbi5jb21wb25lbnQnOwppbXBvcnQgeyBBZG1pbk5hdkNvbXBvbmVudCB9IGZyb20gJy4uL2FkbWluLW5hdi9hZG1pbi1uYXYuY29tcG9uZW50JzsKCkBOZ01vZHVsZSh7CiAgZGVjbGFyYXRpb25zOiBbCiAgICBBZG1pbkNvbXBvbmVudCwKICAgIEFkbWluTmF2Q29tcG9uZW50CiAgXSwKICBpbXBvcnRzOiBbCiAgICBDb21tb25Nb2R1bGUsCiAgICBGb3Jtc01vZHVsZQogIF0sCiAgZXhwb3J0czogWwogICAgQWRtaW5Db21wb25lbnQsCiAgICBBZG1pbk5hdkNvbXBvbmVudAogIF0KfSkKZXhwb3J0IGNsYXNzIEFkbWluTW9kdWxlIHsgfQo=",
-    "encoding": "base64"
-}
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { AdminComponent } from './admin.component';
+import { AdminNavComponent } from '../admin-nav/admin-nav.component';
+
+@NgModule({
+  declarations: [
+    AdminComponent,
+    AdminNavComponent
+  ],
+  imports: [
+    CommonModule,
+    FormsModule
+  ],
+  exports: [
+    AdminComponent,
+    AdminNavComponent
+  ]
+})
+export class AdminModule { }
