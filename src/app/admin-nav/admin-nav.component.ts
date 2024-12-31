@@ -1,10 +1,10 @@
-﻿import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { FirebaseService } from '../services/firebase.service';
 import { Quarter } from '../shared/models/quarter.model';
-import { of } from 'rxjs';
 
 @Component({
   selector: 'app-admin-nav',
@@ -40,7 +40,3 @@ export class AdminNavComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 }
-function switchMap(arg0: (user: any) => any): import("rxjs").OperatorFunction<import("@firebase/auth").User | null, boolean> {
-  throw new Error('Function not implemented.');
-}
-
