@@ -6,13 +6,16 @@ import {
   collection, 
   doc,
   getDoc,
+  getDocs,
   setDoc,
+  updateDoc,
   serverTimestamp 
 } from '@angular/fire/firestore';
+import { ScoringRules } from '../shared/models/scoring.model';
+import { PlayerScore, Quarter } from '../shared/models/quarter.model';
 import { Observable, from, throwError } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
-import { ScoringRules } from '../shared/models/scoring.model';
-import { PlayerScore } from '../shared/models/quarter.model';
+
 
 @Injectable({
   providedIn: 'root'
@@ -80,6 +83,32 @@ export class FirebaseService {
       }),
       catchError(error => {
         console.error('Error fetching quarter:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+  getQuarters(): Observable<Quarter[]> {
+    const quartersRef = collection(this.firestore, 'quarters');
+    return from(getDocs(quartersRef)).pipe(
+      map(snapshot => 
+        snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        } as Quarter))
+      ),
+      catchError(error => {
+        console.error('Error fetching quarters:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  updateQuarter(quarterId: string, data: Partial<Quarter>): Observable<void> {
+    const quarterRef = doc(this.firestore, `quarters/${quarterId}`);
+    return from(updateDoc(quarterRef, data)).pipe(
+      tap(() => console.log('Quarter updated successfully')),
+      catchError(error => {
+        console.error('Error updating quarter:', error);
         return throwError(() => error);
       })
     );
