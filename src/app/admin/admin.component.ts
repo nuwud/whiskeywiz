@@ -3,7 +3,8 @@ import { FirebaseService } from '../services/firebase.service';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { Quarter, Sample, ScoringRules } from '../shared/models/quarter.model';
+import { Quarter, Sample } from '../shared/models/quarter.model';
+import { ScoringRules } from '../shared/models/scoring.model';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -20,13 +21,20 @@ export class AdminComponent implements OnInit {
   showingAnalytics: boolean = false;
 
   scoringRules: ScoringRules = {
-    agePerfectScore: 20,
-    ageBonus: 10,
-    agePenaltyPerYear: 4,
-    proofPerfectScore: 20,
-    proofBonus: 10,
-    proofPenaltyPerPoint: 2,
-    mashbillCorrectScore: 10
+    agePoints: {
+      exact: 30,
+      perYear: 6,
+      maxPoints: 30
+    },
+    proofPoints: {
+      exact: 30,
+      perProof: 3,
+      maxPoints: 30
+    },
+    mashbillPoints: {
+      correct: 10,
+      bonus: 10
+    }
   };
 
   constructor(
@@ -106,6 +114,7 @@ export class AdminComponent implements OnInit {
       console.error('Error loading scoring rules:', error);
     }
   }
+
 
   async logout() {
     try {

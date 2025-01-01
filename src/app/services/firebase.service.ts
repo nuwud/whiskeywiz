@@ -16,17 +16,18 @@ import { PlayerScore, Quarter } from '../shared/models/quarter.model';
 import { Observable, from, throwError } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
   private scoringRulesRef: DocumentReference;
   private scoresRef: CollectionReference;
+  private quartersRef: CollectionReference;
 
   constructor(private firestore: Firestore) {
     this.scoringRulesRef = doc(this.firestore, 'config/scoringRules');
     this.scoresRef = collection(this.firestore, 'scores');
+    this.quartersRef = collection(this.firestore, 'quarters');
   }
 
   getScoringRules(): Observable<ScoringRules> {
@@ -72,12 +73,12 @@ export class FirebaseService {
     );
   }
 
-  getQuarterById(quarterId: string): Observable<any> {
+  getQuarterById(quarterId: string): Observable<Quarter | null> {
     const quarterRef = doc(this.firestore, `quarters/${quarterId}`);
     return from(getDoc(quarterRef)).pipe(
       map(doc => {
         if (doc.exists()) {
-          return { id: doc.id, ...doc.data() };
+          return { id: doc.id, ...doc.data() } as Quarter;
         }
         return null;
       }),
@@ -87,9 +88,9 @@ export class FirebaseService {
       })
     );
   }
+
   getQuarters(): Observable<Quarter[]> {
-    const quartersRef = collection(this.firestore, 'quarters');
-    return from(getDocs(quartersRef)).pipe(
+    return from(getDocs(this.quartersRef)).pipe(
       map(snapshot => 
         snapshot.docs.map(doc => ({
           id: doc.id,
