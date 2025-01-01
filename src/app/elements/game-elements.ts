@@ -1,15 +1,18 @@
-import { Injector, NgModule, Input, Component as NgComponent } from '@angular/core';
+import { Injector, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { createCustomElement } from '@angular/elements';
 import { SharedModule } from '../shared/shared.module';
 import { CoreModule } from '../core/core.module';
 import { GameComponent } from '../shared/game/game.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     FormsModule,
+    ReactiveFormsModule,
     SharedModule,
     CoreModule
   ],
@@ -24,4 +27,5 @@ export class GameElementsModule {
     }
   }
 
-ngDoBootstrap() {}
+  ngDoBootstrap() {}
+}
