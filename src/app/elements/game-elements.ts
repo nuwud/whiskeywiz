@@ -11,7 +11,6 @@ import { GameComponent } from '../shared/game/game.component';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    SharedModule,
     CoreModule
   ],
   providers: []
