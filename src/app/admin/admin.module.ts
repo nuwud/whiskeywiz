@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AdminComponent } from './admin.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
 import { SharedModule } from '../shared/shared.module';
@@ -15,6 +16,8 @@ import { AdminNavModule } from '../admin-nav/admin-nav.module';
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
+    BrowserAnimationsModule,
     SharedModule,
     AdminRoutingModule,
     AdminNavModule

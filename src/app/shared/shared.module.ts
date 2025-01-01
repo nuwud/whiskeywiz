@@ -1,7 +1,8 @@
-import { NgModule, Injector } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameComponent } from './game/game.component';
 import { ResultsComponent } from './results/results.component';
 import { StarRatingComponent } from './components/star-rating/star-rating.component';
@@ -18,7 +19,8 @@ import { GameBannerComponent } from './components/game-banner/game-banner.compon
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    RouterModule
+    RouterModule,
+    BrowserAnimationsModule
   ],
   exports: [
     GameComponent,
@@ -27,7 +29,9 @@ import { GameBannerComponent } from './components/game-banner/game-banner.compon
     StarRatingComponent,
     FormsModule,
     ReactiveFormsModule,
-    CommonModule
+    CommonModule,
+    RouterModule,
+    BrowserAnimationsModule
   ]
 })
 export class SharedModule { }
