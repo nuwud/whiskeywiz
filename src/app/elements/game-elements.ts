@@ -1,87 +1,27 @@
 import { Injector, NgModule, Input, Component as NgComponent } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
 import { createCustomElement } from '@angular/elements';
-import { SharedModule } from '../shared/shared.module'; // Ensure this path is correct and the module is properly exported
+import { SharedModule } from '../shared/shared.module';
+import { CoreModule } from '../core/core.module';
 import { GameComponent } from '../shared/game/game.component';
 
 @NgModule({
   imports: [
     BrowserModule,
-    SharedModule
+    FormsModule,
+    SharedModule,
+    CoreModule
   ],
   providers: []
 })
 export class GameElementsModule {
   constructor(private injector: Injector) {
-    const GameElement = createCustomElement(GameComponent, { injector });
-    
-    // Check if element is already defined
-    if (!customElements.get('whiskey-wiz-game')) {
-      customElements.define('whiskey-wiz-game', GameElement);
+    const elementName = 'whiskey-wiz-game';
+    if (!customElements.get(elementName)) {
+      const GameElement = createCustomElement(GameComponent, { injector });
+      customElements.define(elementName, GameElement);
     }
   }
 
-  ngDoBootstrap() {
-    const GameElement = createCustomElement(GameComponent, { injector: this.injector });
-    if (!customElements.get('whiskey-wiz-game')) {
-      customElements.define('whiskey-wiz-game', GameElement);
-    }
-  }
-}
-
-// Then in your quarter component:
-@Component({
-  selector: 'app-quarter',
-  template: `
-    <div class="quarter-wrapper">
-      <whiskey-wiz-game [quarter]="quarterId"></whiskey-wiz-game>
-    </div>
-  `
-})
-export class QuarterComponent {
-  @Input() quarterId: string; // Format: "1224" for December 2024
-  
-  // Add parser to handle different format inputs
-  @Input() set quarter(value: string) {
-    // Handle both MMYY format and full quarter format
-    if (value.length === 4) {
-      this.quarterId = value; // Already in MMYY format
-    } else {
-      // Parse quarter format (e.g., "Q4 2024" to "1224")
-      const [quarter, year] = value.split(' ');
-      const month = ((parseInt(quarter.substring(1)) - 1) * 3 + 1).toString().padStart(2, '0');
-      this.quarterId = `${month}${year.substring(2)}`;
-    }
-  }
-}
-
-export function createGameElement(injector: Injector) {
-  const elementName = 'whiskey-wiz-game';
-  if (!customElements.get(elementName)) {
-    const GameElement = createCustomElement(GameComponent, { injector });
-    customElements.define(elementName, GameElement);
-  }
-}
-
-function Component(metadata:any ) {
-  return function (target: any) {
-    NgComponent(metadata)(target);
-  };
-}
-
-export function defineQuarterElement(injector: Injector, quarterId: string) {
-  const elementName = `whiskey-wiz-${quarterId}`;
-  if (!customElements.get(elementName)) {
-    const QuarterWrapper = createQuarterWrapper(quarterId);
-    const QuarterElement = createCustomElement(QuarterWrapper, { injector });
-    customElements.define(elementName, QuarterElement);
-  }
-}
-
-function createQuarterWrapper(quarterId: string) {
-  @Component({
-    template: `<whiskey-wiz-game [quarter]="${quarterId}"></whiskey-wiz-game>`
-  })
-  class QuarterWrapper {}
-  return QuarterWrapper;
-}
+  ngDoBootstrap() {}
