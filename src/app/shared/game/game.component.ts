@@ -147,8 +147,7 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
     private authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
-    private router: Router,
-    @Inject('DataCollectionService') private dataCollectionService: any
+    private router: Router
   ) {
     this.isLoggedIn$ = this.authService.isAuthenticated();
     // Initialize auth state

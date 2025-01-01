@@ -6,6 +6,8 @@ import { GameComponent } from './game/game.component';
 import { ResultsComponent } from './results/results.component';
 import { StarRatingComponent } from './components/star-rating/star-rating.component';
 import { GameBannerComponent } from './components/game-banner/game-banner.component';
+import { DataCollectionService } from '../services/data-collection.service';
+import { AngularFireAnalyticsModule } from '@angular/fire/compat/analytics';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,8 @@ import { GameBannerComponent } from './components/game-banner/game-banner.compon
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    RouterModule
+    RouterModule,
+    AngularFireAnalyticsModule
   ],
   exports: [
     GameComponent,
@@ -28,7 +31,11 @@ import { GameBannerComponent } from './components/game-banner/game-banner.compon
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
-    RouterModule
+    RouterModule,
+    AngularFireAnalyticsModule
+  ],
+  providers: [
+    DataCollectionService
   ]
 })
 export class SharedModule { }

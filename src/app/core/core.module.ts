@@ -7,7 +7,17 @@ import { QuarterPopulationService } from '../services/quarter-population.service
 import { ScoreService } from '../services/score.service';
 import { ShopifyService } from '../services/shopify.service';
 
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
+import { environment } from '../../environments/environment';
+
 @NgModule({
+  imports: [
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFirestoreModule,
+    AngularFireAuthModule
+  ],
   providers: [
     AuthService,
     FirebaseService,
