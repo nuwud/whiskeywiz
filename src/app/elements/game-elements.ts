@@ -24,4 +24,4 @@ export class GameElementsModule {
     }
   }
 
-  ngDoBootstrap() {}
+ngDoBootstrap() {}
