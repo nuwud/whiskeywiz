@@ -9,7 +9,10 @@ import {
   getDocs,
   setDoc,
   updateDoc,
-  serverTimestamp 
+  serverTimestamp,
+  query,
+  where,
+  addDoc 
 } from '@angular/fire/firestore';
 import { ScoringRules } from '../shared/models/scoring.model';
 import { PlayerScore, Quarter } from '../shared/models/quarter.model';
@@ -23,11 +26,13 @@ export class FirebaseService {
   private scoringRulesRef: DocumentReference;
   private scoresRef: CollectionReference;
   private quartersRef: CollectionReference;
+  private gameDataRef: CollectionReference;
 
   constructor(private firestore: Firestore) {
     this.scoringRulesRef = doc(this.firestore, 'config/scoringRules');
     this.scoresRef = collection(this.firestore, 'scores');
     this.quartersRef = collection(this.firestore, 'quarters');
+    this.gameDataRef = collection(this.firestore, 'gameData');
   }
 
   getScoringRules(): Observable<ScoringRules> {
@@ -113,5 +118,32 @@ export class FirebaseService {
         return throwError(() => error);
       })
     );
+  }
+
+  async saveGameData(data: any): Promise<void> {
+    try {
+      await addDoc(this.gameDataRef, {
+        ...data,
+        timestamp: serverTimestamp()
+      });
+      console.log('Game data saved successfully');
+    } catch (error) {
+      console.error('Error saving game data:', error);
+      throw error;
+    }
+  }
+
+  async getPlayerGameData(playerId: string): Promise<any[]> {
+    try {
+      const q = query(this.gameDataRef, where('playerId', '==', playerId));
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+    } catch (error) {
+      console.error('Error getting player game data:', error);
+      throw error;
+    }
   }
 }
