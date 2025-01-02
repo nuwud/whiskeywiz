@@ -266,22 +266,22 @@ export class DataCollectionService {
 
     async collectGameData(gameData: {
         quarterId: string;
-        guesses: { [key: string]: Guess };
+        guesses: GameState['guesses'];
         scores: { [key: string]: number };
         ratings: { [key: string]: number };
     }): Promise<void> {
         if (!this.currentSession) throw new Error('No active session');
-
+    
         const updates = {
             'gameData.guesses': gameData.guesses,
             'gameData.scores': gameData.scores,
             'gameData.ratings': gameData.ratings
         };
-
+    
         await this.firestore.collection('sessions')
             .doc(this.currentSession.sessionId)
             .update(updates);
-
+    
         this.analytics.logEvent('game_data_collected', {
             quarterId: gameData.quarterId,
             sessionId: this.currentSession.sessionId,
