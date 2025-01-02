@@ -7,7 +7,7 @@ import { AuthService } from './auth.service';
 import { ShopifyService } from './shopify.service';
 import firebase from 'firebase/compat/app';
 import FieldValue = firebase.firestore.FieldValue;
-import { Guess } from '../models/guess.model';
+import { GameState } from '../shared/models/quarter.model';
 
 export interface PlayerAnalytics {
     sessionId: string;
@@ -307,10 +307,5 @@ export class DataCollectionService {
                 city: 'unknown'
             };
         }
-    }
-
-    // Use the Guess interface
-    processGuess(guess: Guess): void {
-        // Implement the method to process the guess
     }
 }
