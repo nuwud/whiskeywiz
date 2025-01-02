@@ -9,7 +9,7 @@
     "watch": "nx build --watch --configuration development",
     "test": "nx test",
     "lint": "nx lint",
-    "build:elements": "nx build && node concat.js && cp dist/whiskey-wiz/elements/game-bundle.js dist/whiskey-wiz/elements/game-elements.js",
+    "build:elements": "nx build && node concat.js",
     "serve:elements": "http-server dist/whiskey-wiz -p 8080",
     "deploy": "npm run build && firebase deploy --only hosting",
     "clean": "rimraf dist/whiskey-wiz/elements"
