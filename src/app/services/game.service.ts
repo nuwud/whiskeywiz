@@ -6,9 +6,13 @@ import { BehaviorSubject, Observable, from, throwError } from 'rxjs';
 import { map, switchMap, take, catchError, tap } from 'rxjs/operators';
 import { GameState, Quarter } from '../shared/models/quarter.model';
 
+
+
 @Injectable({
   providedIn: 'root'
 })
+
+
 export class GameService {
   private currentQuarter = new BehaviorSubject<Quarter | null>(null);
   private gameState = new BehaviorSubject<GameState | null>(null);
@@ -19,6 +23,7 @@ export class GameService {
     private authService: AuthService,
     private router: Router
   ) {}
+
 
   getCurrentQuarter(): Observable<Quarter | null> {
     return this.currentQuarter.asObservable();
@@ -65,20 +70,6 @@ export class GameService {
       return await this.router.navigate(['/game'], {
         queryParams: { quarter: quarterId },
         replaceUrl: true
-      });
-    } finally {
-      this.navigationLock = false;
-    }
-  }
-
-  async navigateToLeaderboard(quarterId: string): Promise<boolean> {
-    if (this.navigationLock) return false;
-    
-    try {
-      this.navigationLock = true;
-      
-      return await this.router.navigate(['/leaderboard'], {
-        queryParams: { quarter: quarterId }
       });
     } finally {
       this.navigationLock = false;

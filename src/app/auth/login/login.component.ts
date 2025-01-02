@@ -1,5 +1,5 @@
 // login.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -12,7 +12,7 @@ export class LoginComponent implements OnInit {
   email: string = '';
   password: string = '';
   error: string = '';
-  returnQuarter: string = '';
+  @Input() returnQuarter: string = '';
 
   constructor(
     public authService: AuthService, 

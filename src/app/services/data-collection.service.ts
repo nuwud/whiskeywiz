@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
+import { Observable, from } from 'rxjs';
 import { FirebaseService } from './firebase.service';
 import { GameState } from '../shared/models/game.model';
+import { DocumentData, DocumentReference, Firestore, doc as firestoreDoc, setDoc as firestoreSetDoc } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataCollectionService {
-  constructor(private firebaseService: FirebaseService) {}
+  constructor(private firebaseService: FirebaseService, private firestore: Firestore) {}
 
   async collectGameData(gameData: {
     quarterId: string;
@@ -49,4 +51,28 @@ export class DataCollectionService {
       throw error;
     }
   }
+
+  recordInteraction(event: string, data?: any): Observable<void> {
+    const docRef = doc(this.firestore, `interactions/${event}`);
+    return from(setDoc(docRef, data || {}));
+  }
+
+  initializeSession(quarterId: string): Observable<void> {
+    const docRef = doc(this.firestore, `sessions/${quarterId}`);
+    return from(setDoc(docRef, { initialized: true }));
+  }
+
+  finalizeSession(totalScore: number, completed: boolean): Observable<void> {
+    const docRef = doc(this.firestore, `sessions/finalize`);
+    return from(setDoc(docRef, { totalScore, completed }));
+  }
 }
+
+function doc(firestore: Firestore, path: string): DocumentReference<DocumentData> {
+  return firestoreDoc(firestore, path);
+}
+
+function setDoc(docRef: DocumentReference<DocumentData>, data: { totalScore?: number; completed?: boolean; initialized?: boolean }): Promise<void> {
+  return firestoreSetDoc(docRef, data);
+}
+

@@ -16,13 +16,17 @@ type Mashbill = 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt' | 'Specialty';
 
 // Game guess interface
 interface Guess {
+  id: string;
+  value: number;
   age: number;
   proof: number;
   mashbill: Mashbill | string;
-  rating?: number;
+  rating: number;
 }
 
 interface GuessUpdate {
+  id: string;
+  value?: number;
   age?: number;
   proof?: number;
   mashbill?: Mashbill | string;
@@ -383,7 +387,9 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
     const sampleKey = `sample${sampleNum}`;
     if (!this.guesses[sampleKey]) {
       this.guesses[sampleKey] = {
-        age: 5,
+        id: sampleKey,
+        value: 0,
+      age: 5,
         proof: 100,
         mashbill: '',
         rating: 0
@@ -413,6 +419,8 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
     if (!this.guesses[sampleKey]) {
       console.log('Creating new guess for:', sampleKey);
       this.guesses[sampleKey] = {
+        id: sampleKey,
+        value: 0,
         age: 5,
         proof: 100,
         mashbill: '',
@@ -525,6 +533,8 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
     for (let i = 1; i <= 4; i++) {
       const sampleKey = `sample${i}`;
       this.guesses[sampleKey] = {
+        id: sampleKey,
+        value: 0,
         age: 5,
         proof: 100,
         mashbill: '',
@@ -546,6 +556,8 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
     const sampleKey = `sample${sampleNum}`;
     if (!this.guesses[sampleKey]) {
       this.guesses[sampleKey] = {
+        id: sampleKey,
+        value: 0,
         age: 5,
         proof: 100,
         mashbill: '',

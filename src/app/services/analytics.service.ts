@@ -21,14 +21,21 @@ export class AnalyticsService {
     async fetchAnalyticsData(): Promise<void> {
         try {
             // Fetch raw data from Firebase
-            const quarterData = await this.firebaseService.getAllQuarterStats();
-            const playerData = await this.firebaseService.getAllPlayerStats();
+            const quarterData = await this.firebaseService.getAllQuarterStats().toPromise();
+            if (!quarterData) {
+                throw new Error('quarterData is undefined');
+            }
+            const playerDataObservable = this.firebaseService.getAllPlayerStats(
+                quarterData.map((quarter: any) => quarter.playerStats)
+                .reduce((acc: any, playerStats: any) => acc.concat(playerStats), [])
+            );
+            const playerData = await playerDataObservable.toPromise();
 
             // Process participation trend
             const participationTrend = this.processParticipationTrend(quarterData);
             const accuracyStats = this.processAccuracyStats(quarterData);
-            const deviceStats = this.processDeviceStats(playerData);
-            const locationStats = this.processLocationStats(playerData);
+            const deviceStats = playerData ? this.processDeviceStats(playerData) : [];
+            const locationStats = playerData ? this.processLocationStats(playerData) : [];
 
             this.analyticsData.next({
                 participationTrend,

@@ -230,6 +230,18 @@ async handleShare(): Promise<void> {
     }
   }
 
+  async shareAttempt() {
+    await this.dataCollection.recordInteraction('share_attempt', {});
+  }
+
+  async shareSuccess(method: string) {
+    await this.dataCollection.recordInteraction('share_success', { method });
+  }
+
+  async shareFailed(error: Error) {
+    await this.dataCollection.recordInteraction('share_failed', { error: error.message });
+  }
+
   private async getQuarterId(): Promise<string> {
     // Try multiple sources for quarter ID
     const quarterId = this.quarterData?.id ||

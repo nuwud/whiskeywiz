@@ -20,6 +20,14 @@ export interface PlayerAnalytics {
     locationData: Record<string, number>;
 }
 
+export interface PlayerStats {
+    playerId: string;
+    gamesPlayed: number;
+    totalScore: number;
+    averageScore: number;
+    // Add other properties as needed
+}
+
 export interface ChartData {
     participationTrend: {
         quarter: string;
