@@ -10,11 +10,11 @@
     "public": "dist/whiskey-wiz",
     "headers": [
       {
-        "source": "/**",
+        "source": "/**.@(js|css)",
         "headers": [
           {
             "key": "Cache-Control",
-            "value": "private, no-cache, no-store, must-revalidate"
+            "value": "private, no-cache, no-store, must-revalidate, max-age=31536000"
           },
           {
             "key": "Expires",
@@ -23,6 +23,24 @@
           {
             "key": "Pragma",
             "value": "no-cache"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(js|css)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=31536000"
+          }
+        ]
+      },
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
           }
         ]
       }
@@ -43,6 +61,9 @@
   },
   "database": {
     "rules": "database.rules.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
   },
   "emulators": {
     "firestore": {
