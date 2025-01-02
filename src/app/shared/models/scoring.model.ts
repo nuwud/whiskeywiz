@@ -1,33 +1,19 @@
 export interface ScoringRules {
-    agePoints: {
-        exact: number;
-        perYear: number;
-        maxPoints: number;
-    };
-    proofPoints: {
-        exact: number;
-        perProof: number;
-        maxPoints: number;
-    };
-    mashbillPoints: {
-        correct: number;
-        bonus: number;
-    };
-}
-
-export const DEFAULT_SCORING_RULES: ScoringRules = {
-    agePoints: {
-        exact: 30,
-        perYear: 6,
-        maxPoints: 30
-    },
-    proofPoints: {
-        exact: 30,
-        perProof: 3,
-        maxPoints: 30
-    },
-    mashbillPoints: {
-        correct: 10,
-        bonus: 10
-    }
-};
+    agePerfectScore: number;
+    ageBonus: number;
+    agePenaltyPerYear: number;
+    proofPerfectScore: number;
+    proofBonus: number;
+    proofPenaltyPerPoint: number;
+    mashbillCorrectScore: number;
+  }
+  
+  export const DEFAULT_SCORING_RULES: ScoringRules = {
+    agePerfectScore: 20,
+    ageBonus: 10,
+    agePenaltyPerYear: 4,
+    proofPerfectScore: 20,
+    proofBonus: 10,
+    proofPenaltyPerPoint: 2,
+    mashbillCorrectScore: 10
+  };

@@ -21,20 +21,13 @@ export class AdminComponent implements OnInit {
   showingAnalytics: boolean = false;
 
   scoringRules: ScoringRules = {
-    agePoints: {
-      exact: 30,
-      perYear: 6,
-      maxPoints: 30
-    },
-    proofPoints: {
-      exact: 30,
-      perProof: 3,
-      maxPoints: 30
-    },
-    mashbillPoints: {
-      correct: 10,
-      bonus: 10
-    }
+    agePerfectScore: 20,
+    ageBonus: 10,
+    agePenaltyPerYear: 4,
+    proofPerfectScore: 20,
+    proofBonus: 10,
+    proofPenaltyPerPoint: 2,
+    mashbillCorrectScore: 10
   };
 
   constructor(

@@ -619,6 +619,8 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
 
   // Score calculation - moved to separate method
   private calculateScores(): void {
+    if (!this.quarterData) return;
+
     this.totalScore = 0;
 
     for (let i = 1; i <= 4; i++) {
@@ -626,39 +628,32 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
       const actualSample = this.quarterData?.samples[sampleKey];
       const guess = this.guesses[sampleKey];
 
-      console.log(`Calculating score for ${sampleKey}:`, {
-        actual: actualSample,
-        guess: guess,
-        isMobile: window.innerWidth < 768
-      });
-
       if (!actualSample || !guess?.mashbill) continue;
 
       let score = 0;
 
       // Age scoring
       const ageDiff = Math.abs(actualSample.age - (guess.age || 0));
-      score += ageDiff === 0 ? 30 : Math.max(0, 20 - (ageDiff * 4));
+      if (ageDiff === 0) {
+        score += this.scoringRules.agePerfectScore + this.scoringRules.ageBonus;
+      } else {
+        score += Math.max(0, this.scoringRules.agePerfectScore - 
+          (ageDiff * this.scoringRules.agePenaltyPerYear));
+      }
 
       // Proof scoring
       const proofDiff = Math.abs(actualSample.proof - (guess.proof || 0));
       if (proofDiff === 0) {
-        score += 30; // Perfect match bonus
+        score += this.scoringRules.proofPerfectScore + this.scoringRules.proofBonus;
       } else {
-        score += Math.max(0, 20 - (proofDiff * 2)); // 2 points per proof point off
+        score += Math.max(0, this.scoringRules.proofPerfectScore - 
+          (proofDiff * this.scoringRules.proofPenaltyPerPoint));
       }
 
       // Mashbill scoring
-      if (guess.mashbill === actualSample.mashbill) score += 10;
-
-      console.log(`Sample ${sampleKey} scoring:`, {
-        actual: actualSample,
-        guess: guess,
-        ageDiff,
-        proofDiff,
-        mashbillMatch: guess.mashbill === actualSample.mashbill,
-        score
-      });
+      if (guess.mashbill === actualSample.mashbill) {
+        score += this.scoringRules.mashbillCorrectScore;
+      }
 
       // Store score
       this.scores[sampleKey] = score;
@@ -669,7 +664,6 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
       sampleScores: this.scores,
       totalScore: this.totalScore
     });
-
   }
 
   // UI state management
@@ -921,7 +915,7 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
 
   private async collectGameData() {
     try {
-      await this.dataCollectionService.collectGameData({
+      await this.dataCollection.collectGameData({
         quarterId: this._quarterId,
         guesses: this.guesses,
         scores: this.scores,
@@ -931,7 +925,6 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
       console.error('Error collecting game data:', error);
     }
   }
-
   // Modify the submitGuesses method to include data collection
   async submitGuesses() {
     if (!this.areAllGuessesFilled()) {
