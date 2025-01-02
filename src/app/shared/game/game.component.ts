@@ -5,6 +5,7 @@ import { DataCollectionService } from '../../services/data-collection.service';
 import { Quarter, PlayerScore } from '../../shared/models/quarter.model';
 import { GameService } from '../../services/game.service';
 import { AuthService } from '../../services/auth.service';
+import { ScoringRules   } from '../models/scoring.model';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { environment } from '../../../environments/environment';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -138,6 +139,16 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
       { letter: 'D', active: false, completed: false }
     ];
 
+    private scoringRules: ScoringRules = {
+      agePerfectScore: 20,
+      ageBonus: 10,
+      agePenaltyPerYear: 4,
+      proofPerfectScore: 20,
+      proofBonus: 10,
+      proofPenaltyPerPoint: 2,
+      mashbillCorrectScore: 10
+    };
+
   // Game constructor
   constructor(
     private route: ActivatedRoute,
@@ -164,6 +175,18 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
   mashbillCategories: Mashbill[] = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
   mashbillTypes = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
 
+  private async loadScoringRules() {
+    try {
+      const rules = await firstValueFrom(this.firebaseService.getScoringRules());
+      if (rules) {
+        this.scoringRules = rules;
+      }
+    } catch (error) {
+      console.error('Error loading scoring rules:', error);
+      // Fallback to default rules
+    }
+  }
+
   private getStorageKey(): string {
     return `gameState_${this._quarterId}`;
   }
@@ -184,6 +207,7 @@ export class GameComponent implements OnInit {  // Input handling for quarter ID
 
   // Lifecycle
   async ngOnInit() {
+    await this.loadScoringRules();
     // Initialize analytics session when game starts
     const quarterId = this.route.snapshot.queryParams['quarter'];
     await this.dataCollection.initializeSession(this.quarterId);

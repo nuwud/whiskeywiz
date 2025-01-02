@@ -7,6 +7,7 @@ import { AuthService } from './auth.service';
 import { ShopifyService } from './shopify.service';
 import firebase from 'firebase/compat/app';
 import FieldValue = firebase.firestore.FieldValue;
+import { Guess } from '../models/guess.model';
 
 export interface PlayerAnalytics {
     sessionId: string;
@@ -115,6 +116,8 @@ export class DataCollectionService {
             interactionCount: this.interactionCount
         };
     }
+
+    
 
     async initializeSession(quarterId: string): Promise<void> {
         const sessionId = crypto.randomUUID();
@@ -261,6 +264,32 @@ export class DataCollectionService {
         });
     }
 
+    async collectGameData(gameData: {
+        quarterId: string;
+        guesses: { [key: string]: Guess };
+        scores: { [key: string]: number };
+        ratings: { [key: string]: number };
+    }): Promise<void> {
+        if (!this.currentSession) throw new Error('No active session');
+
+        const updates = {
+            'gameData.guesses': gameData.guesses,
+            'gameData.scores': gameData.scores,
+            'gameData.ratings': gameData.ratings
+        };
+
+        await this.firestore.collection('sessions')
+            .doc(this.currentSession.sessionId)
+            .update(updates);
+
+        this.analytics.logEvent('game_data_collected', {
+            quarterId: gameData.quarterId,
+            sessionId: this.currentSession.sessionId,
+            totalGuesses: Object.keys(gameData.guesses).length,
+            totalScore: Object.values(gameData.scores).reduce((a, b) => a + b, 0)
+        });
+    }
+
     private async getLocationData() {
         try {
             const response = await fetch('https://ipapi.co/json/');
@@ -278,5 +307,10 @@ export class DataCollectionService {
                 city: 'unknown'
             };
         }
+    }
+
+    // Use the Guess interface
+    processGuess(guess: Guess): void {
+        // Implement the method to process the guess
     }
 }
