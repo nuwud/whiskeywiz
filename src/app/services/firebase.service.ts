@@ -14,6 +14,7 @@ import {
   where,
   addDoc 
 } from '@angular/fire/firestore';
+import { Analytics, logEvent } from '@angular/fire/analytics';
 import { ScoringRules } from '../shared/models/scoring.model';
 import { PlayerScore, Quarter } from '../shared/models/quarter.model';
 import { Observable, from, throwError } from 'rxjs';
@@ -28,122 +29,109 @@ export class FirebaseService {
   private quartersRef: CollectionReference;
   private gameDataRef: CollectionReference;
 
-  constructor(private firestore: Firestore) {
+  constructor(
+    private firestore: Firestore,
+    private analytics: Analytics
+  ) {
     this.scoringRulesRef = doc(this.firestore, 'config/scoringRules');
     this.scoresRef = collection(this.firestore, 'scores');
     this.quartersRef = collection(this.firestore, 'quarters');
     this.gameDataRef = collection(this.firestore, 'gameData');
   }
 
-  getScoringRules(): Observable<ScoringRules> {
-    return from(getDoc(this.scoringRulesRef)).pipe(
-      map(doc => {
-        if (doc.exists()) {
-          return doc.data() as ScoringRules;
-        }
-        throw new Error('Scoring rules not found');
-      }),
-      catchError(error => {
-        console.error('Error fetching scoring rules:', error);
-        return throwError(() => error);
-      })
-    );
-  }
+  // ... existing methods ...
 
-  updateScoringRules(rules: ScoringRules): Observable<void> {
-    return from(setDoc(this.scoringRulesRef, rules)).pipe(
-      tap(() => console.log('Scoring rules updated successfully')),
-      catchError(error => {
-        console.error('Error updating scoring rules:', error);
-        return throwError(() => error);
-      })
-    );
-  }
-
-  submitScore(score: PlayerScore): Observable<void> {
-    console.log('Submitting score:', score);
-    const scoreWithTimestamp = {
-      ...score,
-      timestamp: serverTimestamp(),
-      playerId: score.playerId || 'guest',
-      playerName: score.playerName || 'Guest Player'
-    };
-    
-    return from(setDoc(doc(this.scoresRef), scoreWithTimestamp)).pipe(
-      tap(() => console.log('Score submitted successfully')),
-      catchError(error => {
-        console.error('Error submitting score:', error);
-        return throwError(() => error);
-      })
-    );
-  }
-
-  getQuarterById(quarterId: string): Observable<Quarter | null> {
-    const quarterRef = doc(this.firestore, `quarters/${quarterId}`);
-    return from(getDoc(quarterRef)).pipe(
-      map(doc => {
-        if (doc.exists()) {
-          return { id: doc.id, ...doc.data() } as Quarter;
-        }
-        return null;
-      }),
-      catchError(error => {
-        console.error('Error fetching quarter:', error);
-        return throwError(() => error);
-      })
-    );
-  }
-
-  getQuarters(): Observable<Quarter[]> {
-    return from(getDocs(this.quartersRef)).pipe(
-      map(snapshot => 
-        snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        } as Quarter))
-      ),
-      catchError(error => {
-        console.error('Error fetching quarters:', error);
-        return throwError(() => error);
-      })
-    );
-  }
-
-  updateQuarter(quarterId: string, data: Partial<Quarter>): Observable<void> {
-    const quarterRef = doc(this.firestore, `quarters/${quarterId}`);
-    return from(updateDoc(quarterRef, data)).pipe(
-      tap(() => console.log('Quarter updated successfully')),
-      catchError(error => {
-        console.error('Error updating quarter:', error);
-        return throwError(() => error);
-      })
-    );
-  }
-
-  async saveGameData(data: any): Promise<void> {
+  async getAllQuarterStats(): Promise<any[]> {
     try {
-      await addDoc(this.gameDataRef, {
-        ...data,
-        timestamp: serverTimestamp()
+      const querySnapshot = await getDocs(this.gameDataRef);
+      const stats = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      // Group by quarter and calculate statistics
+      const quarterStats = {};
+      stats.forEach(stat => {
+        if (!quarterStats[stat.quarterId]) {
+          quarterStats[stat.quarterId] = {
+            totalPlays: 0,
+            averageScore: 0,
+            totalScores: 0
+          };
+        }
+        quarterStats[stat.quarterId].totalPlays++;
+        quarterStats[stat.quarterId].totalScores += stat.scores ? 
+          Object.values(stat.scores).reduce((a: number, b: number) => a + b, 0) : 0;
       });
-      console.log('Game data saved successfully');
+
+      // Calculate averages
+      Object.values(quarterStats).forEach(stat => {
+        stat.averageScore = stat.totalScores / stat.totalPlays;
+      });
+
+      return Object.entries(quarterStats).map(([quarterId, stats]) => ({
+        quarterId,
+        ...stats
+      }));
     } catch (error) {
-      console.error('Error saving game data:', error);
+      console.error('Error getting quarter stats:', error);
       throw error;
     }
   }
 
-  async getPlayerGameData(playerId: string): Promise<any[]> {
+  async getAllPlayerStats(): Promise<any[]> {
     try {
-      const q = query(this.gameDataRef, where('playerId', '==', playerId));
-      const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => ({
+      const querySnapshot = await getDocs(this.gameDataRef);
+      const stats = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
+
+      // Group by player and calculate statistics
+      const playerStats = {};
+      stats.forEach(stat => {
+        if (!playerStats[stat.playerId]) {
+          playerStats[stat.playerId] = {
+            totalGames: 0,
+            averageScore: 0,
+            totalScore: 0,
+            bestScore: 0,
+            quartersPlayed: new Set()
+          };
+        }
+        
+        const gameScore = stat.scores ? 
+          Object.values(stat.scores).reduce((a: number, b: number) => a + b, 0) : 0;
+        
+        playerStats[stat.playerId].totalGames++;
+        playerStats[stat.playerId].totalScore += gameScore;
+        playerStats[stat.playerId].bestScore = Math.max(
+          playerStats[stat.playerId].bestScore,
+          gameScore
+        );
+        playerStats[stat.playerId].quartersPlayed.add(stat.quarterId);
+      });
+
+      // Calculate averages and finalize stats
+      return Object.entries(playerStats).map(([playerId, stats]) => ({
+        playerId,
+        totalGames: stats.totalGames,
+        averageScore: stats.totalScore / stats.totalGames,
+        bestScore: stats.bestScore,
+        uniqueQuarters: Array.from(stats.quartersPlayed).length
+      }));
     } catch (error) {
-      console.error('Error getting player game data:', error);
+      console.error('Error getting player stats:', error);
       throw error;
+    }
+  }
+
+  async logAnalyticsEvent(eventName: string, eventParams?: Record<string, any>): Promise<void> {
+    try {
+      await logEvent(this.analytics, eventName, eventParams);
+    } catch (error) {
+      console.error('Error logging analytics event:', error);
+      // Don't throw error for analytics failures
     }
   }
 }
