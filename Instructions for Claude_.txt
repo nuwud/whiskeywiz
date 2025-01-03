@@ -1,0 +1,93 @@
+# Instructions for Claude
+
+## Project Context
+"I'm working on a Whiskey Wiz web application built with Angular and Firebase. This is a quarterly whiskey tasting game where admins can set up tasting questions and users can play. We're using web components for embedding in Shopify pages.
+
+## MCP Usage Notes
+Important: When making file changes, remember these key points:
+
+1. File Operations:
+   - Use get_file_contents first to check current file content
+   - When updating files, must include proper 'content' and 'message' parameters
+   - Create new branches before making changes using create_branch
+   - Handle base64 encoding/decoding when needed
+
+2. GitHub Operations:
+   - Always create feature branches for changes
+   - Use meaningful commit messages
+   - Group related changes together
+   - Test changes before committing
+
+3. Best Practices:
+   - Read files before modifying to understand current state
+   - Break large changes into smaller, manageable commits
+   - Use clear, descriptive commit messages
+   - Update documentation alongside code changes
+
+4. Common Patterns:
+```typescript
+// Reading a file
+const fileContent = await get_file_contents({
+  owner: "nuwud",
+  repo: "whiskeywiz",
+  path: "path/to/file"
+});
+
+// Creating a branch
+await create_branch({
+  owner: "nuwud",
+  repo: "whiskeywiz",
+  branch: "feature/meaningful-name"
+});
+
+// Updating a file
+await create_or_update_file({
+  owner: "nuwud",
+  repo: "whiskeywiz",
+  path: "path/to/file",
+  message: "feat: what changed",
+  branch: "feature/branch-name",
+  content: "file content here"
+});
+```
+
+Note: Keep this file updated with new learned patterns and best practices to help future Claude sessions work more efficiently with MCP functionality.
+
+## Project Details
+Key files to share with you:
+1. src/app/shared/models/quarter.model.ts - Contains interfaces for game data
+2. src/app/services/firebase.service.ts - Handles Firebase operations
+3. src/app/services/auth.service.ts - Handles authentication
+4. src/app/admin/admin.component.ts, .html, .css - Admin interface
+5. src/app/shared/game/game.component.ts, .html, .css - Game interface
+6. src/app/app.module.ts - Module configuration
+7. src/app/app-routing.module.ts - Routing configuration
+
+Project Structure:
+* Uses Firebase for backend
+* Angular web components for Shopify integration
+* Admin section for managing quarterly tastings
+* Game section for users to play
+* Authentication with admin/user roles
+
+Recent Updates:
+1. Implemented chronological sorting for quarters
+2. Added bulk actions for quarter management
+3. Added collapsible quarter list
+4. Fixed web component registration
+5. Updated routing and navigation
+
+Current Issues:
+1. Testing web component deployment at https://whiskeywiz2.web.app/game?quarter=Q12022
+2. Managing quarter activation states
+3. Integrating with Shopify pages
+
+Please share relevant files when asking for help, and note that the project uses:
+* Angular web components
+* Firebase/Firestore
+* Shopify integration via embedded components
+* Admin/User role-based access"
+
+Here's a more detailed briefing for Claude:
+
+[Rest of original file content follows...]
