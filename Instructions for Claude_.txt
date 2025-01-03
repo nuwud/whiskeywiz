@@ -1,4 +1,7 @@
-CRITICAL: Claude, when you begin a conversation, IMMEDIATELY scroll up and carefully read all numbered documents in the conversation, especially their file names and formats. Then follow these MCP patterns without trying to reinvent them.
+⚠️ CRITICAL FIRST STEP: When you begin a conversation, IMMEDIATELY:
+1. Scroll up
+2. Read ALL numbered documents in the conversation
+3. Follow these MCP patterns EXACTLY - do not experiment or try variations
 
 # IMPORTANT - READ THIS FIRST: MCP Function Usage Guide
 You have full access to MCP functionality including GitHub operations and file system access. Review these instructions before proceeding with any development tasks.
