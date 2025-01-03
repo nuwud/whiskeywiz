@@ -3,7 +3,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { AnalyticsService } from '../../services/analytics.service';
 import { ChartData } from '../../shared/models/analytics.model';
-import { Chart } from 'chart.js/auto';
+import { Chart } from 'chart.js';
 import { Subscription } from 'rxjs';
 
 @Component({
