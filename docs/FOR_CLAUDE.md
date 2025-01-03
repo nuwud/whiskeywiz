@@ -1,51 +1,51 @@
 # MCP GitHub Guide for Claude
 
-IMPORTANT: Skip all experimentation and read this first!
+IMPORTANT: Read this before ANY GitHub operations!
 
-## The Only Pattern You Need
+## CRITICAL: Start Here
 
-1. ALWAYS use push_files (never try create_or_update_file)
-2. ALWAYS include these parameters:
+1. NEVER start by trying to write examples of MCP commands into your docs
+   - This causes infinite recursion of examples
+   - You'll waste time with escaping issues
+   - Just describe the parameters in plain text
+
+2. ALWAYS use this exact parameter structure:
    - repo: whiskeywiz
    - owner: nuwud
    - branch: main
-   - message: your commit message
+   - message: descriptive commit message
    - files: array with {path, content}
 
-3. ALWAYS test with a simple file first:
-   - Use a simple .md file
-   - Keep content basic
-   - Verify success before attempting complex content
-
-4. DON'T:
-   - Try to use base64 encoding
-   - Include example code in content
-   - Experiment with different formats
-   - Skip any required parameters
-
-## Common Error Prevention
-
-DON'T waste time like I did with these common mistakes:
-
-1. If you see "Invalid arguments: content.encoding, content.content" error:
-   - You're missing one of the required parameters
-   - Double-check all parameters are present
-   - Start with a minimal test file
-
-2. DON'T try to:
-   - Include complex code examples (causes escaping issues)
-   - Use create_or_update_file (always fails)
-   - Skip the message parameter
-   - Use partial parameters
-
-## Working Example
-
-This file was created with exactly:
-```
+3. ALWAYS test first with minimal content:
+```json
 files: [{
-  "path": "docs/FOR_CLAUDE.md",
-  "content": "actual content here"
+  "path": "test.md",
+  "content": "test content"
 }]
 ```
 
-No other format is needed. This works. Test it first with a simple file before trying anything complex.
+4. Common Errors & Solutions:
+   - "Cannot convert undefined or null to object"
+     → You forgot owner, branch, or message parameter
+   - "Invalid arguments: content.encoding, content.content"
+     → You're overcomplicating the content structure
+
+5. NEVER:
+   - Try to use create_or_update_file
+   - Use base64 encoding
+   - Include MCP command examples in content
+   - Skip any required parameters
+   - Try to get fancy with the format
+
+## Time-Saving Tips
+
+1. Don't experiment! This format works:
+   ```typescript
+   push_files + {repo, owner, branch, message, files}
+   ```
+
+2. Start with the test.md approach above
+3. Only after success, try your actual content
+4. Keep content simple - no nested code examples!
+
+Note: I had to write this guide 3 times because I kept trying to include example MCP commands in the content. Don't do that!
