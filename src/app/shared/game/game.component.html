@@ -1,140 +1,142 @@
-<div class="game-container">
-  <div class="auth-modal" *ngIf="!isLoggedIn$ && !isGuest">
-    <div class="auth-content">
-      <h2 class="font-hermona-2xl">Welcome to Whiskey Wiz</h2>
-      <p>Please sign in or continue as guest to play</p>
-
-      <div class="auth-buttons">
-        <button class="auth-button login" (click)="login()">
-          <img src="assets/images/Login_Button.png" alt="Login">
-        </button>
-        <button class="auth-button" [class.guest]="isGuest" (click)="handleAuth()" title="Auth Button">
-          <img [src]="isGuest ? 'assets/images/Login_Button.png' : 'assets/images/Logout_Button.png'"
-            [alt]="isGuest ? 'Login' : 'Logout'" [title]="isGuest ? 'Login' : 'Logout'" title="Auth Button Image">
-        </button>
-      </div>
-    </div>
+<div class="game-container" [ngClass]="{'fade-out': transitioning}">
+  <!-- Header with title and game status -->
+  <div class="game-header">
+    <h1 class="quarter-title">{{ getQuarterTitle() }}</h1>
   </div>
 
-  <!-- Header Section -->
-  <div class="header-container">
-    <div class="logo-header">
-      <img [src]="getImagePath('BlindBarrels.png')" alt="Blind Barrels Logo" class="logo">
-      <button class="auth-button" [class.guest]="isGuest" (click)="handleAuth()">
-        <img [src]="isGuest ? 'assets/images/Login_Button.png' : 'assets/images/Logout_Button.png'"
-          [alt]="isGuest ? 'Login' : 'Logout'" title="Logout Button Image">
-      </button>
-    </div>
-  </div>
-
-  <!-- Game Content -->
-  <div *ngIf="!gameCompleted" [@fadeInOut] class="game-content">
-      <!-- Quarter Title -->
-      <h4 class="quarter-title font-hermona-2xl">{{ getQuarterTitle() }}</h4>
-
-    <!-- Sample Navigation Buttons -->
-    <div class="sample-navigation">
-      <button *ngFor="let button of sampleButtons; let i = index"
-              class="sample-button"
-              [class.active]="button.active"
-              [class.completed]="button.completed"
+  <!-- Sample Navigation -->
+  <div class="sample-navigation" [@panelFade]>
+    <div class="nav-buttons">
+      <button *ngFor="let btn of sampleButtons; let i = index"
               (click)="selectSample(i)"
-              [attr.aria-label]="getSampleAriaLabel(i + 1)">
-        Sample {{ button.letter }}
+              [class.active]="btn.active"
+              [class.completed]="btn.completed"
+              [attr.aria-label]="getSampleAriaLabel(i + 1)"
+              class="sample-button">
+        <span class="sample-letter">{{ btn.letter }}</span>
+        <div class="completion-indicator" *ngIf="btn.completed">✓</div>
       </button>
     </div>
+  </div>
 
-    <!-- Sample Instructions -->
-    <div class="sample-instructions">
-      Take your first sip of Sample {{ getSampleLetter(currentSample) }} and see how good your whiskey taste buds are...
+  <!-- Main Game Content -->
+  <div class="game-content" [@sampleTransition]="getPanelTransitionState(currentSample)">
+    <!-- Age Guess Section -->
+    <div class="guess-section">
+      <h3>Age Statement</h3>
+      <div class="slider-container">
+        <input type="range" 
+               min="1" 
+               max="30" 
+               [value]="getGuessValue(currentSample, 'age')"
+               (input)="updateGuess(currentSample, 'age', $event.target.value)"
+               class="custom-slider">
+        <div class="slider-value">{{ getGuessValue(currentSample, 'age') }} years</div>
+      </div>
     </div>
 
-    <!-- Main Form Area -->
-    <div class="guess-form">
-        <!-- Age Statement -->
-        <div class="form-group">
-          <div class="label-group">
-            <h3 class="font-hermona-2xl age">
-              What do you think the age statement is?
-              <span class="value font-hermona-2xl">
-                {{ getSampleData(currentSample)?.age || 5 }} Years
-              </span>
-            </h3>
-          </div>
-          <span class="slider-container">
-            <img src="assets/images/Track.png" class="slider-track" alt="track">
-            <input type="range" class="custom-slider" min="1" max="10" title="Age Slider"
-              [(ngModel)]="guesses['sample' + currentSample].age">
-          </span>
-        </div>
+    <!-- Proof Guess Section -->
+    <div class="guess-section">
+      <h3>Proof</h3>
+      <div class="slider-container">
+        <input type="range" 
+               min="80" 
+               max="160" 
+               [value]="getGuessValue(currentSample, 'proof')"
+               (input)="updateGuess(currentSample, 'proof', $event.target.value)"
+               class="custom-slider">
+        <div class="slider-value">{{ getGuessValue(currentSample, 'proof') }}°</div>
+      </div>
+    </div>
 
-        <!-- Proof -->
-        <div class="form-group">
-          <span class="label-group">
-            <h3 class="font-hermona-2xl">
-              What do you think the proof is?
-              <span class="value font-hermona-2xl">
-                {{ getSampleData(currentSample)?.proof || 100 }} Proof
-              </span>
-            </h3>
-          </span>
-          <span class="slider-container">
-            <img src="assets/images/Track.png" class="slider-track" alt="track">
-            <input type="range" class="custom-slider" min="80" max="130" title="Proof Slider"
-              [(ngModel)]="guesses['sample' + currentSample].proof">
-          </span>
-        </div>
+    <!-- Mashbill Selection -->
+    <div class="guess-section">
+      <h3>Mashbill</h3>
+      <div class="mashbill-options">
+        <label *ngFor="let type of mashbillTypes" 
+               class="mashbill-option"
+               [class.selected]="getGuessValue(currentSample, 'mashbill') === type">
+          <input type="radio" 
+                 [value]="type" 
+                 [checked]="getGuessValue(currentSample, 'mashbill') === type"
+                 (change)="updateGuess(currentSample, 'mashbill', type)">
+          <span class="radio-label">{{ type }}</span>
+        </label>
+      </div>
+    </div>
 
-        <!-- Mashbill -->
-        <div class="form-group">
-          <h3 class="font-hermona-2xl">What do you think the mashbill is?</h3>
-          <div class="mashbill-options">
-            <div *ngFor="let type of mashbillTypes" class="mashbill-option">
-              <input type="radio" [id]="'mashbill-' + type" [value]="type" title="Mashbill Type: {{ type }}"
-                [(ngModel)]="guesses['sample' + currentSample].mashbill" name="mashbill{{currentSample}}">
-              <label [for]="'mashbill-' + type" class="helvetica-text">
-                <img src="assets/images/Ellipse_W.png" class="radio-unchecked" alt="unchecked">
-                <img src="assets/images/Ellipse_B.png" class="radio-checked" alt="checked">
-                <span class="label-text">{{ type }}</span>
-              </label>
-            </div>
-          </div>
+    <!-- Rating Section -->
+    <div class="guess-section">
+      <h3>Your Rating</h3>
+      <div class="star-rating">
+        <div class="stars">
+          <ng-container *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]">
+            <span class="star"
+                  (click)="updateStarRating(currentSample, i)"
+                  [class.filled]="i <= (starRatings['sample' + currentSample] || 0)">
+              ⭐
+            </span>
+          </ng-container>
         </div>
-
-        <!-- Star-Rating -->
-        <div class="form-group">
-          <span class="label-group">
-            <h3 class="font-hermona-2xl">
-              How do you rate this whiskey?
-              <span class="value font-hermona-2xl" *ngIf="starRatings['sample'+currentSample]">
-                {{ starRatings['sample'+currentSample] }}/10
-              </span>
-            </h3>
-          </span>
-          <div class="rating-container">
-            <app-star-rating [rating]="starRatings['sample' + currentSample] || 0"
-              (ratingChange)="updateStarRating(currentSample, $event)" [readonly]="false">
-            </app-star-rating>
-          </div>
+        <div class="rating-value" *ngIf="starRatings['sample' + currentSample]">
+          {{ starRatings['sample' + currentSample] }}/10
         </div>
-
-              <!-- Submit Button (only shown on last sample) -->
-      <div class="submit-section" *ngIf="showSubmitAllButton()">
-        <button class="submit-button" (click)="submitGuesses()">
-          <img src="assets/images/Submit_All_Guesses_Button.png" alt="Submit All Guesses">
-        </button>
       </div>
     </div>
   </div>
 
-  <!-- Results Component -->
-  <app-results *ngIf="gameCompleted && showResults" 
-    [quarterData]="quarterData" 
-    [guesses]="guesses" 
-    [scores]="scores"
-    [totalScore]="totalScore" 
-    (playAgain)="playAgain()" 
-    (shareResults)="share()" 
-    (submitScore)="submitScore()">
-  </app-results>
+  <!-- Submit Section -->
+  <div class="submit-section" *ngIf="!showResults">
+    <button *ngIf="showSubmitAllButton()"
+            (click)="submitGuesses()"
+            class="submit-button"
+            [disabled]="!areAllGuessesFilled()">
+      Submit All Guesses
+    </button>
+  </div>
+
+  <!-- Results View -->
+  <div class="results-view" *ngIf="showResults" [@panelFade]>
+    <div class="results-header">
+      <h2>Final Score: {{ totalScore }}</h2>
+      <div class="score-quip">{{ getScoreQuip() }}</div>
+    </div>
+
+    <div class="results-grid">
+      <div *ngFor="let sample of [1,2,3,4]" class="result-card">
+        <h3>Sample {{ getSampleLetter(sample) }}</h3>
+        <div class="result-details">
+          <div class="guess-comparison">
+            <span>Age: {{ getGuessValue(sample, 'age') }} years</span>
+            <span>Proof: {{ getGuessValue(sample, 'proof') }}°</span>
+            <span>Mashbill: {{ getGuessValue(sample, 'mashbill') }}</span>
+          </div>
+          <div class="score-display">
+            Score: {{ scores['sample' + sample] || 0 }} points
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <button (click)="share()" class="share-button">
+        Share Results
+      </button>
+      <button (click)="playAgain()" class="play-again-button">
+        Play Again
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Display -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <!-- Authentication Section -->
+  <div class="auth-section">
+    <button (click)="handleAuth()" class="auth-button">
+      {{ isGuest ? 'Login to Save Progress' : 'Logout' }}
+    </button>
+  </div>
 </div>
