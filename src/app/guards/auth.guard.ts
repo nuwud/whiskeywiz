@@ -1,55 +1,28 @@
 import { Injectable } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { CanActivate, Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
-import { inject } from '@angular/core';
-import { map, tap } from 'rxjs/operators';
 
-export const canActivateAuth: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-  
-  return authService.isAuthenticated().pipe(
-    tap(isAuthenticated => {
-      if (!isAuthenticated) {
-        router.navigate(['/login']);
-      }
-    })
-  );
-};
+@Injectable({ providedIn: 'root' })
+export class AuthGuard implements CanActivate {
+  constructor(
+    private auth: AuthService,
+    private router: Router
+  ) {
+    console.log('AuthGuard initialized');
+  }
 
-export const canActivateAdmin: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-  
-  return authService.isAdmin().pipe(
-    tap(isAdmin => {
-      if (!isAdmin) {
-        router.navigate(['/']);
-      }
-    })
-  );
-};
-
-export const canActivateGame: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-  
-  return authService.isAuthenticated().pipe(
-    map(isAuthenticated => true) // Allow both authenticated and guest users
-  );
-};
-
-export const combineGuards = (...guards: CanActivateFn[]): CanActivateFn => 
-  (route, state) => {
-    for (const guard of guards) {
-      const result = guard(route, state);
-      if (!result) return false;
-    }
-    return true;
-  };
-
-  export const AuthGuard = {
-    canActivate: canActivateAuth,
-    canActivateAdmin,
-    canActivateGame
-  };
+  canActivate(): Observable<boolean> {
+    console.log('AuthGuard canActivate called');
+    return this.auth.isAdmin$.pipe(
+      tap(isAdmin => {
+        console.log('AuthGuard isAdmin check:', isAdmin);
+        if (!isAdmin) {
+          console.log('AuthGuard: Not admin, redirecting to home');
+          this.router.navigate(['/']);
+        }
+      })
+    );
+  }
+}
