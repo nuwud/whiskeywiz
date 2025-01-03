@@ -1,1 +1,64 @@
-IyBXaGlza2V5IFdpeiBUZWNobmljYWwgTm90ZXMKCiMjIFJvdXRpbmcgU3RydWN0dXJlCi0gYC9hZG1pbmAgLSBBZG1pbiBpbnRlcmZhY2UKLSBgL3BsYXllcmAgLSBQbGF5ZXIgaG9tZQotIGAvcXVhcnRlci86aWRgIC0gU3BlY2lmaWMgcXVhcnRlciBnYW1lcyAoZS5nLiAvcXVhcnRlci8wMTI0IGZvciBRMSAyMDI0KQotIGAvbG9naW5gIC0gTG9naW4gcGFnZQotIGAvcmVnaXN0ZXJgIC0gUmVnaXN0cmF0aW9uIHBhZ2UKCiMjIE1DUCBHaXRIdWIgUmVxdWlyZW1lbnRzCgpXaGVuIHVzaW5nIE1DUCBmb3IgR2l0SHViIG9wZXJhdGlvbnM6CgoxLiBGaWxlIE9wZXJhdGlvbnMKICAgYGBganNvbgogICB7CiAgICAgInBhdGgiOiAicGF0aC90by9maWxlIiwKICAgICAicmVwbyI6ICJ3aGlza2V5d2l6IiwKICAgICAib3duZXIiOiAibnV3dWQiLAogICAgICJicmFuY2giOiAibWFpbiIsCiAgICAgImNvbnRlbnQiOiB7CiAgICAgICAiY29udGVudCI6ICJmaWxlIGNvbnRlbnQiLAogICAgICAgImVuY29kaW5nIjogInV0Zi04IgogICAgIH0sCiAgICAgIm1lc3NhZ2UiOiAiY29tbWl0IG1lc3NhZ2UiCiAgIH0KICAgYGBgCgoyLiBSZXF1aXJlZCBQYXJhbWV0ZXJzCiAgIC0gYHBhdGhgOiBGaWxlIHBhdGggaW4gcmVwbwogICAtIGByZXBvYDogUmVwb3NpdG9yeSBuYW1lCiAgIC0gYG93bmVyYDogUmVwb3NpdG9yeSBvd25lcgogICAtIGBicmFuY2hgOiBUYXJnZXQgYnJhbmNoCiAgIC0gYGNvbnRlbnRgOiBGaWxlIGNvbnRlbnQgd2l0aCBlbmNvZGluZwogICAtIGBtZXNzYWdlYDogQ29tbWl0IG1lc3NhZ2UKCiMjIERldmVsb3BtZW50IE5vdGVzCgoxLiBBZG1pbiBJbnRlcmZhY2UKICAgLSBVc2VzIGxhenkgbG9hZGluZwogICAtIFJlcXVpcmVzIGF1dGggZ3VhcmQKICAgLSBNYW5hZ2VzIHF1YXJ0ZXJseWdhbWVzCgoyLiBRdWFydGVyIENvbXBvbmVudHMKICAgLSBEeW5hbWljYWxseSBsb2FkZWQKICAgLSBVbmlxdWUgVVJMIHBlciBxdWFydGVyCiAgIC0gRm9ybWF0OiBNTVlZIChlLmcuLCAwMTI0KQoKMy4gU2hvcGlmeSBJbnRlZ3JhdGlvbgogICAtIFdlYiBjb21wb25lbnRzCiAgIC0gRW1iZWRkZWQgaW4gc3RvcmUgcGFnZXMKICAgLSBVc2VzIGN1c3RvbSBlbGVtZW50cwoKIyMgRmlyZWJhc2UgQ29uZmlndXJhdGlvbgotIFNQQSByb3V0aW5nIGVuYWJsZWQKLSBDT1JTIGhlYWRlcnMgc2V0Ci0gQ2FjaGUgY29udHJvbCBjb25maWd1cmVkCgojIyBOZXh0IFN0ZXBzCjEuIFZlcmlmeSBhZG1pbiBuYXZpZ2F0aW9uCjIuIFRlc3QgcXVhcnRlciByb3V0aW5nCjMuIFZhbGlkYXRlIFNob3BpZnkgaW50ZWdyYXRpb24KCkxhc3QgVXBkYXRlZDogMjAyNC0wMS0wMw==
+# Whiskey Wiz Technical Notes
+
+## Routing Structure
+- `/admin` - Admin interface
+- `/player` - Player home
+- `/quarter/:id` - Specific quarter games (e.g. /quarter/0124 for Q1 2024)
+- `/login` - Login page
+- `/register` - Registration page
+
+## MCP GitHub Requirements
+
+When using MCP for GitHub operations:
+
+1. File Operations
+   ```json
+   {
+     "path": "path/to/file",
+     "repo": "whiskeywiz",
+     "owner": "nuwud",
+     "branch": "main",
+     "content": {
+       "content": "file content",
+       "encoding": "utf-8"
+     },
+     "message": "commit message"
+   }
+   ```
+
+2. Required Parameters
+   - `path`: File path in repo
+   - `repo`: Repository name
+   - `owner`: Repository owner
+   - `branch`: Target branch
+   - `content`: File content with encoding
+   - `message`: Commit message
+
+## Development Notes
+
+1. Admin Interface
+   - Uses lazy loading
+   - Requires auth guard
+   - Manages quarterly games
+
+2. Quarter Components
+   - Dynamically loaded
+   - Unique URL per quarter
+   - Format: MMYY (e.g., 0124)
+
+3. Shopify Integration
+   - Web components
+   - Embedded in store pages
+   - Uses custom elements
+
+## Firebase Configuration
+- SPA routing enabled
+- CORS headers set
+- Cache control configured
+
+## Next Steps
+1. Verify admin navigation
+2. Test quarter routing
+3. Validate Shopify integration
+
+Last Updated: 2024-01-03
