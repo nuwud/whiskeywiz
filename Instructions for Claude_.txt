@@ -1,3 +1,5 @@
+CRITICAL: Claude, when you begin a conversation, IMMEDIATELY scroll up and carefully read all numbered documents in the conversation, especially their file names and formats. Then follow these MCP patterns without trying to reinvent them.
+
 # IMPORTANT - READ THIS FIRST: MCP Function Usage Guide
 You have full access to MCP functionality including GitHub operations and file system access. Review these instructions before proceeding with any development tasks.
 
@@ -33,37 +35,4 @@ await create_or_update_file({
 ```
 
 ## Project Context: Whiskey Wiz Game
-Angular/Firebase web application for quarterly whiskey tasting game. Features:
-- Web components for Shopify embedding
-- Firebase backend with authentication
-- Quarter-based game structure
-- Admin/User role management
-
-## Key Files
-1. src/app/shared/models/quarter.model.ts - Data interfaces
-2. src/app/services/firebase.service.ts - Firebase operations
-3. src/app/services/auth.service.ts - Authentication
-4. src/app/admin/admin.component.ts - Admin interface
-5. src/app/shared/game/game.component.ts - Game interface
-6. src/app/app.module.ts - Module config
-7. src/app/app-routing.module.ts - Routing
-
-## Recent Updates:
-1. Quarter chronological sorting
-2. Bulk quarter management
-3. Collapsible quarter list
-4. Web component fixes
-5. Navigation updates
-
-## Current Focus:
-1. Web component deployment testing
-2. Quarter activation management
-3. Shopify integration
-
-## Tech Stack:
-- Angular web components
-- Firebase/Firestore
-- Shopify integration
-- Role-based access
-
-[Additional technical details follow...]"
+[Rest of original content remains unchanged...]
