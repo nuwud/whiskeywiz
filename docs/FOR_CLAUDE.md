@@ -1,22 +1,36 @@
 # MCP GitHub Guide for Claude
 
-Key facts for successful GitHub operations:
+IMPORTANT: Skip all experimentation and read this first!
 
-1. Always use push_files command
-2. Required parameters:
+## The Only Pattern You Need
+
+1. ALWAYS use push_files (never try create_or_update_file)
+2. ALWAYS include these parameters:
    - repo: whiskeywiz
    - owner: nuwud
    - branch: main
-   - message: descriptive commit message
-   - files: array of {path, content} objects
+   - message: your commit message
+   - files: array with {path, content}
 
-3. Common mistakes to avoid:
-   - Don't try to use create_or_update_file
-   - Don't use base64 encoding unless required
-   - Keep file content simple and direct
-   - Avoid complex escaping in examples
+3. ALWAYS test with a simple file first:
+   - Use a simple .md file
+   - Keep content basic
+   - Verify success before attempting complex content
 
-4. Example of complete working structure:
-   files: [{"path": "path/to/file", "content": "actual content"}]
+4. DON'T:
+   - Try to use base64 encoding
+   - Include example code in content
+   - Experiment with different formats
+   - Skip any required parameters
 
-Note: This file was created using these exact instructions.
+## Working Example
+
+This file was created with exactly:
+```
+files: [{
+  "path": "docs/FOR_CLAUDE.md",
+  "content": "actual content here"
+}]
+```
+
+No other format is needed. This works.
