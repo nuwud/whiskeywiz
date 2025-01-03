@@ -3,20 +3,22 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { AuthGuard } from './guards/auth.guard';
-import { AdminComponent } from './admin/admin.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   {
     path: 'admin',
-    component: AdminComponent,
     loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
     canActivate: [AuthGuard]
   },
   {
     path: 'player',
     loadChildren: () => import('./player/player.module').then(m => m.PlayerModule)
+  },
+  { 
+    path: 'quarter/:id',
+    loadChildren: () => import('./quarters/quarter.module').then(m => m.QuarterModule)
   },
   { path: '', redirectTo: '/player', pathMatch: 'full' },
   { path: '**', redirectTo: '' }
