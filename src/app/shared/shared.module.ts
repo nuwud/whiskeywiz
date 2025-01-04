@@ -27,6 +27,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     StarRatingComponent,
     ResultsComponent
   ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA] // Add this to support web components
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class SharedModule { }
