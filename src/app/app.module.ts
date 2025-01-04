@@ -8,11 +8,11 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 // Firebase imports
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { getAuth, provideAuth } from '@angular/fire/auth';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { getStorage, provideStorage } from '@angular/fire/storage';
-import { getAnalytics, provideAnalytics, ScreenTrackingService, UserTrackingService } from '@angular/fire/analytics';
-import { getDatabase, provideDatabase } from '@angular/fire/database';
+import { getAuth, provideAuth, Auth } from '@angular/fire/auth';
+import { getFirestore, provideFirestore, Firestore } from '@angular/fire/firestore';
+import { getStorage, provideStorage, Storage } from '@angular/fire/storage';
+import { getAnalytics, provideAnalytics, Analytics, ScreenTrackingService, UserTrackingService } from '@angular/fire/analytics';
+import { getDatabase, provideDatabase, Database } from '@angular/fire/database';
 import { environment } from '../environments/environment';
 
 // Feature Modules
@@ -28,6 +28,14 @@ import { HermonaFontService } from './services/hermona-font.service';
 import { QuarterPopulationService } from './services/quarter-population.service';
 import { ShopifyService } from './services/shopify.service';
 
+// Initialize Firebase
+const app = initializeApp(environment.firebase);
+const auth = getAuth(app);
+const firestore = getFirestore(app);
+const storage = getStorage(app);
+const analytics = getAnalytics(app);
+const database = getDatabase(app);
+
 @NgModule({
   declarations: [
     AppComponent
@@ -42,15 +50,20 @@ import { ShopifyService } from './services/shopify.service';
     QuartersModule,
     
     // Firebase initialization
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
-    provideStorage(() => getStorage()),
-    provideAnalytics(() => getAnalytics()),
-    provideDatabase(() => getDatabase())
+    provideFirebaseApp(() => app),
+    provideAuth(() => auth),
+    provideFirestore(() => firestore),
+    provideStorage(() => storage),
+    provideAnalytics(() => analytics),
+    provideDatabase(() => database)
   ],
   providers: [
     { provide: LocationStrategy, useClass: HashLocationStrategy },
+    { provide: Auth, useValue: auth },
+    { provide: Firestore, useValue: firestore },
+    { provide: Storage, useValue: storage },
+    { provide: Analytics, useValue: analytics },
+    { provide: Database, useValue: database },
     FirebaseService,
     AuthService,
     GameService,
