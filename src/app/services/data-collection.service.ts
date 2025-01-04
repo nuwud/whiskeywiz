@@ -1,78 +1,112 @@
 import { Injectable } from '@angular/core';
 import { Observable, from } from 'rxjs';
 import { FirebaseService } from './firebase.service';
-import { GameState } from '../shared/models/game.model';
-import { DocumentData, DocumentReference, Firestore, doc as firestoreDoc, setDoc as firestoreSetDoc } from '@angular/fire/firestore';
+import { GameState, GameData } from '../shared/models/game.model';
+import { 
+  Firestore, 
+  doc, 
+  setDoc, 
+  serverTimestamp, 
+  collection, 
+  DocumentReference 
+} from '@angular/fire/firestore';
+
+interface InteractionData {
+  timestamp: any;
+  method?: string;
+  error?: string;
+  [key: string]: any;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataCollectionService {
-  constructor(private firebaseService: FirebaseService, private firestore: Firestore) {}
+  private sessionsRef: DocumentReference;
+  private interactionsRef: DocumentReference;
 
-  async collectGameData(gameData: {
-    quarterId: string;
-    guesses: GameState['guesses'];
-    scores: { [key: string]: number };
-    ratings: { [key: string]: number };
-    location?: {
-      country: string;
-      region: string;
-      city: string;
-    };
-    deviceInfo?: {
-      platform: string;
-      userAgent: string;
-      language: string;
-    };
-    shopifyCustomerId?: string;
-    completionTime?: number;
-  }): Promise<void> {
+  constructor(
+    private firebaseService: FirebaseService, 
+    private firestore: Firestore
+  ) {
+    this.sessionsRef = doc(collection(this.firestore, 'sessions'));
+    this.interactionsRef = doc(collection(this.firestore, 'interactions'));
+  }
+
+  async collectGameData(gameData: GameData): Promise<void> {
     try {
-      // Add timestamp
-      const dataWithTimestamp = {
-        ...gameData,
-        timestamp: new Date().toISOString(),
-      };
-
-      // Store in Firebase
-      await this.firebaseService.saveGameData(dataWithTimestamp);
+      const enhancedData = await this.enhanceGameData(gameData);
+      await this.firebaseService.saveGameProgress(
+        enhancedData.playerId || 'guest',
+        {
+          quarterId: enhancedData.quarterId,
+          guesses: enhancedData.guesses,
+          scores: enhancedData.scores,
+          currentSample: 0,
+          isComplete: true,
+          totalScore: Object.values(enhancedData.scores).reduce((a, b) => a + b, 0)
+        }
+      ).toPromise();
     } catch (error) {
       console.error('Error collecting game data:', error);
       throw error;
     }
   }
 
-  async getPlayerAnalytics(playerId: string) {
+  recordInteraction(event: string, data: Partial<InteractionData> = {}): Observable<void> {
+    const interactionRef = doc(collection(this.firestore, `interactions/${event}`));
+    const interactionData: InteractionData = {
+      ...data,
+      timestamp: serverTimestamp()
+    };
+
+    return from(setDoc(interactionRef, interactionData));
+  }
+
+  initializeSession(quarterId: string, playerId?: string): Observable<void> {
+    const sessionDoc = doc(this.firestore, `sessions/${quarterId}_${playerId || 'guest'}`);
+    return from(setDoc(sessionDoc, {
+      quarterId,
+      playerId,
+      startedAt: serverTimestamp(),
+      status: 'initialized'
+    }));
+  }
+
+  finalizeSession(
+    quarterId: string, 
+    playerId: string | undefined, 
+    totalScore: number, 
+    completed: boolean
+  ): Observable<void> {
+    const sessionDoc = doc(this.firestore, `sessions/${quarterId}_${playerId || 'guest'}`);
+    return from(setDoc(sessionDoc, {
+      completedAt: serverTimestamp(),
+      totalScore,
+      completed,
+      status: completed ? 'completed' : 'abandoned'
+    }, { merge: true }));
+  }
+
+  private async enhanceGameData(gameData: GameData): Promise<GameData> {
     try {
-      return await this.firebaseService.getPlayerGameData(playerId);
+      return {
+        ...gameData,
+        deviceInfo: this.getDeviceInfo(),
+        timestamp: new Date().toISOString()
+      };
     } catch (error) {
-      console.error('Error fetching player analytics:', error);
-      throw error;
+      console.error('Error enhancing game data:', error);
+      return gameData;
     }
   }
 
-  recordInteraction(event: string, data?: any): Observable<void> {
-    const docRef = doc(this.firestore, `interactions/${event}`);
-    return from(setDoc(docRef, data || {}));
-  }
-
-  initializeSession(quarterId: string): Observable<void> {
-    const docRef = doc(this.firestore, `sessions/${quarterId}`);
-    return from(setDoc(docRef, { initialized: true }));
-  }
-
-  finalizeSession(totalScore: number, completed: boolean): Observable<void> {
-    const docRef = doc(this.firestore, `sessions/finalize`);
-    return from(setDoc(docRef, { totalScore, completed }));
+  private getDeviceInfo() {
+    return {
+      platform: navigator.platform,
+      userAgent: navigator.userAgent,
+      language: navigator.language,
+      screenSize: `${window.screen.width}x${window.screen.height}`
+    };
   }
 }
-
-function doc(firestore: Firestore, path: string): DocumentReference<DocumentData> {
-  return firestoreDoc(firestore, path);
-}
-
-function setDoc(docRef: DocumentReference<DocumentData>, data: { totalScore?: number; completed?: boolean; initialized?: boolean }): Promise<void> {
-  return firestoreSetDoc(docRef, data);
-}
-
