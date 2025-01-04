@@ -9,58 +9,67 @@ Behavior: Site redirects to base URL showing only background image.
 
 ## Investigation Findings (January 4, 2025)
 
+### Project Structure:
+- Using Nx workspace (not standard Angular)
+- Build configuration in project.json (not angular.json)
+- Firebase hosting configured for SPA
+
 ### Issues Identified:
 
-1. **Duplicate Base Href**
-   - index.html contains two base href tags
-   - This can cause routing conflicts
-   - Only one base href should be present
+1. **Build Configuration**:
+   - Build output might not include proper routing handling for SPA
+   - Need to verify project.json configurations
 
-2. **Router Outlet References**
-   - Router outlet exists but might not be properly initialized
-   - Auth service reference in template might cause early errors
+2. **Routing Configuration Conflict**:
+   - Duplicate base href tags in index.html
+   - Multiple routing configurations might conflict
 
-3. **Build Configuration**
-   - Need to verify angular.json configuration for proper routing
-   - Check if deployments include proper routing configuration
+3. **Firebase Deployment**:
+   - Current Firebase hosting config might need updates for SPA routing
+   - Need to verify rewrite rules
 
-## Immediate Fixes Required:
+## Fixes Applied:
 
-1. **Index.html Fixes**
-   - Remove duplicate base href tag
-   - Ensure proper order of meta tags
-   - Add proper CSP headers
+1. **Index.html Cleanup**:
+   - Removed duplicate base href tag
+   - Reorganized meta tags
+   - Added error handling to version check script
 
-2. **App Component Fixes**
-   - Update auth service reference handling
-   - Add proper error boundaries
-   - Improve component initialization
+2. **App Component Updates**:
+   - Improved auth state management
+   - Added error boundaries
+   - Updated template structure
 
-3. **Build Process Updates**
-   - Add proper build configuration for routing
-   - Update Firebase deployment settings
+## Next Steps:
 
-## Steps Being Taken:
+1. **Build Verification**
+   - Review project.json build configuration
+   - Ensure all necessary files are included in the build
+   - Verify production configuration
 
-1. Correcting index.html configuration
-2. Updating app component template
-3. Adding error handling
-4. Reviewing build process
+2. **Firebase Config Check**
+   - Review firebase.json rewrite rules
+   - Verify hosting configuration
+   - Check for any caching issues
 
-## Progress Updates:
+3. **Testing Plan**
+   - Test locally with nx serve
+   - Test production build locally
+   - Deploy and verify routes
 
-### January 4, 2025 - Initial Investigation
-- Identified duplicate base href issue
-- Located potential auth service initialization problem
-- Found missing error boundaries in app component
+## Current Status:
+- Initial fixes applied to index.html and app component
+- Further investigation needed for build configuration
+- Need to verify changes in development environment
 
-### Next Steps:
-1. Implement identified fixes
-2. Test routing in development environment
-3. Deploy changes and verify in production
-4. Document any additional issues found
+## Notes for Team:
+- Project uses Nx workspace structure
+- Build configuration is in project.json
+- Deployment uses Firebase Hosting
+- Keep documentation updated with any configuration changes
 
-## Notes:
-- Keep track of deployment timestamps
-- Monitor error logs after changes
-- Document any authentication-related issues separately
+## To Be Investigated:
+1. Verify Firebase Functions if being used
+2. Check for any route guards blocking access
+3. Review service worker configuration if present
+4. Test different deployment configurations
