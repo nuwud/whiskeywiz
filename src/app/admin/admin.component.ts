@@ -1,24 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FirebaseService } from '../services/firebase.service';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { Quarter, Sample } from '../shared/models/quarter.model';
 import { ScoringRules } from '../shared/models/scoring.model';
-import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
-  styleUrls: ['./admin.component.css']
+  styleUrls: ['./admin.component.scss']
 })
-export class AdminComponent implements OnInit {
+export class AdminComponent implements OnInit, OnDestroy {
   quarters: Quarter[] = [];
   selectedQuarter: Quarter | null = null;
   sampleNumbers = [1, 2, 3, 4];
   error: string | null = null;
   successMessage: string | null = null;
   showingAnalytics: boolean = false;
+  private subscriptions = new Subscription();
 
   scoringRules: ScoringRules = {
     agePerfectScore: 20,
@@ -36,43 +36,31 @@ export class AdminComponent implements OnInit {
     private router: Router
   ) {}
 
-  isMenuCollapsed = false;
-
-  toggleMenu() {
-    if (window.innerWidth <= 768) {
-      this.isMenuCollapsed = !this.isMenuCollapsed;
-    }
-  }
-
   ngOnInit() {
-    this.loadQuarters();
-    this.loadScoringRules();
-
-    window.addEventListener('resize', () => {
-      if (window.innerWidth > 768) {
-        this.isMenuCollapsed = false;
-      }
-    });
+    // Check authentication first
+    this.subscriptions.add(
+      this.authService.isAdmin().subscribe(isAdmin => {
+        if (!isAdmin) {
+          console.log('Not admin, redirecting');
+          this.router.navigate(['/']);
+          return;
+        }
+        this.loadQuarters();
+        this.loadScoringRules();
+      })
+    );
   }
 
   ngOnDestroy() {
-    window.removeEventListener('resize', () => {});
+    this.subscriptions.unsubscribe();
   }
 
   async loadQuarters() {
     try {
       const quarters = await firstValueFrom(this.firebaseService.getQuarters());
-      console.log('Loaded quarters:', quarters);
       this.quarters = quarters
-        .filter((q): q is Quarter => {
-          return q !== null && 
-                typeof q === 'object' && 
-                'id' in q && 
-                typeof q.name === 'string' && 
-                typeof q.active === 'boolean';
-        })
+        .filter(q => q !== null)
         .sort((a, b) => {
-          // Parse quarter and year from the name (e.g., "Q1 2024")
           const parseQuarter = (name: string) => {
             const [q, y] = name.split(' ');
             return {
@@ -84,7 +72,6 @@ export class AdminComponent implements OnInit {
           const quarterA = parseQuarter(a.name);
           const quarterB = parseQuarter(b.name);
           
-          // Sort by year first, then by quarter
           if (quarterA.year !== quarterB.year) {
             return quarterA.year - quarterB.year;
           }
@@ -105,9 +92,9 @@ export class AdminComponent implements OnInit {
       }
     } catch (error) {
       console.error('Error loading scoring rules:', error);
+      this.error = 'Failed to load scoring rules.';
     }
   }
-
 
   async logout() {
     try {
@@ -115,42 +102,13 @@ export class AdminComponent implements OnInit {
       this.router.navigate(['/login']);
     } catch (error) {
       console.error('Error logging out:', error);
+      this.error = 'Failed to log out.';
     }
   }
 
-  // Non-null assertion method for use in template
-  getQuarterId(): string {
-    if (!this.selectedQuarter?.id) {
-      throw new Error('Quarter ID is undefined');
-    }
-    return this.selectedQuarter.id;
-  }
-  
-  // Safe navigation method for use in component
-  navigateToQuarter(quarterId: string | undefined) {
-    if (!quarterId) {
-      console.error('No quarter ID provided');
-      return;
-    }
-    this.router.navigate(['/game'], { queryParams: { quarter: quarterId }});
-  }
-
-  copyToClipboard(quarterId: string | undefined) {
-    if (!quarterId) {
-      console.error('No quarter ID provided');
-      return;
-    }
-    const textToCopy = `<whiskey-wiz-${quarterId}></whiskey-wiz-${quarterId}>`;
-    navigator.clipboard.writeText(textToCopy)
-      .then(() => console.log('Copied to clipboard'))
-      .catch(err => console.error('Failed to copy:', err));
-  }
-
-  async selectQuarter(quarter: Quarter) {
-    if (!quarter) return;
-    this.selectedQuarter = { ...quarter };
-    this.error = null;
-    this.successMessage = null;
+  showQuarters() {
+    this.showingAnalytics = false;
+    this.selectedQuarter = null;
   }
 
   showAnalytics() {
@@ -163,52 +121,59 @@ export class AdminComponent implements OnInit {
     this.showingAnalytics = false;
   }
 
+  copyToClipboard(quarterId: string) {
+    const textToCopy = `<whiskey-wiz-${quarterId}></whiskey-wiz-${quarterId}>`;
+    navigator.clipboard.writeText(textToCopy)
+      .then(() => {
+        this.successMessage = 'Copied to clipboard';
+        setTimeout(() => this.successMessage = null, 3000);
+      })
+      .catch(err => {
+        console.error('Failed to copy:', err);
+        this.error = 'Failed to copy to clipboard';
+      });
+  }
+
+  async selectQuarter(quarter: Quarter) {
+    this.selectedQuarter = { ...quarter };
+    this.error = null;
+    this.successMessage = null;
+    this.showingAnalytics = false;
+  }
+
   async updateQuarter() {
     if (!this.selectedQuarter?.id) {
       this.error = 'No quarter selected';
       return;
     }
-  
+
     try {
       const isAdmin = await firstValueFrom(this.authService.isAdmin());
       if (!isAdmin) {
         this.error = 'You do not have permission to update quarters';
         return;
       }
-  
-      // Simply update the selected quarter without affecting others
+
       await firstValueFrom(
         this.firebaseService.updateQuarter(
           this.selectedQuarter.id,
           this.selectedQuarter
         )
       );
-  
+
       await this.loadQuarters();
-      
-      const updatedQuarter = this.quarters.find(q => q.id === this.selectedQuarter?.id);
-      if (updatedQuarter) {
-        this.selectedQuarter = { ...updatedQuarter };
-      }
-  
       this.successMessage = 'Quarter updated successfully';
       this.error = null;
     } catch (error) {
       console.error('Failed to update quarter:', error);
       this.error = 'Failed to update quarter. Please try again.';
-      this.successMessage = null;
     }
-  }
-
-  getSample(num: number): Sample | undefined {
-    if (!this.selectedQuarter) return undefined;
-    const sampleKey = `sample${num}`;
-    return this.selectedQuarter.samples[sampleKey];
   }
 
   async updateScoringRules() {
     try {
-      if (!await firstValueFrom(this.authService.isAdmin())) {
+      const isAdmin = await firstValueFrom(this.authService.isAdmin());
+      if (!isAdmin) {
         this.error = 'You do not have permission to update scoring rules';
         return;
       }
@@ -218,21 +183,29 @@ export class AdminComponent implements OnInit {
       this.error = null;
     } catch (error) {
       console.error('Error updating scoring rules:', error);
-      this.error = 'Failed to update scoring rules. Please try again.';
+      this.error = 'Failed to update scoring rules';
     }
   }
 
-  clearMessages() {
-    this.error = null;
-    this.successMessage = null;
+  navigateToQuarter(quarterId: string) {
+    this.router.navigate(['/#/game'], { queryParams: { quarter: quarterId } });
+  }
+
+  getSampleKey(num: number): string {
+    return `sample${num}`;
   }
 
   clearError() {
     this.error = null;
   }
 
-  getSampleKey(num: number): string {
-    return `sample${num}`;
+  getObjectKeys(obj: any): string[] {
+    return Object.keys(obj);
   }
-  
+
+  formatFieldName(field: string): string {
+    return field
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, str => str.toUpperCase());
+  }
 }
