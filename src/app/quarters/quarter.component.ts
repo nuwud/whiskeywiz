@@ -1,11 +1,24 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-quarter',
   template: `
-    <div class="quarter-container">
-      <whiskey-wiz-game [quarter]="quarterId"></whiskey-wiz-game>
+    <div class="quarter-container" [class.embedded]="isEmbedded">
+      <!-- Banner Mode -->
+      <div *ngIf="isEmbedded && !isExpanded" class="banner-mode">
+        <button (click)="expand()" class="expand-button">
+          Play Q{{quarterId}} Game
+        </button>
+      </div>
+
+      <!-- Game Mode -->
+      <div *ngIf="!isEmbedded || isExpanded" class="game-mode">
+        <app-game 
+          [quarterId]="quarterId"
+          (gameComplete)="onGameComplete($event)">
+        </app-game>
+      </div>
     </div>
   `,
   styles: [`
@@ -13,18 +26,37 @@ import { ActivatedRoute } from '@angular/router';
       width: 100%;
       height: 100%;
     }
+
+    .banner-mode {
+      /* Banner styling */
+    }
+
+    .game-mode {
+      /* Game styling */
+    }
   `]
 })
 export class QuarterComponent implements OnInit {
   @Input() quarterId: string = '';
+  @Input() isEmbedded: boolean = false;
+  isExpanded: boolean = false;
 
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
-      if (params['id']) {
-        this.quarterId = params['id'];
-      }
-    });
+    // If not embedded, get quarterId from route
+    if (!this.isEmbedded) {
+      this.route.params.subscribe(params => {
+        this.quarterId = params['quarterId'];
+      });
+    }
+  }
+
+  expand() {
+    this.isExpanded = true;
+  }
+
+  onGameComplete(score: number) {
+    // Navigate to reveal page or handle completion
   }
 }
