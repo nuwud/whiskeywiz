@@ -1,8 +1,7 @@
-// auth.service.ts
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
+import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from '@angular/fire/auth';
+import { Firestore, doc, setDoc, collection, query, where, getDocs, writeBatch } from '@angular/fire/firestore';
 import { Observable, from, of } from 'rxjs';
 import { map, switchMap, catchError, tap } from 'rxjs/operators';
 
@@ -16,9 +15,19 @@ interface UserData {
   providedIn: 'root'
 })
 export class AuthService {
-  user$: Observable<any>;
   private readonly shopifyConfig = environment.shopify;
   private readonly adminEmails = ['nuwudorder@gmail.com', 'bobby@blindbarrels.com'];
+
+  constructor(
+    private auth: Auth,
+    private firestore: Firestore
+  ) {}
+
+  get user$(): Observable<any> {
+    return new Observable(subscriber => {
+      return this.auth.onAuthStateChanged(subscriber);
+    });
+  }
 
   createGuestSession(): Observable<string> {
     return of(this.generateGuestId()).pipe(
@@ -41,23 +50,15 @@ export class AuthService {
     );
   }
 
-  constructor(
-    private afAuth: AngularFireAuth,
-    private afs: AngularFirestore
-  ) {
-    this.user$ = this.afAuth.authState;
-  }
-
   // Authentication methods
   async signIn(email: string, password: string) {
     try {
       console.log('Attempting sign in...', { email });
-      const result = await this.afAuth.signInWithEmailAndPassword(email, password);
-      console.log('Sign in successful', result);
+      const result = await signInWithEmailAndPassword(this.auth, email, password);
       
       // Check and update admin status
       if (result.user) {
-        await this.afs.doc(`users/${result.user.uid}`).set({
+        await setDoc(doc(this.firestore, `users/${result.user.uid}`), {
           email: result.user.email,
           isAdmin: this.adminEmails.includes(email),
           lastLogin: new Date()
@@ -73,32 +74,17 @@ export class AuthService {
     }
   }
 
-  shopifyDomain = 'https://blind-barrels.myshopify.com'; 
-  
-  async connectWithShopify() {
-    const shopifyAuthUrl = `${this.shopifyConfig.shopName}/admin/oauth/authorize?` +
-      `client_id=${this.shopifyConfig.apiKey}&` +
-      `redirect_uri=${encodeURIComponent(this.shopifyConfig.redirectUri)}&` +
-      `scope=read_customers,write_customers`;
-    
-    window.location.href = shopifyAuthUrl;
-  }
-
-  async handleShopifyCallback(code: string) {
-    // Exchange code for token and create/update user
-  }
-
   async register(email: string, password: string) {
     try {
       console.log('Starting registration for:', email);
-      const credential = await this.afAuth.createUserWithEmailAndPassword(email, password);
+      const credential = await createUserWithEmailAndPassword(this.auth, email, password);
       
       if (!credential.user) {
         throw new Error('No user returned after registration');
       }
   
       // Create user profile in Firestore
-      await this.afs.doc(`users/${credential.user.uid}`).set({
+      await setDoc(doc(this.firestore, `users/${credential.user.uid}`), {
         email: credential.user.email,
         createdAt: new Date(),
         isGuest: false
@@ -109,55 +95,12 @@ export class AuthService {
   
     } catch (error: any) {
       console.error('Registration error:', error);
-      // Enhance error message
-      if (error.code === 'auth/email-already-in-use') {
-        throw new Error('This email is already registered. Please login instead.');
-      }
-      // Pass through Firebase errors directly
-      throw error;
+      throw this.handleAuthError(error);
     }
   }
 
   async signOut() {
-    return this.afAuth.signOut();
-  }
-
-  async transferGuestScores(guestId: string, newUserEmail: string): Promise<void> {
-    try {
-      const batch = this.afs.firestore.batch();
-      
-      // Get all scores for guest
-      const guestScores = await this.afs.collection('scores')
-        .ref.where('playerId', '==', guestId).get();
-      
-      // Update each score with new user ID
-      guestScores.docs.forEach(doc => {
-        const scoreData = doc.data();
-        batch.update(doc.ref, {
-          playerId: newUserEmail,
-          isGuest: false,
-          playerName: newUserEmail
-        });
-      });
-      
-      await batch.commit();
-    } catch (error) {
-      console.error('Error transferring guest scores:', error);
-      throw error;
-    }
-  }  
-
-  // User data methods
-  private async updateUserData(user: any) {
-    const userRef: AngularFirestoreDocument<UserData> = this.afs.doc(`users/${user.uid}`);
-    
-    const data: UserData = {
-      email: user.email,
-      isAdmin: this.adminEmails.includes(user.email),
-      createdAt: new Date()
-    };
-
-    return userRef.set(data, { merge: true });
+    return signOut(this.auth);
   }
 
   // Auth state checks
@@ -173,15 +116,15 @@ export class AuthService {
     return this.user$.pipe(
       switchMap(user => {
         if (!user) return of(false);
-        return this.afs.doc<UserData>(`users/${user.uid}`).valueChanges().pipe(
-          map(userData => userData?.isAdmin || false),
+        return from(getDocs(doc(this.firestore, `users/${user.uid}`))).pipe(
+          map(userData => (userData.data() as UserData)?.isAdmin || false),
           catchError(() => of(false))
         );
       })
     );
   }
 
-  // Helper method for synchrous admin check (useful for immediate checks)
+  // Helper method for synchronous admin check
   isAdminSync(email: string | null): boolean {
     if (!email) return false;
     return this.adminEmails.includes(email);
@@ -236,6 +179,4 @@ export class AuthService {
 
     return new Error(message);
   }
-
-
 }
