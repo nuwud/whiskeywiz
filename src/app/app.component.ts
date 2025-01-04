@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from './services/auth.service';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, RouterEvent } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -10,19 +10,32 @@ import { filter } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit {
   isAuthenticated$ = this.authService.isAuthenticated();
-  
+
   constructor(
-    public authService: AuthService,
-    private router: Router
+    private router: Router,
+    public authService: AuthService
   ) {}
 
   ngOnInit() {
-    // Handle navigation errors
+    // Handle navigation events
     this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe(() => {
-      // Clear any previous error states
-      console.log('Navigation completed successfully');
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      // Log navigation
+      console.log('Navigation completed:', event.urlAfterRedirects);
+      
+      // Handle hash-based URLs
+      if (event.urlAfterRedirects === '/') {
+        const hash = window.location.hash;
+        if (hash) {
+          const route = hash.substring(1); // Remove the # character
+          console.log('Handling hash route:', route);
+          this.router.navigate([route], { replaceUrl: true });
+        } else {
+          // Default route if no hash
+          this.router.navigate(['/game'], { replaceUrl: true });
+        }
+      }
     });
 
     // Initialize auth state
