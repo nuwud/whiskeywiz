@@ -81,10 +81,32 @@ export class Q[MMYY]Component extends BaseQuarterComponent {
 3. Working with files: Use window.fs.readFile in components
 4. Firebase operations: Use service methods
 
+## 🚨 Error Handling
+1. Firebase Connection:
+   - Always use try/catch with async operations
+   - Implement reconnection logic
+   - Provide clear user feedback
+
+2. Game State:
+   - Save progress periodically
+   - Handle session timeouts
+   - Provide recovery options
+
+3. Data Validation:
+   - Validate all form inputs
+   - Check score calculations
+   - Verify quarter data integrity
+
+4. Common Issues:
+   - Network disconnections during gameplay
+   - Score submission failures
+   - Authentication timeouts
+   - Browser compatibility
+
 ## 🤝 Contributing
 Please update implementation notes when making changes.
 
-## 📌 Important Files
+## 📎 Important Files
 - src/app/quarters/base-quarter.component.ts
 - src/app/shared/shared.module.ts
 - src/app/quarters/quarters.module.ts
