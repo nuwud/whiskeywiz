@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { BaseQuarterComponent } from './base-quarter.component';
 import { QuarterComponent } from './quarter.component';
+import { QuartersRoutingModule } from './quarters-routing.module';
 
 // Import all quarter components
 import { Q0122Component } from './0122/0122.component';
@@ -58,9 +59,20 @@ const QUARTER_COMPONENTS = [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    QuartersRoutingModule
   ],
   exports: [...QUARTER_COMPONENTS],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class QuartersModule { }
+export class QuartersModule { 
+  constructor() {
+    // Register web components
+    QUARTER_COMPONENTS.forEach(component => {
+      if (component.name.startsWith('Q') && component.name !== 'QuarterComponent') {
+        const mmyy = component.name.replace('Q', '').replace('Component', '').toLowerCase();
+        customElements.define(`whiskey-wiz-${mmyy}`, component as any);
+      }
+    });
+  }
+}
