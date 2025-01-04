@@ -4,16 +4,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AdminComponent } from './admin.component';
 import { SharedModule } from '../shared/shared.module';
 import { AnalyticsComponent } from './analytics/analytics.component';
+import { AdminQuartersComponent } from './quarters/admin-quarters.component';
 import { AdminRoutingModule } from './admin-routing.module';
-import { FirebaseService } from '../services/firebase.service';
-import { AuthService } from '../services/auth.service';
-import { GameService } from '../services/game.service';
-import { ScoreService } from '../services/score.service';
 
 @NgModule({
   declarations: [
     AdminComponent,
-    AnalyticsComponent
+    AnalyticsComponent,
+    AdminQuartersComponent
   ],
   imports: [
     CommonModule,
@@ -21,12 +19,6 @@ import { ScoreService } from '../services/score.service';
     ReactiveFormsModule,
     SharedModule,
     AdminRoutingModule
-  ],
-  providers: [
-    FirebaseService,
-    AuthService,
-    GameService,
-    ScoreService
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
