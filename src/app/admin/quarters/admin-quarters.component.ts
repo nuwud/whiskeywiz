@@ -1,25 +1,44 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FirebaseService } from '../../services/firebase.service';
+import { Quarter } from '../../shared/models/quarter.model';
 
 @Component({
   selector: 'app-admin-quarters',
   template: `
     <div class="quarters-management">
-      <h2>Quarters Management</h2>
+      <header class="header">
+        <h2>Quarters Management</h2>
+        <button class="add-button" (click)="addNewQuarter()">
+          Add New Quarter
+        </button>
+      </header>
       
-      <div class="quarters-list">
+      <div class="quarters-list" *ngIf="quarters.length > 0">
         <div *ngFor="let quarter of quarters" class="quarter-item">
-          <span class="quarter-id">{{formatQuarter(quarter.id)}}</span>
+          <div class="quarter-info">
+            <span class="quarter-id">{{formatQuarter(quarter.id)}}</span>
+            <span class="quarter-status" [class.active]="quarter.active">
+              {{ quarter.active ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
           <div class="quarter-actions">
-            <button (click)="editQuarter(quarter.id)">Edit</button>
-            <button (click)="previewQuarter(quarter.id)">Preview</button>
+            <button (click)="previewQuarter(quarter.id)" class="preview-button">
+              Preview
+            </button>
+            <button (click)="editQuarter(quarter.id)" class="edit-button">
+              Edit
+            </button>
           </div>
         </div>
       </div>
 
-      <div class="add-quarter">
-        <button (click)="addNewQuarter()">Add New Quarter</button>
+      <div *ngIf="quarters.length === 0" class="no-quarters">
+        No quarters available. Click 'Add New Quarter' to create one.
+      </div>
+
+      <div *ngIf="error" class="error-message">
+        {{ error }}
       </div>
     </div>
   `,
@@ -27,21 +46,54 @@ import { FirebaseService } from '../../services/firebase.service';
     .quarters-management {
       padding: 20px;
     }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
     .quarter-item {
       display: flex;
       justify-content: space-between;
-      padding: 10px;
-      margin: 5px 0;
+      align-items: center;
+      padding: 15px;
+      margin: 10px 0;
       border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .quarter-info {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+    .quarter-status {
+      padding: 4px 8px;
+      border-radius: 12px;
+      background: #eee;
+      font-size: 0.9em;
+    }
+    .quarter-status.active {
+      background: #e6f4ea;
+      color: #137333;
     }
     .quarter-actions {
       display: flex;
       gap: 10px;
     }
+    .error-message {
+      color: #d32f2f;
+      margin-top: 20px;
+    }
+    .no-quarters {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
   `]
 })
 export class AdminQuartersComponent implements OnInit {
-  quarters: any[] = [];
+  quarters: Quarter[] = [];
+  error: string = '';
 
   constructor(
     private router: Router,
@@ -54,9 +106,12 @@ export class AdminQuartersComponent implements OnInit {
 
   async loadQuarters() {
     try {
-      this.quarters = await this.firebaseService.getQuarters();
+      // Sort quarters by ID (MMYY) in descending order
+      const quarters = await this.firebaseService.getQuarters();
+      this.quarters = quarters.sort((a, b) => b.id.localeCompare(a.id));
     } catch (error) {
-      console.error('Error loading quarters:', error);
+      this.error = 'Error loading quarters';
+      console.error('Error:', error);
     }
   }
 
@@ -70,17 +125,15 @@ export class AdminQuartersComponent implements OnInit {
   }
 
   editQuarter(mmyy: string) {
-    // Navigate to quarter editor
     this.router.navigate(['/admin/quarters', mmyy, 'edit']);
   }
 
   previewQuarter(mmyy: string) {
-    // Navigate to quarter preview
-    this.router.navigate(['/quarters', mmyy]);
+    // Open in new tab to maintain admin context
+    window.open(`/#/quarters/${mmyy}`, '_blank');
   }
 
   addNewQuarter() {
-    // Navigate to new quarter form
     this.router.navigate(['/admin/quarters/new']);
   }
 }
