@@ -1,10 +1,8 @@
-import { Component, Inject, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { BaseQuarterComponent } from '../base-quarter.component';
 import { AuthService } from '../../services/auth.service';
 import { FirebaseService } from '../../services/firebase.service';
 import { NgForm } from '@angular/forms';
-import { FirebaseApp } from '@angular/fire/app';
-import { FIREBASE_APP } from '../../app.module';
 import { AnalyticsService } from '../../services/analytics.service';
 
 @Component({
@@ -21,33 +19,24 @@ import { AnalyticsService } from '../../services/analytics.service';
 })
 export class Q0323Component extends BaseQuarterComponent {
   @Input() override quarterId: string = '0323';
-  @Input() quarterName: string = 'March 2023';
+  @Input() override quarterName: string = 'March 2023';
 
   constructor(
-    @Inject(FIREBASE_APP) app: FirebaseApp,
     firebaseService: FirebaseService,
     authService: AuthService,
-    analyticsService: AnalyticsService,
-    private changeDetectorRef: ChangeDetectorRef
+    analyticsService: AnalyticsService
   ) {
-    super(app, firebaseService, authService, analyticsService);
-    this.quarterId = '0323';
+    super(firebaseService, authService, analyticsService);
   }
 
   onSubmit(form: NgForm) {
-    if (!this.app) {
-      console.error('Firebase not initialized');
-      return;
-    }
-    
     if (form.valid) {
       const guess = {
         age: form.value.ageGuess,
         proof: form.value.proofGuess,
         mashbill: form.value.mashbillGuess
       };
-      super.submitGuess(guess);
-      this.changeDetectorRef.detectChanges();
+      this.submitGuess(guess);
     }
   }
 }
