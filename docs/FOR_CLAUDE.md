@@ -1,5 +1,8 @@
 # MCP GitHub Guide for Claude
 
+## 💬 RECOMMENDED CHAT STARTER:
+"Please read and apply doc/FOR_CLAUDE.md in the numbered documents first, then let me know you're ready to help with the Whiskey Wiz game. We have existing implementation code and are currently working on improving the game's navigation and integration components."
+
 ⚠️ CRITICAL FIRST STEP - DO THIS IMMEDIATELY:
 1. Stop and read ALL numbered documents first
 2. Locate this file (FOR_CLAUDE.md) in the docs
