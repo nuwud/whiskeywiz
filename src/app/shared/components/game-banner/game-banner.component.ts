@@ -1,94 +1,32 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { trigger, state, style, animate, transition } from '@angular/animations';
-import { GameService } from '../../../services/game.service';
-import { FirebaseService } from '../../../services/firebase.service';
-import { DataCollectionService } from 'src/app/services/data-collection.service'; 
-import { SharedModule } from '../../shared.module'; 
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-game-banner',
   template: `
-    <div class="banner-container" [class.expanded]="isExpanded">
+    <div class="game-banner" [class.expanded]="isExpanded">
       <div class="banner-header" (click)="toggleExpand()">
-        <h2 class="banner-title font-hermona-2xl">
-          {{ quarterName }}
-        </h2>
-        <div class="banner-controls">
-          <span class="expand-icon" [@rotateChevron]="isExpanded ? 'down' : 'up'">▼</span>
-        </div>
+        <h2>{{ quarterName }} Whiskey Challenge</h2>
       </div>
-
-      <div class="banner-content" [@expandCollapse]="isExpanded ? 'expanded' : 'collapsed'">
-        <app-game 
+      <div class="game-container" *ngIf="isExpanded">
+        <app-game
           [quarterId]="quarterId"
-          *ngIf="isExpanded">
+          (gameComplete)="onGameComplete($event)">
         </app-game>
       </div>
     </div>
   `,
-  styleUrls: ['./game-banner.component.scss'],
-  animations: [
-    trigger('expandCollapse', [
-      state('collapsed', style({
-        height: '0',
-        overflow: 'hidden',
-        opacity: '0'
-      })),
-      state('expanded', style({
-        height: '*',
-        opacity: '1'
-      })),
-      transition('collapsed <=> expanded', [
-        animate('300ms cubic-bezier(0.4, 0.0, 0.2, 1)')
-      ])
-    ]),
-    trigger('rotateChevron', [
-      state('down', style({ transform: 'rotate(180deg)' })),
-      state('up', style({ transform: 'rotate(0deg)' })),
-      transition('up <=> down', [
-        animate('300ms cubic-bezier(0.4, 0.0, 0.2, 1)')
-      ])
-    ])
-  ]
+  styleUrls: ['./game-banner.component.scss']
 })
-export class GameBannerComponent implements OnInit {
-  @Input() quarterId: string = 'string';
-  @Input() quarterName: string = 'string';
-  
+export class GameBannerComponent {
+  @Input() quarterId: string = '';
+  @Input() quarterName: string = '';
   isExpanded: boolean = false;
-  
-  constructor(
-    private gameService: GameService,
-    private firebaseService: FirebaseService,
-    private dataCollection: DataCollectionService
-  ) {}
-  
-  ngOnInit() {
-    // Check for saved state
-    const savedState = localStorage.getItem(`banner_${this.quarterId}_expanded`);
-    if (savedState) {
-      this.isExpanded = savedState === 'true';
-    }
 
-    // Load quarter data when expanded
-    if (this.isExpanded && this.quarterId) {
-      this.gameService.loadQuarter(this.quarterId);
-    }
+  toggleExpand(): void {
+    this.isExpanded = !this.isExpanded;
   }
 
-  async toggleExpand() {
-    this.isExpanded = !this.isExpanded;
-    await this.dataCollection.recordInteraction('banner_toggle', {
-      quarterId: this.quarterId,
-      state: this.isExpanded ? 'expanded' : 'collapsed'
-    });
-    
-    // Save state
-    localStorage.setItem(`banner_${this.quarterId}_expanded`, this.isExpanded.toString());
-    
-    // Load data if expanding
-    if (this.isExpanded && this.quarterId) {
-      this.gameService.loadQuarter(this.quarterId);
-    }
+  onGameComplete(score: number): void {
+    console.log('Game completed with score:', score);
   }
 }
