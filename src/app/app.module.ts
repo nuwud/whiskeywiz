@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -21,8 +21,10 @@ import { environment } from '../environments/environment';
 import { AuthGuard } from './guards/auth.guard';
 import { PlayerComponent } from './player/player.component';
 import { PageNotFoundComponent } from './shared/page-not-found/page-not-found.component';
+import { GameComponent } from './shared/game/game.component';
 
 export const FIREBASE_APP = AngularFireModule.initializeApp(environment.firebase);
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,7 +32,8 @@ export const FIREBASE_APP = AngularFireModule.initializeApp(environment.firebase
     RegisterComponent,
     AuthButtonComponent,
     PlayerComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    GameComponent
   ],
   imports: [
     BrowserModule,
@@ -50,5 +53,6 @@ export const FIREBASE_APP = AngularFireModule.initializeApp(environment.firebase
   ],
   providers: [AuthGuard],
   bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule { }
