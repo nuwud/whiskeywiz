@@ -4,13 +4,8 @@ import { QuarterComponent } from './quarter.component';
 
 const routes: Routes = [
   {
-    path: ':quarterId',
+    path: ':mmyy',  // Using MMYY format
     component: QuarterComponent
-  },
-  {
-    path: '',
-    redirectTo: '/quarters/current',
-    pathMatch: 'full'
   }
 ];
 
