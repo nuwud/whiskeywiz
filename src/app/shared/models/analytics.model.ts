@@ -23,3 +23,20 @@ export interface PlayerStats {
   totalScore: number;
   averageScore: number;
 }
+
+export interface ChartSeries {
+  name: string;
+  value: number;
+}
+
+export interface ChartData {
+  name: string;
+  series: ChartSeries[];
+  participationTrend: any[];
+  deviceStats: any[];
+  accuracyStats: any[];
+  legend?: {
+    position: string;
+    useDefaultMarker: boolean;
+  };
+}

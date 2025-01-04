@@ -3,19 +3,17 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AdminComponent } from './admin.component';
 import { SharedModule } from '../shared/shared.module';
+import { AnalyticsComponent } from './analytics/analytics.component';
 
 @NgModule({
   declarations: [
-    AdminComponent
+    AnalyticsComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     SharedModule
-  ],
-  exports: [
-    AdminComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

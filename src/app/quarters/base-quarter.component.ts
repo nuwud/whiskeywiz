@@ -5,14 +5,16 @@ import { Component, Input } from '@angular/core';
   template: `
     <app-game-banner
       [quarterId]="quarterId"
-      [quarterName]="'Q' + quarterId.substring(0, 1) + ' 20' + quarterId.substring(1)">
+      [quarterName]="quarterName">
     </app-game-banner>
   `
 })
 export class BaseQuarterComponent {
   @Input() quarterId: string;
+  @Input() quarterName: string;
 
   constructor() {
     this.quarterId = '';
+    this.quarterName = '';
   }
 }

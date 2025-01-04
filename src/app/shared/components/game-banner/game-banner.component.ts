@@ -19,8 +19,8 @@ import { GameComponent } from '../../game/game.component';
   styleUrls: ['./game-banner.component.scss']
 })
 export class GameBannerComponent {
-  @Input() quarterId: string = '';
-  @Input() quarterName: string = '';
+  @Input() quarterId: string;
+  @Input() quarterName: string;
   isExpanded: boolean = false;
 
   toggleExpand(): void {

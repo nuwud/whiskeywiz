@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 // Components
-import { GameComponent } from './game/game.component';
+import { GameModule } from './game/game.module';
 import { GameBannerComponent } from './components/game-banner/game-banner.component';
 import { StarRatingComponent } from './components/star-rating/star-rating.component';
 import { ResultsComponent } from './results/results.component';
@@ -15,7 +15,6 @@ import { ScoreService } from '../services/score.service';
 import { GameService } from '../services/game.service';
 
 const COMPONENTS = [
-  GameComponent,
   GameBannerComponent,
   StarRatingComponent,
   ResultsComponent
@@ -24,6 +23,7 @@ const COMPONENTS = [
 @NgModule({
   declarations: [...COMPONENTS],
   imports: [
+    GameModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
