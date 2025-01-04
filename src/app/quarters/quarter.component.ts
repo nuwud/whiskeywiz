@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-quarter',
@@ -8,7 +8,7 @@ import { ActivatedRoute } from '@angular/router';
       <!-- Banner Mode -->
       <div *ngIf="isEmbedded && !isExpanded" class="banner-mode">
         <button (click)="expand()" class="expand-button">
-          Play Q{{quarterId}} Game
+          Play {{formatQuarterDisplay(quarterId)}} Game
         </button>
       </div>
 
@@ -41,15 +41,39 @@ export class QuarterComponent implements OnInit {
   @Input() isEmbedded: boolean = false;
   isExpanded: boolean = false;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     // If not embedded, get quarterId from route
     if (!this.isEmbedded) {
       this.route.params.subscribe(params => {
-        this.quarterId = params['quarterId'];
+        const mmyy = params['mmyy'];
+        if (mmyy && this.isValidMMYY(mmyy)) {
+          this.quarterId = mmyy;
+        } else {
+          console.error('Invalid quarter format:', mmyy);
+          this.router.navigate(['/']);
+        }
       });
     }
+  }
+
+  formatQuarterDisplay(mmyy: string): string {
+    if (!mmyy) return '';
+    const month = parseInt(mmyy.substring(0, 2));
+    const year = '20' + mmyy.substring(2, 4);
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${monthNames[month - 1]} ${year}`;
+  }
+
+  isValidMMYY(mmyy: string): boolean {
+    if (!mmyy || mmyy.length !== 4) return false;
+    const month = parseInt(mmyy.substring(0, 2));
+    return month >= 1 && month <= 12;
   }
 
   expand() {
@@ -58,5 +82,6 @@ export class QuarterComponent implements OnInit {
 
   onGameComplete(score: number) {
     // Navigate to reveal page or handle completion
+    console.log(`Game completed for quarter ${this.quarterId} with score ${score}`);
   }
 }
