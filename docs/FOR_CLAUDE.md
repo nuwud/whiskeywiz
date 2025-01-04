@@ -32,6 +32,7 @@ push_files + {
    - Use the exact parameter structure
    - Keep content simple
    - Follow working examples
+   - Document changes in appropriate .md files
 
 4. Common Errors Mean:
    - "Cannot convert undefined or null to object"
@@ -39,10 +40,21 @@ push_files + {
    - "Invalid arguments: content.encoding, content.content"
      → Overcomplicating content structure
 
+## Project Conventions
+1. Quarter ID Format: MMYY (e.g., 0324 for March 2024)
+2. Component Naming: Q{MMYY}Component (e.g., Q0324Component)
+3. Web Component Tags: whiskey-wiz-{mmyy} (e.g., whiskey-wiz-0324)
+
+## Documentation Practices
+1. Create dedicated fix documentation (e.g., ROUTING_FIX_JAN2025.md)
+2. Update DEVELOPMENT_NOTES.md for architectural changes
+3. Add context to CHAT_HANDOFF_JAN2025.md for session transitions
+
 ## Time-Saving Tips
 1. Don't experiment - use proven patterns
 2. Start with test.md approach
 3. Only after success, add real content
 4. Keep content simple - no nested examples
+5. Document changes immediately
 
 Note: This exists to prevent wasting limited Claude time with trial and error!
