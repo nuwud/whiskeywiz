@@ -4,7 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { GameComponent } from './game.component';
 
-const routes: Routes = [];
+const routes: Routes = [
+  { path: 'game', component: GameComponent },
+  { path: 'player', component: GameComponent }
+];
 
 @NgModule({
   declarations: [GameComponent],
@@ -13,6 +16,6 @@ const routes: Routes = [];
     FormsModule,
     RouterModule.forChild(routes)
   ],
-  exports: [GameComponent]
+  exports: [GameComponent, RouterModule]
 })
 export class GameModule { }
