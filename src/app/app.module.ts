@@ -24,6 +24,9 @@ import { FirebaseService } from './services/firebase.service';
 import { AuthService } from './services/auth.service';
 import { GameService } from './services/game.service';
 import { ScoreService } from './services/score.service';
+import { HermonaFontService } from './services/hermona-font.service';
+import { QuarterPopulationService } from './services/quarter-population.service';
+import { ShopifyService } from './services/shopify.service';
 
 @NgModule({
   declarations: [
@@ -52,6 +55,9 @@ import { ScoreService } from './services/score.service';
     AuthService,
     GameService,
     ScoreService,
+    HermonaFontService,
+    QuarterPopulationService,
+    ShopifyService,
     ScreenTrackingService,
     UserTrackingService
   ],
