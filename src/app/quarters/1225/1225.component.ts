@@ -1,10 +1,9 @@
-import { Component, Inject, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { BaseQuarterComponent } from '../base-quarter.component';
 import { AuthService } from '../../services/auth.service';
 import { FirebaseService } from '../../services/firebase.service';
 import { NgForm } from '@angular/forms';
 import { FirebaseApp } from '@angular/fire/app';
-import { FIREBASE_APP } from '../../app.module';
 import { AnalyticsService } from '../../services/analytics.service';
 
 @Component({
@@ -24,14 +23,12 @@ export class Q1225Component extends BaseQuarterComponent {
   @Input() quarterName: string = 'December 2025';
 
   constructor(
-    @Inject(FIREBASE_APP) app: FirebaseApp,
+    app: FirebaseApp,
     firebaseService: FirebaseService,
     authService: AuthService,
-    analyticsService: AnalyticsService,
-    private changeDetectorRef: ChangeDetectorRef
+    analyticsService: AnalyticsService
   ) {
     super(app, firebaseService, authService, analyticsService);
-    this.quarterId = '1225';
   }
 
   onSubmit(form: NgForm) {
@@ -46,8 +43,7 @@ export class Q1225Component extends BaseQuarterComponent {
         proof: form.value.proofGuess,
         mashbill: form.value.mashbillGuess
       };
-      super.submitGuess(guess);
-      this.changeDetectorRef.detectChanges();
+      this.submitGuess(guess);
     }
   }
 }
