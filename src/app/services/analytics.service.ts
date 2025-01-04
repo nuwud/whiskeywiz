@@ -1,36 +1,39 @@
-// src/app/services/analytics.service.ts
-
 import { Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { ChartData, ChartSeries } from '../shared/models/analytics.model';
+import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { ChartData, ChartSeries, QuarterStats, PlayerStats } from '../shared/models/analytics.model';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AnalyticsService {
-    private analyticsData: BehaviorSubject<ChartData> = new BehaviorSubject<ChartData>(this.getChartData());
+    private analyticsData = new BehaviorSubject<ChartData>(this.getInitialChartData());
 
     constructor(private firebaseService: FirebaseService) { }
 
     async fetchAnalyticsData(): Promise<void> {
         try {
-            // Fetch raw data from Firebase
-            const quarterData = await this.firebaseService.getAllQuarterStats().toPromise();
-            if (!quarterData) {
-                throw new Error('quarterData is undefined');
+            const quarterStats = await firstValueFrom(this.firebaseService.getAllQuarterStats());
+            if (!quarterStats) {
+                throw new Error('Quarter stats data is undefined');
             }
-            const playerDataObservable = this.firebaseService.getAllPlayerStats(
-                quarterData.map((quarter: any) => quarter.playerStats)
-                    .reduce((acc: any, playerStats: any) => acc.concat(playerStats), [])
-            );
-            const playerData = await playerDataObservable.toPromise();
 
-            // Process participation trend
-            const participationTrend = this.processParticipationTrend(quarterData);
-            const accuracyStats = this.processAccuracyStats(quarterData);
-            const deviceStats = playerData ? this.processDeviceStats(playerData) : [];
-            const locationStats = playerData ? this.processLocationStats(playerData) : [];
+            const playerStats = await firstValueFrom(this.firebaseService.getAllPlayerStats());
+
+            const participationTrend = this.processParticipationTrend(quarterStats);
+            const accuracyStats = this.processAccuracyStats(quarterStats);
+            const deviceStats = this.processDeviceStats(playerStats);
+            const locationStats = this.processLocationStats(playerStats);
+
+            this.analyticsData.next({
+                name: 'Whiskey Wiz Analytics',
+                series: this.buildChartSeries(quarterStats),
+                participationTrend,
+                accuracyStats,
+                deviceStats,
+                locationStats
+            });
 
         } catch (error) {
             console.error('Error fetching analytics data:', error);
@@ -42,13 +45,10 @@ export class AnalyticsService {
         return this.analyticsData.asObservable();
     }
 
-    getChartData(): ChartData {
+    private getInitialChartData(): ChartData {
         return {
-            name: 'Sample Chart',
-            series: [
-                { name: 'Data Point 1', value: 10 },
-                { name: 'Data Point 2', value: 20 }
-            ],
+            name: 'Loading...',
+            series: [],
             participationTrend: [],
             accuracyStats: [],
             deviceStats: [],
@@ -56,16 +56,21 @@ export class AnalyticsService {
         };
     }
 
-    // Firebase Analytics Event Logging
-    logGameStart(quarterId: string): void {
-        this.firebaseService.logAnalyticsEvent('game_start', {
-            quarter_id: quarterId,
+    // Event Logging
+    logEvent(eventName: string, eventParams: Record<string, any> = {}): void {
+        this.firebaseService.logAnalyticsEvent(eventName, {
+            ...eventParams,
             timestamp: new Date().toISOString()
         });
     }
 
+    // Game Events
+    logGameStart(quarterId: string): void {
+        this.logEvent('game_start', { quarter_id: quarterId });
+    }
+
     logGuessSubmitted(quarterId: string, sampleId: string, guessType: string): void {
-        this.firebaseService.logAnalyticsEvent('guess_submitted', {
+        this.logEvent('guess_submitted', {
             quarter_id: quarterId,
             sample_id: sampleId,
             guess_type: guessType
@@ -73,82 +78,62 @@ export class AnalyticsService {
     }
 
     logGameCompleted(quarterId: string, totalScore: number, timeTaken: number): void {
-        this.firebaseService.logAnalyticsEvent('game_completed', {
+        this.logEvent('game_completed', {
             quarter_id: quarterId,
             score: totalScore,
             completion_time: timeTaken
         });
     }
 
-    logEvent(eventName: string, eventParams: any): void {
-        // Implementation for logging custom events
-        console.log(`Event: ${eventName}`, eventParams);
-    }
-
-    private processParticipationTrend(data: any[]): any[] {
-        // Group by quarter and calculate averages
-        const grouped = data.reduce((acc, curr) => {
-            const quarter = curr.quarterId;
-            if (!acc[quarter]) {
-                acc[quarter] = {
-                    participants: 0,
-                    totalScore: 0
-                };
-            }
-            acc[quarter].participants++;
-            acc[quarter].totalScore += curr.score;
-            return acc;
-        }, {});
-
-        return Object.entries(grouped).map(([quarter, stats]: [string, any]) => ({
-            quarter,
-            participants: stats.participants,
-            avgScore: stats.totalScore / stats.participants
+    // Data Processing
+    private processParticipationTrend(stats: QuarterStats[]): ChartSeries[] {
+        return stats.map(stat => ({
+            name: stat.quarterId,
+            value: stat.totalPlayers
         }));
     }
 
-    private processAccuracyStats(data: any[]): any[] {
-        // Calculate accuracy percentages for each guess type
-        const accuracyTypes = ['age', 'proof', 'mashbill'];
-        return accuracyTypes.map(type => ({
-            type,
-            accuracy: this.calculateAccuracy(data, type)
-        }));
+    private processAccuracyStats(stats: QuarterStats[]): ChartSeries[] {
+        const totalCorrect = stats.reduce((sum, stat) => sum + (stat.topScore || 0), 0);
+        const totalPossible = stats.length * 70; // 70 is max score per quarter
+        const accuracy = (totalCorrect / totalPossible) * 100;
+
+        return [{
+            name: 'Overall Accuracy',
+            value: accuracy
+        }];
     }
 
-    private processDeviceStats(data: any[]): any[] {
-        // Process device type distribution
-        const devices = data.reduce((acc, curr) => {
-            const device = curr.deviceType;
+    private processDeviceStats(stats: PlayerStats[]): ChartSeries[] {
+        const deviceCounts = stats.reduce((acc, stat) => {
+            const device = stat.device || 'unknown';
             acc[device] = (acc[device] || 0) + 1;
             return acc;
-        }, {});
+        }, {} as Record<string, number>);
 
-        return Object.entries(devices).map(([device, count]) => ({
-            device,
-            count
+        return Object.entries(deviceCounts).map(([device, count]) => ({
+            name: device,
+            value: count
         }));
     }
 
-    private processLocationStats(data: any[]): any[] {
-        // Process location distribution
-        const locations = data.reduce((acc, curr) => {
-            const location = curr.location;
+    private processLocationStats(stats: PlayerStats[]): ChartSeries[] {
+        const locationCounts = stats.reduce((acc, stat) => {
+            const location = stat.location || 'unknown';
             acc[location] = (acc[location] || 0) + 1;
             return acc;
-        }, {});
+        }, {} as Record<string, number>);
 
-        return Object.entries(locations).map(([location, count]) => ({
-            location,
-            count
+        return Object.entries(locationCounts).map(([location, count]) => ({
+            name: location,
+            value: count
         }));
     }
 
-    private calculateAccuracy(data: any[], type: string): number {
-        // Calculate accuracy percentage for a specific guess type
-        const total = data.length;
-        const correct = data.filter(item => item[`${type}Correct`]).length;
-        return (correct / total) * 100;
+    private buildChartSeries(stats: QuarterStats[]): ChartSeries[] {
+        return stats.map(stat => ({
+            name: `Q${stat.quarterId}`,
+            value: stat.averageScore
+        }));
     }
-
 }
