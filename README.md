@@ -1,116 +1,91 @@
-# Whiskey Wiz
+# Whiskey Wiz Game
 
-Blind Barrels' Whiskey Blind Tasting Game - A quarterly interactive whiskey tasting experience built with Angular and Firebase.
+## 🎮 Project Overview
+A web-based whiskey tasting game that allows players to guess attributes of whiskey samples and compete quarterly. Built with Angular and Firebase, designed to be embedded in Shopify pages.
 
-## Overview
+## 📋 Key Features
+- Quarterly whiskey tasting challenges
+- Guest and authenticated play modes
+- Score tracking and leaderboards
+- Analytics and user tracking
+- Shopify integration via web components
 
-Whiskey Wiz is a gamified whiskey tasting application that integrates with Shopify pages via web components. Players guess attributes of quarterly whiskey samples, earning points and sharing their results.
+## 🛠 Technical Stack
+- Angular 17.2
+- Firebase/Firestore
+- Custom web components for Shopify
+- Firebase Authentication
+- Firebase Analytics
 
-## Project Structure
-
-This project uses Nx for monorepo management and Angular 17.2 with Firebase backend.
-
+## 🗂 Project Structure
 ```
 src/
 ├── app/
-│   ├── admin/             # Admin feature module (lazy loaded)
-│   ├── player/            # Player feature module (lazy loaded)
-│   ├── admin-nav/         # Admin navigation module
-│   ├── auth/              # Authentication components
-│   ├── core/              # Core module (services)
-│   ├── shared/            # Shared components and models
-│   │   ├── components/
-│   │   ├── game/         # Main game components
-│   │   ├── models/       # Interfaces and types
-│   │   └── results/      # Score display components
-│   └── quarters/         # Quarter-specific components
-├── assets/
-│   ├── fonts/           # Hermona font files
-│   └── images/          # UI assets
-└── environments/        # Environment configurations
+│   ├── shared/           # Shared components and models
+│   ├── quarters/         # Quarterly game components
+│   ├── services/         # Firebase and game services
+│   ├── admin/           # Admin interface
+│   └── elements/        # Web component wrappers
+└── assets/
+    └── images/          # UI elements and assets
 ```
 
-## Key Features
+## 🎯 Important Notes for Claude
+1. Check `/docs/FOR_CLAUDE.md` first - Contains essential setup and MCP usage instructions
+2. Implementation notes in `/docs/IMPLEMENTATION_NOTES.md` track all changes
+3. Use quarters/1225 as reference for component implementation
+4. All quarters follow standard template pattern
 
-- Quarterly whiskey tasting games
-- Web component integration for Shopify
-- Firebase backend with real-time updates
-- Guest and authenticated play modes
-- Admin interface for quarter management
-- Advanced analytics tracking
+## 🔑 Key Components
+1. BaseQuarterComponent: Base class for all quarters
+2. QuarterComponent: Router component for dynamic loading
+3. GameBanner: Main game interface component
+4. AdminComponent: Quarter management interface
 
-## Analytics Implementation
-
-The application tracks:
-- Player location data
-- Device and platform information
-- Sample ratings and preferences
-- Game completion metrics
-- Shopify customer correlation
-- Score distribution
-- Time-based engagement metrics
-
-Analytics are collected via:
-- Firebase Analytics
-- Custom tracking service
-- Shopify customer events
-
-## Development Setup
-
-1. Install dependencies:
-```bash
-npm install
-```
-
-2. Serve the application:
-```bash
-nx serve whiskeywiz
-```
-
-3. Build web components:
-```bash
-npm run build:elements
-```
-
-## Deployment
-
-The application is deployed to Firebase Hosting at whiskeywiz2.web.app.
-
-```bash
-npm run deploy
-```
-
-## Shopify Integration
-
-Embed game components in Shopify pages using:
-```html
-<whiskey-wiz-{quarterId}></whiskey-wiz-{quarterId}>
-```
-
-## Environment Setup
-
-Requires environment.ts with Firebase configuration:
+## 📝 Component Template
 ```typescript
-export const environment = {
-  production: false,
-  firebase: {
-    // Firebase config
+export class Q[MMYY]Component extends BaseQuarterComponent {
+  @Input() override quarterId: string = '[MMYY]';
+  @Input() override quarterName: string = '[Month YYYY]';
+
+  constructor(
+    firebaseService: FirebaseService,
+    authService: AuthService,
+    analyticsService: AnalyticsService
+  ) {
+    super(firebaseService, authService, analyticsService);
   }
-};
+}
 ```
 
-## Contributing
+## 🔄 Recent Updates
+- Standardized all quarter components
+- Removed direct FIREBASE_APP injection
+- Updated module architecture
+- Enhanced analytics tracking
 
-See CONTRIBUTING.md for development guidelines and procedures.
+## 🚀 Development Workflow
+1. Check FOR_CLAUDE.md for setup
+2. Follow implementation notes for context
+3. Use standard quarter template
+4. Update documentation
 
-## Testing
+## 📚 Documentation Index
+1. /docs/FOR_CLAUDE.md - Essential setup instructions
+2. /docs/IMPLEMENTATION_NOTES.md - Change history
+3. README.md - Project overview
 
-Run tests:
-```bash
-nx test
-nx e2e
-```
+## 🔍 Common Tasks
+1. Adding new quarters: Follow quarter template in quarters/
+2. Component updates: Check implementation notes
+3. Working with files: Use window.fs.readFile in components
+4. Firebase operations: Use service methods
 
-## License
+## 🤝 Contributing
+Please update implementation notes when making changes.
 
-Proprietary - Blind Barrels © 2024
+## 📌 Important Files
+- src/app/quarters/base-quarter.component.ts
+- src/app/shared/shared.module.ts
+- src/app/quarters/quarters.module.ts
+- docs/FOR_CLAUDE.md
