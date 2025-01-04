@@ -1,49 +1,39 @@
 # Implementation Notes
 
-## 2024-01-03: Model Interface Additions (Update 5)
+## 2024-01-03: Model Interface Fixes (Update 6)
 
 ### Issues Fixed
-1. Missing PlayerScore interface in quarter.model.ts
-2. Missing ScoringRules interface
-3. Missing analytics interfaces (QuarterStats, PlayerStats)
+1. ScoringRules interface mismatch with admin implementation
+2. Corrected scoring model structure
 
 ### Changes Made
 
-1. `src/app/shared/models/quarter.model.ts`:
-   - Added PlayerScore interface with Firebase timestamp support
-   - Updated guesses structure
+1. `src/app/shared/models/scoring.model.ts`:
+   - Updated to match admin component implementation
+   - Added default value comments
+   - Simplified interface structure
 
-2. Added New Model Files:
-   - `src/app/shared/models/scoring.model.ts`:
-     - ScoringRules interface with age/proof/mashbill rules
-   - `src/app/shared/models/analytics.model.ts`:
-     - QuarterStats interface
-     - PlayerStats interface
-
-### Model Interfaces Added
-1. Scoring:
-   - Detailed scoring rules for age guesses
-   - Proof scoring parameters
-   - Mashbill scoring
-   - Bonus calculations
-
-2. Analytics:
-   - Quarter participation stats
-   - Player performance tracking
-   - Game completion metrics
+### Scoring Rules Structure
+- agePerfectScore: 20 points for exact age match
+- ageBonus: 10 points bonus for perfect guess
+- agePenaltyPerYear: 4 points deducted per year off
+- proofPerfectScore: 20 points for exact proof match
+- proofBonus: 10 points bonus for perfect guess
+- proofPenaltyPerPoint: 2 points deducted per proof point off
+- mashbillCorrectScore: 10 points for correct mashbill
 
 ### Testing Notes
 Verify the following after deployment:
-1. Firebase service compiles without errors
-2. Score submissions work correctly
-3. Analytics tracking functions properly
-4. Model types are correctly enforced
+1. Admin scoring rules interface matches model
+2. Score calculations work correctly
+3. Bonuses are applied properly
+4. Penalties are calculated correctly
 
 ### Next Steps
-1. Implement remaining Firebase service methods
-2. Add analytics tracking
-3. Test scoring calculations
-4. Verify data models in Firebase
+1. Test score calculations
+2. Verify admin interface
+3. Test bonus point system
+4. Validate penalty calculations
 
 ---
 
