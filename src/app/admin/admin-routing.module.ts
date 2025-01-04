@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AdminComponent } from './admin.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
-import { canActivateAdmin } from '../guards/auth.guard';
 
 const routes: Routes = [
   {
@@ -12,6 +11,10 @@ const routes: Routes = [
       { 
         path: 'analytics', 
         component: AnalyticsComponent 
+      },
+      { 
+        path: 'quarters',
+        component: AdminComponent
       },
       { 
         path: '', 
