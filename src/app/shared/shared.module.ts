@@ -1,38 +1,32 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-import { ResultsComponent } from './results/results.component';
-import { StarRatingComponent } from './components/star-rating/star-rating.component';
+import { GameComponent } from './game/game.component';
 import { GameBannerComponent } from './components/game-banner/game-banner.component';
-import { DataCollectionService } from '../services/data-collection.service';
-import { AngularFireAnalyticsModule } from '@angular/fire/compat/analytics';
+import { HermonaButtonComponent } from './components/hermona-button/hermona-button.component';
+import { StarRatingComponent } from './components/star-rating/star-rating.component';
+import { ResultsComponent } from './results/results.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
+    GameComponent,
     GameBannerComponent,
-    ResultsComponent,
-    StarRatingComponent
+    HermonaButtonComponent,
+    StarRatingComponent,
+    ResultsComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
-    RouterModule,
-    AngularFireAnalyticsModule,
+    ReactiveFormsModule
   ],
   exports: [
+    GameComponent,
     GameBannerComponent,
-    ResultsComponent,
+    HermonaButtonComponent,
     StarRatingComponent,
-    FormsModule,
-    ReactiveFormsModule,
-    CommonModule,
-    RouterModule,
-    AngularFireAnalyticsModule
+    ResultsComponent
   ],
-  providers: [
-    DataCollectionService
-  ]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA] // Add this to support web components
 })
 export class SharedModule { }
