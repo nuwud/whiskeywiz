@@ -21,7 +21,6 @@ import { environment } from '../environments/environment';
 import { AuthGuard } from './guards/auth.guard';
 import { PlayerComponent } from './player/player.component';
 import { PageNotFoundComponent } from './shared/page-not-found/page-not-found.component';
-import { GameComponent } from './shared/game/game.component';
 
 export const FIREBASE_APP = AngularFireModule.initializeApp(environment.firebase);
 
@@ -32,8 +31,7 @@ export const FIREBASE_APP = AngularFireModule.initializeApp(environment.firebase
     RegisterComponent,
     AuthButtonComponent,
     PlayerComponent,
-    PageNotFoundComponent,
-    GameComponent
+    PageNotFoundComponent
   ],
   imports: [
     BrowserModule,
