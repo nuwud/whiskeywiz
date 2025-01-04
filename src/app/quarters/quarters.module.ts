@@ -4,12 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { BaseQuarterComponent } from './base-quarter.component';
 import { Q1225Component } from './1225/1225.component';
-// Import other quarter components here
 
 const QUARTER_COMPONENTS = [
   BaseQuarterComponent,
-  Q1225Component,
-  // Add other quarter components here
+  Q1225Component
 ];
 
 @NgModule({
