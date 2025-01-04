@@ -9,7 +9,6 @@ import { GameState, Quarter } from '../shared/models/quarter.model';
 @Injectable({
   providedIn: 'root'
 })
-
 export class GameService {
   private currentQuarter = new BehaviorSubject<Quarter | null>(null);
   private gameState = new BehaviorSubject<GameState | null>(null);
@@ -29,15 +28,15 @@ export class GameService {
     return this.currentQuarter.value?.id || null;
   }
 
-  async loadQuarter(quarterId: string): Promise<void> {
+  async loadQuarter(mmyy: string): Promise<void> {
     try {
-      const quarter = await this.firebaseService.getQuarterById(quarterId)
+      const quarter = await this.firebaseService.getQuarterById(mmyy)
         .pipe(take(1))
         .toPromise();
         
       if (quarter) {
         this.currentQuarter.next(quarter);
-        localStorage.setItem('lastPlayedQuarter', quarterId);
+        localStorage.setItem('lastPlayedQuarter', mmyy);
       } else {
         throw new Error('Quarter not found');
       }
@@ -52,39 +51,36 @@ export class GameService {
     this.currentQuarter.next(null);
   }
 
-  async navigateToGame(quarterId: string): Promise<boolean> {
-    if (this.navigationLock) return false;
+  async navigateToGame(mmyy: string): Promise<boolean> {
+    if (this.navigationLock || !this.isValidMMYY(mmyy)) return false;
     
     try {
       this.navigationLock = true;
       
       // Clear existing game state
-      localStorage.removeItem(`gameState_${quarterId}`);
+      localStorage.removeItem(`gameState_${mmyy}`);
       this.clearGameState();
       
-      // Navigate to game
-      return await this.router.navigate(['/game'], {
-        queryParams: { quarter: quarterId },
-        replaceUrl: true
-      });
+      // Navigate using MMYY format
+      return await this.router.navigate(['/quarters', mmyy]);
     } finally {
       this.navigationLock = false;
     }
   }
 
-  async handlePlayAgain(quarterId: string): Promise<void> {
-    if (this.navigationLock) return;
+  async handlePlayAgain(mmyy: string): Promise<void> {
+    if (this.navigationLock || !this.isValidMMYY(mmyy)) return;
     
     try {
       this.navigationLock = true;
       
       // Clear game state
       this.clearGameState();
-      localStorage.removeItem(`gameState_${quarterId}`);
+      localStorage.removeItem(`gameState_${mmyy}`);
       
       // Load quarter and navigate
-      await this.loadQuarter(quarterId);
-      await this.navigateToGame(quarterId);
+      await this.loadQuarter(mmyy);
+      await this.navigateToGame(mmyy);
     } finally {
       this.navigationLock = false;
     }
@@ -103,5 +99,12 @@ export class GameService {
       }),
       tap(() => this.gameState.next(state))
     );
+  }
+
+  private isValidMMYY(mmyy: string): boolean {
+    if (!mmyy || mmyy.length !== 4) return false;
+    const month = parseInt(mmyy.substring(0, 2));
+    const year = parseInt(mmyy.substring(2, 4));
+    return month >= 1 && month <= 12 && year >= 20 && year <= 99;
   }
 }
