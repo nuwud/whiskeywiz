@@ -1,36 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-  <meta charset="utf-8">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-  <base href="/" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preload" href="/assets/fonts/Hermona.woff2" as="font" type="font/woff2" crossorigin="">
-  <link rel="preload" href="/assets/fonts/Hermona-Extras.woff2" as="font" type="font/woff2" crossorigin="">
-  <link rel="preload" href="/assets/fonts/Helvetica.woff2" as="font" type="font/woff2" crossorigin="">
-  <link rel="preload" href="/assets/fonts/Helvetica-Bold.woff2" as="font" type="font/woff2" crossorigin="">
-  <link rel="preload" href="/assets/fonts/Helvetica-Oblique.woff2" as="font" type="font/woff2" crossorigin="">
-  <link rel="preload" href="/assets/fonts/Helvetica-BoldOblique.woff2" as="font" type="font/woff2" crossorigin="">
-  
-  <title>Whiskey Wiz</title>
-  <base href="/">
-</head>
-<body>
-  <app-root></app-root>
-  <script>
-    // Force reload if version mismatch
-    fetch('/version.json?' + new Date().getTime())
-      .then(response => response.json())
-      .then(data => {
-        const currentVersion = localStorage.getItem('app-version');
-        if (currentVersion && currentVersion !== data.version) {
+    <meta charset="utf-8">
+    <title>Whiskey Wiz</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Font Preloading -->
+    <link rel="preload" href="/assets/fonts/Hermona.woff2" as="font" type="font/woff2" crossorigin="">
+    <link rel="preload" href="/assets/fonts/Hermona-Extras.woff2" as="font" type="font/woff2" crossorigin="">
+    <link rel="preload" href="/assets/fonts/Helvetica.woff2" as="font" type="font/woff2" crossorigin="">
+    <link rel="preload" href="/assets/fonts/Helvetica-Bold.woff2" as="font" type="font/woff2" crossorigin="">
+    <link rel="preload" href="/assets/fonts/Helvetica-Oblique.woff2" as="font" type="font/woff2" crossorigin="">
+    <link rel="preload" href="/assets/fonts/Helvetica-BoldOblique.woff2" as="font" type="font/woff2" crossorigin="">
+  </head>
+  <body>
+    <app-root></app-root>
+    <script>
+      // Force reload if version mismatch
+      fetch('/version.json?' + new Date().getTime())
+        .then(response => response.json())
+        .then(data => {
+          const currentVersion = localStorage.getItem('app-version');
+          if (currentVersion && currentVersion !== data.version) {
+            localStorage.setItem('app-version', data.version);
+            window.location.reload(true);
+          }
           localStorage.setItem('app-version', data.version);
-          window.location.reload(true);
-        }
-        localStorage.setItem('app-version', data.version);
-      });
-  </script>
-</body>
+        })
+        .catch(error => console.warn('Version check failed:', error));
+    </script>
+  </body>
 </html>
