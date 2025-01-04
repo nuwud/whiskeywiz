@@ -12,7 +12,14 @@ import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getStorage, provideStorage } from '@angular/fire/storage';
+import { getAnalytics, provideAnalytics, ScreenTrackingService, UserTrackingService } from '@angular/fire/analytics';
+import { getDatabase, provideDatabase } from '@angular/fire/database';
 import { environment } from '../environments/environment';
+
+// Services
+import { FirebaseService } from './services/firebase.service';
+import { AuthService } from './services/auth.service';
+import { GameService } from './services/game.service';
 
 @NgModule({
   declarations: [
@@ -30,10 +37,17 @@ import { environment } from '../environments/environment';
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
-    provideStorage(() => getStorage())
+    provideStorage(() => getStorage()),
+    provideAnalytics(() => getAnalytics()),
+    provideDatabase(() => getDatabase())
   ],
   providers: [
-    { provide: LocationStrategy, useClass: HashLocationStrategy }
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    FirebaseService,
+    AuthService,
+    GameService,
+    ScreenTrackingService,
+    UserTrackingService
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
