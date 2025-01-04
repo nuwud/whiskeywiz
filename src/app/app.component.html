@@ -3,13 +3,18 @@
   <!-- Show header only once at the top level -->
   <header class="app-header">
     <h1 class="text-center text-green-600">Whiskey Wiz</h1>
-    <nav *ngIf="authService.isAuthenticated() | async">
+    <nav *ngIf="isAuthenticated$ | async">
       <a routerLink="/logout" class="logout-link">Logout</a>
     </nav>
   </header>
 
-  <!-- Main content area -->
+  <!-- Main content area with error boundary -->
   <main class="app-content">
     <router-outlet></router-outlet>
   </main>
+
+  <!-- Error display area if needed -->
+  <div *ngIf="errorMessage" class="error-container">
+    {{ errorMessage }}
+  </div>
 </div>
