@@ -30,7 +30,6 @@ export class GameService {
   }
 
   async loadQuarter(quarterId: string): Promise<void> {
-    this.router.navigate(['/game'], { queryParams: { quarter: quarterId } });
     try {
       const quarter = await this.firebaseService.getQuarterById(quarterId)
         .pipe(take(1))

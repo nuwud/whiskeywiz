@@ -3,18 +3,13 @@
 import { Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { PlayerAnalytics, ChartData } from '../shared/models/analytics.model';
+import { ChartData, ChartSeries } from '../shared/models/analytics.model';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AnalyticsService {
-    private analyticsData = new BehaviorSubject<ChartData>({
-        participationTrend: [],
-        accuracyStats: [],
-        deviceStats: [],
-        locationStats: []
-    });
+    private analyticsData: BehaviorSubject<ChartData> = new BehaviorSubject<ChartData>(this.getChartData());
 
     constructor(private firebaseService: FirebaseService) { }
 
@@ -27,7 +22,7 @@ export class AnalyticsService {
             }
             const playerDataObservable = this.firebaseService.getAllPlayerStats(
                 quarterData.map((quarter: any) => quarter.playerStats)
-                .reduce((acc: any, playerStats: any) => acc.concat(playerStats), [])
+                    .reduce((acc: any, playerStats: any) => acc.concat(playerStats), [])
             );
             const playerData = await playerDataObservable.toPromise();
 
@@ -37,12 +32,6 @@ export class AnalyticsService {
             const deviceStats = playerData ? this.processDeviceStats(playerData) : [];
             const locationStats = playerData ? this.processLocationStats(playerData) : [];
 
-            this.analyticsData.next({
-                participationTrend,
-                accuracyStats,
-                deviceStats,
-                locationStats
-            });
         } catch (error) {
             console.error('Error fetching analytics data:', error);
             throw error;
@@ -51,6 +40,20 @@ export class AnalyticsService {
 
     getAnalyticsData(): Observable<ChartData> {
         return this.analyticsData.asObservable();
+    }
+
+    getChartData(): ChartData {
+        return {
+            name: 'Sample Chart',
+            series: [
+                { name: 'Data Point 1', value: 10 },
+                { name: 'Data Point 2', value: 20 }
+            ],
+            participationTrend: [],
+            accuracyStats: [],
+            deviceStats: [],
+            locationStats: []
+        };
     }
 
     // Firebase Analytics Event Logging
@@ -75,6 +78,11 @@ export class AnalyticsService {
             score: totalScore,
             completion_time: timeTaken
         });
+    }
+
+    logEvent(eventName: string, eventParams: any): void {
+        // Implementation for logging custom events
+        console.log(`Event: ${eventName}`, eventParams);
     }
 
     private processParticipationTrend(data: any[]): any[] {
@@ -142,4 +150,5 @@ export class AnalyticsService {
         const correct = data.filter(item => item[`${type}Correct`]).length;
         return (correct / total) * 100;
     }
+
 }

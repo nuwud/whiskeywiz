@@ -46,10 +46,18 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   }
 
   private updateCharts(data: ChartData) {
-    this.updateParticipationChart(data.participationTrend);
-    this.updateCompletionChart(data.participationTrend);
-    this.updateDeviceChart(data.deviceStats);
-    this.updateAccuracyChart(data.accuracyStats);
+    if (data.participationTrend) {
+      this.updateParticipationChart(data.participationTrend);
+    }
+    if (data.participationTrend) {
+      this.updateCompletionChart(data.participationTrend);
+    }
+    if (data.deviceStats) {
+      this.updateDeviceChart(data.deviceStats);
+    }
+    if (data.accuracyStats) {
+      this.updateAccuracyChart(data.accuracyStats);
+    }
   }
 
   private updateParticipationChart(data: any[]) {

@@ -30,3 +30,10 @@ export interface PlayerScore {
     };
   };
 }
+
+export interface GameState {
+  id: string;
+  name: string;
+  status: string;
+  // Add other properties as needed
+}

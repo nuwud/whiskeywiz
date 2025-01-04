@@ -32,11 +32,8 @@ export interface ChartSeries {
 export interface ChartData {
   name: string;
   series: ChartSeries[];
-  participationTrend: any[];
-  deviceStats: any[];
-  accuracyStats: any[];
-  legend?: {
-    position: string;
-    useDefaultMarker: boolean;
-  };
+  participationTrend?: any[];
+  accuracyStats?: any[];
+  deviceStats?: any[];
+  locationStats?: any[];
 }
