@@ -3,7 +3,6 @@ import { BaseQuarterComponent } from '../base-quarter.component';
 import { AuthService } from '../../services/auth.service';
 import { FirebaseService } from '../../services/firebase.service';
 import { NgForm } from '@angular/forms';
-import { FirebaseApp } from '@angular/fire/app';
 import { AnalyticsService } from '../../services/analytics.service';
 
 @Component({
@@ -20,23 +19,17 @@ import { AnalyticsService } from '../../services/analytics.service';
 })
 export class Q1225Component extends BaseQuarterComponent {
   @Input() override quarterId: string = '1225';
-  @Input() quarterName: string = 'December 2025';
+  @Input() override quarterName: string = 'December 2025';
 
   constructor(
-    app: FirebaseApp,
     firebaseService: FirebaseService,
     authService: AuthService,
     analyticsService: AnalyticsService
   ) {
-    super(app, firebaseService, authService, analyticsService);
+    super(firebaseService, authService, analyticsService);
   }
 
   onSubmit(form: NgForm) {
-    if (!this.app) {
-      console.error('Firebase not initialized');
-      return;
-    }
-    
     if (form.valid) {
       const guess = {
         age: form.value.ageGuess,
