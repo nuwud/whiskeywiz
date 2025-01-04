@@ -12,13 +12,14 @@ import {
   updateDoc,
   serverTimestamp,
   collectionData,
-  DocumentData
+  DocumentData,
+  docData
 } from '@angular/fire/firestore';
 import { ScoringRules } from '../shared/models/scoring.model';
 import { PlayerScore, Quarter } from '../shared/models/quarter.model';
 import { QuarterStats, PlayerStats } from '../shared/models/analytics.model';
 import { Observable, from, throwError } from 'rxjs';
-import { GameState } from '../shared/models/game.model'; // Adjust the path as necessary
+import { GameState } from '../shared/models/game.model'; 
 import { map, tap, catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -34,17 +35,17 @@ export class FirebaseService {
     this.scoresRef = collection(this.firestore, 'scores');
     this.quartersRef = collection(this.firestore, 'quarters');
   }
+
   isInitialized(): boolean {
-    // Add your initialization logic here
-    return true; // or false based on your logic
+    return !!this.firestore;
   }
 
   navigateToAdmin() {
-    this.router.navigate(['/admin']);
+    this.router.navigate(['/#/admin']);
   }
 
   navigateToGame(quarterId: string) {
-    this.router.navigate(['/game'], { queryParams: { quarter: quarterId } });
+    this.router.navigate(['/#/game'], { queryParams: { quarter: quarterId } });
   }
 
   getScoringRules(): Observable<ScoringRules> {
@@ -107,13 +108,8 @@ export class FirebaseService {
   }
 
   getQuarters(): Observable<Quarter[]> {
-    return from(getDocs(this.quartersRef)).pipe(
-      map(snapshot =>
-        snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        } as Quarter))
-      ),
+    return collectionData(this.quartersRef, { idField: 'id' }).pipe(
+      map(quarters => quarters as Quarter[]),
       catchError(error => {
         console.error('Error fetching quarters:', error);
         return throwError(() => error);
@@ -133,22 +129,17 @@ export class FirebaseService {
   }
 
   getAllQuarterStats(): Observable<QuarterStats[]> {
-    return from(getDocs(this.quartersRef)).pipe(
-      map(snapshot =>
-        snapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            name: data.name,
-            stats: data.stats,
-            quarterId: data.quarterId,
-            participationCount: data.participationCount,
-            averageScore: data.averageScore,
-            completionRate: data.completionRate,
-            guessAccuracy: data.guessAccuracy
-          } as QuarterStats;
-        })
-      ),
+    return collectionData(this.quartersRef, { idField: 'id' }).pipe(
+      map(quarters => quarters.map(quarter => ({
+        id: quarter['id'],
+        name: quarter['name'],
+        stats: quarter['stats'],
+        quarterId: quarter['quarterId'],
+        participationCount: quarter['participationCount'] || 0,
+        averageScore: quarter['averageScore'] || 0,
+        completionRate: quarter['completionRate'] || 0,
+        guessAccuracy: quarter['guessAccuracy'] || 0
+      }) as QuarterStats[])),
       catchError(error => {
         console.error('Error fetching quarter stats:', error);
         return throwError(() => error);
@@ -156,35 +147,31 @@ export class FirebaseService {
     );
   }
 
-  async getPlayerGameData(playerId: string): Promise<any> {
-    // Fetch player data from Firestore
+  getPlayerGameData(playerId: string): Observable<any> {
     const playerRef = doc(this.firestore, `players/${playerId}`);
-    const playerDoc = await getDoc(playerRef);
-    const playerGameData = playerDoc.data();
-    // Implementation to fetch player game data from Firebase
-    // This is a placeholder implementation
-    return {};
+    return from(getDoc(playerRef)).pipe(
+      map(doc => doc.data() || {}),
+      catchError(error => {
+        console.error('Error fetching player game data:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
-
   getAllPlayerStats(playerId: string): Observable<PlayerStats[]> {
-    return from(getDocs(this.scoresRef)).pipe(
-      map(snapshot =>
-        snapshot.docs
-          .filter(doc => doc.data().playerId === playerId)
-          .map(doc => {
-            const data = doc.data();
-            return {
-              id: doc.id,
-              quarterId: data.quarterId,
-              score: data.score,
-              timestamp: data.timestamp,
-              playerId: data.playerId,
-              gamesPlayed: data.gamesPlayed || 0,
-              totalScore: data.totalScore || 0,
-              averageScore: data.averageScore || 0
-            } as PlayerStats;
-          })
+    return collectionData(this.scoresRef, { idField: 'id' }).pipe(
+      map(scores => scores
+        .filter(score => score['playerId'] === playerId)
+        .map(score => ({
+          id: score['id'],
+          quarterId: score['quarterId'],
+          score: score['score'],
+          timestamp: score['timestamp'],
+          playerId: score['playerId'],
+          gamesPlayed: score['gamesPlayed'] || 0,
+          totalScore: score['totalScore'] || 0,
+          averageScore: score['averageScore'] || 0
+        }) as PlayerStats)
       ),
       catchError(error => {
         console.error('Error fetching player stats:', error);
@@ -193,24 +180,9 @@ export class FirebaseService {
     );
   }
 
-
-  saveGameData(gameData: {
-    timestamp: string;
-    quarterId: string;
-    guesses: GameState["guesses"];
-    scores: { [key: string]: number; };
-    ratings: { [key: string]: number; };
-    location?: { country: string; region: string; city: string; };
-    deviceInfo?: { platform: string; userAgent: string; language: string; };
-    shopifyCustomerId?: string;
-    completionTime?: number;
-  }): void {
-    // Implement this method to save game data
-  }
-
-  logAnalyticsEvent(eventName: string, eventParams: { [key: string]: any }): void {
-    // Implementation for logging analytics event
-    console.log(`Event: ${eventName}`, eventParams);
+  saveGameProgress(playerId: string, state: GameState): Observable<void> {
+    const docRef = doc(this.firestore, `gameProgress/${playerId}`);
+    return from(setDoc(docRef, { ...state, timestamp: serverTimestamp() }));
   }
 
   getCollection(collectionName: string): Observable<any[]> {
@@ -220,17 +192,6 @@ export class FirebaseService {
 
   getDocument(collectionName: string, documentId: string): Observable<any> {
     const docRef = doc(this.firestore, `${collectionName}/${documentId}`);
-    return this.docData(docRef);
+    return docData(docRef);
   }
-
-  private docData(docRef: DocumentReference<DocumentData, DocumentData>): Observable<any> {
-    throw new Error('Function not implemented.');
-  }
-
-
-  saveGameProgress(playerId: string, state: any): Observable<void> {
-    const docRef = doc(this.firestore, `gameProgress/${playerId}`);
-    return from(setDoc(docRef, state));
-  }
-
 }
