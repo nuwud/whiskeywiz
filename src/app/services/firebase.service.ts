@@ -12,14 +12,14 @@ import {
   updateDoc,
   serverTimestamp,
   collectionData,
-  DocumentData,
-  docData
+  docData,
+  DocumentData
 } from '@angular/fire/firestore';
 import { ScoringRules } from '../shared/models/scoring.model';
 import { PlayerScore, Quarter } from '../shared/models/quarter.model';
 import { QuarterStats, PlayerStats } from '../shared/models/analytics.model';
 import { Observable, from, throwError } from 'rxjs';
-import { GameState } from '../shared/models/game.model'; 
+import { GameState } from '../shared/models/game.model';
 import { map, tap, catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -36,18 +36,39 @@ export class FirebaseService {
     this.quartersRef = collection(this.firestore, 'quarters');
   }
 
+  // Collection and Document Access Methods
+  getCollection(collectionPath: string): Observable<any[]> {
+    const collectionRef = collection(this.firestore, collectionPath);
+    return collectionData(collectionRef, { idField: 'id' }).pipe(
+      catchError(error => {
+        console.error(`Error fetching collection ${collectionPath}:`, error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getDocument(collectionPath: string, documentId: string): Observable<any> {
+    const docRef = doc(this.firestore, `${collectionPath}/${documentId}`);
+    return from(getDoc(docRef)).pipe(
+      map(doc => {
+        if (doc.exists()) {
+          return { id: doc.id, ...doc.data() };
+        }
+        return null;
+      }),
+      catchError(error => {
+        console.error(`Error fetching document ${documentId}:`, error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  // Authentication and Navigation Methods
   isInitialized(): boolean {
     return !!this.firestore;
   }
 
-  navigateToAdmin() {
-    this.router.navigate(['/#/admin']);
-  }
-
-  navigateToGame(quarterId: string) {
-    this.router.navigate(['/#/game'], { queryParams: { quarter: quarterId } });
-  }
-
+  // Game State and Data Methods
   getScoringRules(): Observable<ScoringRules> {
     return from(getDoc(this.scoringRulesRef)).pipe(
       map(doc => {
@@ -92,29 +113,11 @@ export class FirebaseService {
   }
 
   getQuarterById(quarterId: string): Observable<Quarter | null> {
-    const quarterRef = doc(this.firestore, `quarters/${quarterId}`);
-    return from(getDoc(quarterRef)).pipe(
-      map(doc => {
-        if (doc.exists()) {
-          return { id: doc.id, ...doc.data() } as Quarter;
-        }
-        return null;
-      }),
-      catchError(error => {
-        console.error('Error fetching quarter:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.getDocument('quarters', quarterId);
   }
 
   getQuarters(): Observable<Quarter[]> {
-    return collectionData(this.quartersRef, { idField: 'id' }).pipe(
-      map(quarters => quarters as Quarter[]),
-      catchError(error => {
-        console.error('Error fetching quarters:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.getCollection('quarters') as Observable<Quarter[]>;
   }
 
   updateQuarter(quarterId: string, data: Partial<Quarter>): Observable<void> {
@@ -129,69 +132,44 @@ export class FirebaseService {
   }
 
   getAllQuarterStats(): Observable<QuarterStats[]> {
-    return collectionData(this.quartersRef, { idField: 'id' }).pipe(
+    return this.getCollection('quarters').pipe(
       map(quarters => quarters.map(quarter => ({
-        id: quarter['id'],
-        name: quarter['name'],
-        stats: quarter['stats'],
-        quarterId: quarter['quarterId'],
-        participationCount: quarter['participationCount'] || 0,
-        averageScore: quarter['averageScore'] || 0,
-        completionRate: quarter['completionRate'] || 0,
-        guessAccuracy: quarter['guessAccuracy'] || 0
-      }) as QuarterStats[])),
-      catchError(error => {
-        console.error('Error fetching quarter stats:', error);
-        return throwError(() => error);
-      })
+        id: quarter.id,
+        name: quarter.name,
+        stats: quarter.stats,
+        quarterId: quarter.quarterId,
+        participationCount: quarter.participationCount || 0,
+        averageScore: quarter.averageScore || 0,
+        completionRate: quarter.completionRate || 0,
+        guessAccuracy: quarter.guessAccuracy || 0
+      })))
     );
   }
 
   getPlayerGameData(playerId: string): Observable<any> {
-    const playerRef = doc(this.firestore, `players/${playerId}`);
-    return from(getDoc(playerRef)).pipe(
-      map(doc => doc.data() || {}),
-      catchError(error => {
-        console.error('Error fetching player game data:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.getDocument('players', playerId);
   }
 
   getAllPlayerStats(playerId: string): Observable<PlayerStats[]> {
-    return collectionData(this.scoresRef, { idField: 'id' }).pipe(
+    return this.getCollection('scores').pipe(
       map(scores => scores
-        .filter(score => score['playerId'] === playerId)
+        .filter(score => score.playerId === playerId)
         .map(score => ({
-          id: score['id'],
-          quarterId: score['quarterId'],
-          score: score['score'],
-          timestamp: score['timestamp'],
-          playerId: score['playerId'],
-          gamesPlayed: score['gamesPlayed'] || 0,
-          totalScore: score['totalScore'] || 0,
-          averageScore: score['averageScore'] || 0
-        }) as PlayerStats)
-      ),
-      catchError(error => {
-        console.error('Error fetching player stats:', error);
-        return throwError(() => error);
-      })
+          id: score.id,
+          quarterId: score.quarterId,
+          score: score.score,
+          timestamp: score.timestamp,
+          playerId: score.playerId,
+          gamesPlayed: score.gamesPlayed || 0,
+          totalScore: score.totalScore || 0,
+          averageScore: score.averageScore || 0
+        }))
+      )
     );
   }
 
   saveGameProgress(playerId: string, state: GameState): Observable<void> {
     const docRef = doc(this.firestore, `gameProgress/${playerId}`);
     return from(setDoc(docRef, { ...state, timestamp: serverTimestamp() }));
-  }
-
-  getCollection(collectionName: string): Observable<any[]> {
-    const collectionRef = collection(this.firestore, collectionName);
-    return collectionData(collectionRef);
-  }
-
-  getDocument(collectionName: string, documentId: string): Observable<any> {
-    const docRef = doc(this.firestore, `${collectionName}/${documentId}`);
-    return docData(docRef);
   }
 }
