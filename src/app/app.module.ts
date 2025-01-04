@@ -1,10 +1,9 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { SharedModule } from './shared/shared.module';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { QuartersModule } from './quarters/quarters.module';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 // Firebase imports
@@ -16,10 +15,15 @@ import { getAnalytics, provideAnalytics, ScreenTrackingService, UserTrackingServ
 import { getDatabase, provideDatabase } from '@angular/fire/database';
 import { environment } from '../environments/environment';
 
+// Feature Modules
+import { SharedModule } from './shared/shared.module';
+import { QuartersModule } from './quarters/quarters.module';
+
 // Services
 import { FirebaseService } from './services/firebase.service';
 import { AuthService } from './services/auth.service';
 import { GameService } from './services/game.service';
+import { ScoreService } from './services/score.service';
 
 @NgModule({
   declarations: [
@@ -27,6 +31,7 @@ import { GameService } from './services/game.service';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
@@ -46,6 +51,7 @@ import { GameService } from './services/game.service';
     FirebaseService,
     AuthService,
     GameService,
+    ScoreService,
     ScreenTrackingService,
     UserTrackingService
   ],
