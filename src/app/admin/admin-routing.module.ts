@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AdminComponent } from './admin.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
 import { AdminQuartersComponent } from './quarters/admin-quarters.component';
+import { AdminQuarterEditComponent } from './quarters/admin-quarter-edit.component';
 
 const routes: Routes = [
   {
@@ -22,11 +23,11 @@ const routes: Routes = [
           },
           {
             path: 'new',
-            component: AdminQuartersComponent
+            component: AdminQuarterEditComponent
           },
           {
             path: ':mmyy/edit',
-            component: AdminQuartersComponent
+            component: AdminQuarterEditComponent
           }
         ]
       },
