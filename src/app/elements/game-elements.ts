@@ -11,13 +11,16 @@ import { GameComponent } from '../shared/game/game.component';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    SharedModule,
     CoreModule
   ],
+  declarations: [GameComponent],
   providers: []
 })
 export class GameElementsModule {
   constructor(private injector: Injector) {
-    const elementName = 'whiskey-wiz-game';
+    // Match the name used in game-bundle.js
+    const elementName = 'whiskey-wiz-game-component';
     if (!customElements.get(elementName)) {
       const GameElement = createCustomElement(GameComponent, { injector });
       customElements.define(elementName, GameElement);
