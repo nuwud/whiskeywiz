@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AdminComponent } from './admin.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
+import { AdminQuartersComponent } from './quarters/admin-quarters.component';
 
 const routes: Routes = [
   {
@@ -14,7 +15,20 @@ const routes: Routes = [
       },
       { 
         path: 'quarters',
-        component: AdminComponent
+        children: [
+          {
+            path: '',
+            component: AdminQuartersComponent
+          },
+          {
+            path: 'new',
+            component: AdminQuartersComponent
+          },
+          {
+            path: ':mmyy/edit',
+            component: AdminQuartersComponent
+          }
+        ]
       },
       { 
         path: '', 
