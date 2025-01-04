@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { QuartersModule } from './quarters/quarters.module';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 // Firebase imports
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
@@ -31,7 +32,9 @@ import { environment } from '../environments/environment';
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage())
   ],
-  providers: [],
+  providers: [
+    { provide: LocationStrategy, useClass: HashLocationStrategy }
+  ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
