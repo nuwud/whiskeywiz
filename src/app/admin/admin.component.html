@@ -9,9 +9,9 @@
 
         <div class="quarter-items">
           <div *ngFor="let quarter of quarters" 
-               class="quarter-item"
-               [class.active]="selectedQuarter?.id === quarter.id"
-               (click)="selectQuarter(quarter)">
+                class="quarter-item"
+                [class.active]="selectedQuarter?.id === quarter.id"
+                (click)="selectQuarter(quarter)">
             <div class="quarter-content">
               <span>{{quarter.name}}</span>
               <span class="quarter-status" [class.active]="quarter.active">

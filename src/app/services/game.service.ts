@@ -6,12 +6,9 @@ import { BehaviorSubject, Observable, from, throwError } from 'rxjs';
 import { map, switchMap, take, catchError, tap } from 'rxjs/operators';
 import { GameState, Quarter } from '../shared/models/quarter.model';
 
-
-
 @Injectable({
   providedIn: 'root'
 })
-
 
 export class GameService {
   private currentQuarter = new BehaviorSubject<Quarter | null>(null);
@@ -24,7 +21,6 @@ export class GameService {
     private router: Router
   ) {}
 
-
   getCurrentQuarter(): Observable<Quarter | null> {
     return this.currentQuarter.asObservable();
   }
@@ -34,6 +30,7 @@ export class GameService {
   }
 
   async loadQuarter(quarterId: string): Promise<void> {
+    this.router.navigate(['/game'], { queryParams: { quarter: quarterId } });
     try {
       const quarter = await this.firebaseService.getQuarterById(quarterId)
         .pipe(take(1))

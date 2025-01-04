@@ -1,63 +1,77 @@
 import { Injectable } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanActivateFn, UrlTree } from '@angular/router';
 import { inject } from '@angular/core';
-import { map, tap } from 'rxjs/operators';
+import { AuthService } from '../services/auth.service';
+import { map, forkJoin as rxForkJoin, Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthGuard implements CanActivate {
+  constructor(private authService: AuthService, private router: Router) {}
+
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    if (this.authService.isAuthenticated()) {
+      return true;
+    } else {
+      this.router.navigate(['/login']);
+      return false;
+    }
+  }
+}
 
 export const canActivateAuth: CanActivateFn = (route, state) => {
-  console.log('canActivateAuth called');
   const authService = inject(AuthService);
   const router = inject(Router);
-  
   return authService.isAuthenticated().pipe(
-    tap(isAuthenticated => {
-      console.log('Auth check:', isAuthenticated);
+    map(isAuthenticated => {
       if (!isAuthenticated) {
-        console.log('Not authenticated, redirecting to login');
         router.navigate(['/login']);
+        return false;
       }
+      return true;
     })
   );
 };
 
 export const canActivateAdmin: CanActivateFn = (route, state) => {
-  console.log('canActivateAdmin called');
   const authService = inject(AuthService);
   const router = inject(Router);
-  
   return authService.isAdmin().pipe(
-    tap(isAdmin => {
-      console.log('Admin check:', isAdmin);
+    map(isAdmin => {
       if (!isAdmin) {
-        console.log('Not admin, redirecting home');
-        router.navigate(['/']);
+        router.navigate(['/unauthorized']);
+        return false;
       }
+      return true;
     })
   );
 };
 
 export const canActivateGame: CanActivateFn = (route, state) => {
-  console.log('canActivateGame called');
   const authService = inject(AuthService);
   const router = inject(Router);
-  
   return authService.isAuthenticated().pipe(
-    map(isAuthenticated => true)
+    map(isAuthenticated => {
+      if (!isAuthenticated) {
+        router.navigate(['/login']);
+        return false;
+      }
+      return true;
+    })
   );
 };
 
-export const combineGuards = (...guards: CanActivateFn[]): CanActivateFn => 
+export const combineGuards = (...guards: CanActivateFn[]): CanActivateFn =>
   (route, state) => {
-    console.log('Combining guards');
-    for (const guard of guards) {
-      const result = guard(route, state);
-      if (!result) return false;
-    }
-    return true;
+    return forkJoin(guards.map(guard => guard(route, state) as Observable<boolean>)).pipe(
+      map(results => results.every(result => result === true))
+    );
   };
 
-export const AuthGuard = {
-  canActivate: canActivateAuth,
-  canActivateAdmin,
-  canActivateGame
-};
+type GuardResult = boolean | UrlTree;
+type MaybeAsync<T> = T | Promise<T> | Observable<T>;
+
+function forkJoin(arg0: MaybeAsync<boolean>[]) {
+  return rxForkJoin(arg0);
+}

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   DocumentReference,
   CollectionReference,
@@ -21,17 +22,29 @@ import { GameState } from '../shared/models/game.model'; // Adjust the path as n
 import { map, tap, catchError } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FirebaseService {
   private scoringRulesRef: DocumentReference;
   private scoresRef: CollectionReference;
   private quartersRef: CollectionReference;
 
-  constructor(private firestore: Firestore) {
+  constructor(private firestore: Firestore, private router: Router) {
     this.scoringRulesRef = doc(this.firestore, 'config/scoringRules');
     this.scoresRef = collection(this.firestore, 'scores');
     this.quartersRef = collection(this.firestore, 'quarters');
+  }
+  isInitialized(): boolean {
+    // Add your initialization logic here
+    return true; // or false based on your logic
+  }
+
+  navigateToAdmin() {
+    this.router.navigate(['/admin']);
+  }
+
+  navigateToGame(quarterId: string) {
+    this.router.navigate(['/game'], { queryParams: { quarter: quarterId } });
   }
 
   getScoringRules(): Observable<ScoringRules> {
@@ -148,13 +161,9 @@ export class FirebaseService {
     const playerRef = doc(this.firestore, `players/${playerId}`);
     const playerDoc = await getDoc(playerRef);
     const playerGameData = playerDoc.data();
-
     // Implementation to fetch player game data from Firebase
-
     // This is a placeholder implementation
-
     return {};
-
   }
 
 
@@ -186,37 +195,22 @@ export class FirebaseService {
 
 
   saveGameData(gameData: {
-
     timestamp: string;
-
     quarterId: string;
-
     guesses: GameState["guesses"];
-
     scores: { [key: string]: number; };
-
     ratings: { [key: string]: number; };
-
     location?: { country: string; region: string; city: string; };
-
     deviceInfo?: { platform: string; userAgent: string; language: string; };
-
     shopifyCustomerId?: string;
-
     completionTime?: number;
-
   }): void {
-
     // Implement this method to save game data
-
   }
 
   logAnalyticsEvent(eventName: string, eventParams: { [key: string]: any }): void {
-
     // Implementation for logging analytics event
-
     console.log(`Event: ${eventName}`, eventParams);
-
   }
 
   getCollection(collectionName: string): Observable<any[]> {
@@ -229,14 +223,14 @@ export class FirebaseService {
     return this.docData(docRef);
   }
 
-private docData(docRef: DocumentReference<DocumentData, DocumentData>): Observable<any> {
-  throw new Error('Function not implemented.');
-}
+  private docData(docRef: DocumentReference<DocumentData, DocumentData>): Observable<any> {
+    throw new Error('Function not implemented.');
+  }
 
 
-saveGameProgress(playerId: string, state: any): Observable<void> {
-  const docRef = doc(this.firestore, `gameProgress/${playerId}`);
-  return from(setDoc(docRef, state));
-}
+  saveGameProgress(playerId: string, state: any): Observable<void> {
+    const docRef = doc(this.firestore, `gameProgress/${playerId}`);
+    return from(setDoc(docRef, state));
+  }
 
 }

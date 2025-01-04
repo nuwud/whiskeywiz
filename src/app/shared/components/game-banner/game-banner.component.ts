@@ -2,7 +2,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { GameService } from '../../../services/game.service';
 import { FirebaseService } from '../../../services/firebase.service';
-import { DataCollectionService } from 'src/app/services/data-collection.service';  
+import { DataCollectionService } from 'src/app/services/data-collection.service'; 
+import { SharedModule } from '../../shared.module'; 
 
 @Component({
   selector: 'app-game-banner',
@@ -51,10 +52,10 @@ import { DataCollectionService } from 'src/app/services/data-collection.service'
   ]
 })
 export class GameBannerComponent implements OnInit {
-  @Input() quarterId: string = '';
-  @Input() quarterName: string = 'Whiskey Wiz Challenge';
+  @Input() quarterId: string = 'string';
+  @Input() quarterName: string = 'string';
   
-  isExpanded = false;
+  isExpanded: boolean = false;
   
   constructor(
     private gameService: GameService,

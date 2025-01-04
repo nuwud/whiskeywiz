@@ -4,13 +4,11 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
-    "predeploy": [
-      "nx build whiskey-wiz --configuration=production"
-    ],
+    "predeploy": ["nx build whiskey-wiz --configuration=production"],
     "public": "dist/whiskey-wiz",
     "headers": [
       {
-        "source": "/**.@(js|css)",
+        "source": "/**.@(js|css|html|jsx)",
         "headers": [
           {
             "key": "Cache-Control",
@@ -27,11 +25,11 @@
         ]
       },
       {
-        "source": "**/*.@(js|css)",
+        "source": "**/*.@(js|css|html|jsx)",
         "headers": [
           {
             "key": "Cache-Control",
-            "value": "max-age=31536000"
+            "value": "private, no-cache, no-store, must-revalidate, max-age=31536000"
           }
         ]
       },
@@ -45,16 +43,12 @@
         ]
       }
     ],
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
+      { "source": "/admin/**", "destination": "/index.html" },
+      { "source": "/game/**", "destination": "/index.html" },
+      { "source": "/player/**", "destination": "/index.html" },
+      { "source": "**", "destination": "/index.html" }
     ],
     "cleanUrls": true,
     "trailingSlash": false

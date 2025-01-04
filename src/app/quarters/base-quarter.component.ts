@@ -7,6 +7,7 @@ import { Quarter } from '../shared/models/quarter.model';
 import { FirebaseApp } from '@angular/fire/app';
 import { FIREBASE_APP } from '../app.module';
 import { AnalyticsService } from '../services/analytics.service';
+import { SharedModule } from '../shared/shared.module';
 
 @Component({
   selector: "app-base-quarter",

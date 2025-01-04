@@ -1,20 +1,19 @@
 ﻿import { Injectable } from '@angular/core';
 import { CanActivate } from '@angular/router';
-import { FirebaseApp } from '@angular/fire/app';
-import { Inject } from '@angular/core';
-import { FIREBASE_APP } from '../app.module';
+import { FirebaseService } from '../services/firebase.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseInitGuard implements CanActivate {
-  constructor(@Inject(FIREBASE_APP) private app: FirebaseApp) {}
+  constructor(private firebaseService: FirebaseService) {}
 
   canActivate(): boolean {
-    if (!this.app) {
-      console.error('Firebase not initialized');
+    if (this.firebaseService.isInitialized()) {
+      return true;
+    } else {
+      console.error('Firebase is not initialized!');
       return false;
     }
-    return true;
   }
 }
