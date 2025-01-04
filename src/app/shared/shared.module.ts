@@ -9,11 +9,6 @@ import { GameBannerComponent } from './components/game-banner/game-banner.compon
 import { StarRatingComponent } from './components/star-rating/star-rating.component';
 import { ResultsComponent } from './results/results.component';
 
-// Services
-import { DataCollectionService } from '../services/data-collection.service';
-import { ScoreService } from '../services/score.service';
-import { GameService } from '../services/game.service';
-
 const COMPONENTS = [
   GameBannerComponent,
   StarRatingComponent,
@@ -23,17 +18,19 @@ const COMPONENTS = [
 @NgModule({
   declarations: [...COMPONENTS],
   imports: [
-    GameModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    RouterModule
+    RouterModule,
+    GameModule
   ],
-  exports: [...COMPONENTS],
-  providers: [
-    DataCollectionService,
-    ScoreService,
-    GameService
+  exports: [
+    ...COMPONENTS,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+    GameModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
