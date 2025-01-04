@@ -8,10 +8,16 @@ const routes: Routes = [
   {
     path: '',
     component: AdminComponent,
-    canActivate: [canActivateAdmin],
     children: [
-      { path: 'analytics', component: AnalyticsComponent },
-      { path: '', redirectTo: 'quarters', pathMatch: 'full' }
+      { 
+        path: 'analytics', 
+        component: AnalyticsComponent 
+      },
+      { 
+        path: '', 
+        redirectTo: 'quarters', 
+        pathMatch: 'full' 
+      }
     ]
   }
 ];
