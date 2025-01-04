@@ -14,38 +14,38 @@ import { AnalyticsService } from '../services/analytics.service';
   `
 })
 export class BaseQuarterComponent {
-<<<<<<< HEAD
-  @Input() quarterId: string;
-  @Input() quarterName: string;
-||||||| b66c326
-  @Input() quarterId: string;
-=======
   @Input() quarterId: string = '';
-  protected app: FirebaseApp;
+  @Input() quarterName: string = '';
+  protected firebase: FirebaseService;
+  protected auth: AuthService;
   protected analytics: AnalyticsService;
->>>>>>> 910f2ed56ac2a777b23c86bd7450b0f9d5c487d0
 
-<<<<<<< HEAD
-  constructor() {
-    this.quarterId = '';
-    this.quarterName = '';
-||||||| b66c326
-  constructor() {
-    this.quarterId = '';
-=======
   constructor(
-    app: FirebaseApp,
     protected firebaseService: FirebaseService,
     protected authService: AuthService,
     analyticsService: AnalyticsService
   ) {
-    this.app = app;
+    this.firebase = firebaseService;
+    this.auth = authService;
     this.analytics = analyticsService;
->>>>>>> 910f2ed56ac2a777b23c86bd7450b0f9d5c487d0
   }
 
-  protected submitGuess(guess: { age: number; proof: number; mashbill: string }) {
-    // Implement base guess submission logic
-    console.log('Submitting guess:', guess);
+  protected async submitGuess(guess: { age: number; proof: number; mashbill: string }) {
+    if (!this.quarterId) {
+      console.error('No quarter ID available');
+      return;
+    }
+
+    try {
+      await this.analytics.logEvent('guess_submitted', {
+        quarterId: this.quarterId,
+        ...guess
+      });
+
+      // Additional guess submission logic will go here
+      console.log('Submitting guess:', guess);
+    } catch (error) {
+      console.error('Error submitting guess:', error);
+    }
   }
 }
