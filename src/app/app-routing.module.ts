@@ -10,7 +10,7 @@ import { RegisterComponent } from './auth/register/register.component';
 const routes: Routes = [
   { 
     path: '', 
-    redirectTo: 'game', 
+    redirectTo: 'quarters', 
     pathMatch: 'full' 
   },
   { 
@@ -18,10 +18,9 @@ const routes: Routes = [
     loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
     canActivate: [canActivateAdmin]
   },
-  { 
-    path: 'game', 
-    component: GameComponent,
-    canActivate: [canActivateGame]
+  {
+    path: 'quarters',
+    loadChildren: () => import('./quarters/quarters.module').then(m => m.QuartersModule)
   },
   { 
     path: 'player', 
