@@ -2,12 +2,12 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { getAuth, provideAuth } from '@angular/fire/auth';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { getStorage, provideStorage } from '@angular/fire/storage';
-import { getAnalytics, provideAnalytics } from '@angular/fire/analytics';
-import { getDatabase, provideDatabase } from '@angular/fire/database';
+import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import { provideAuth, getAuth } from '@angular/fire/auth';
+import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { provideStorage, getStorage } from '@angular/fire/storage';
+import { provideAnalytics, getAnalytics } from '@angular/fire/analytics';
+import { provideDatabase, getDatabase } from '@angular/fire/database';
 
 import { AppComponent } from './app.component';
 import { GameComponent } from './shared/game/game.component';
@@ -15,8 +15,7 @@ import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    GameComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
