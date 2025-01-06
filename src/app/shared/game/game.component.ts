@@ -1,20 +1,8 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { GameService } from '../../services/game.service';
-<<<<<<< HEAD
 import { OfflineQueueService } from '../../services/offline-queue.service';
 import { ValidationService } from '../../services/validation.service';
-import { Observable } from 'rxjs';
-||||||| 594c059
-import { Observable } from 'rxjs';
-import { animate, style, transition, trigger } from '@angular/animations';
-
-interface SampleGuess {
-  age: number;
-  proof: number;
-  mashbill: string;
-}
-=======
 import { Observable, from } from 'rxjs';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Router } from '@angular/router';
@@ -25,7 +13,6 @@ interface SampleGuess {
   proof: number;
   mashbill: string;
 }
->>>>>>> f404b768ace07bc6863e93b0b7d5b7501944cfec
 
 @Component({
   selector: 'app-game',
@@ -36,22 +23,7 @@ export class GameComponent implements OnInit {
   @Input() quarterId: string = '';
   @Output() gameComplete = new EventEmitter<number>();
 
-<<<<<<< HEAD
   // ... [Previous properties remain unchanged]
-||||||| 594c059
-  isLoggedIn$: Observable<boolean>;
-  isGuest: boolean = false;
-  guesses: { [key: string]: SampleGuess } = {};
-  currentSample: number = 0;
-  scores: { [key: string]: number } = {};
-  totalScore: number = 0;
-  starRatings: { [key: string]: number } = {};
-  quarterData: any;
-  gameCompleted: boolean = false;
-  showResults: boolean = false;
-  sampleButtons = ['A', 'B', 'C', 'D'];
-  mashbillTypes = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
-=======
   isLoggedIn$: Observable<boolean>;
   isGuest: boolean = false;
   guesses: { [key: string]: SampleGuess } = {};
@@ -65,77 +37,36 @@ export class GameComponent implements OnInit {
   sampleButtons = ['A', 'B', 'C', 'D'];
   mashbillTypes = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Specialty'];
   sessionStartTime: number = Date.now();
->>>>>>> f404b768ace07bc6863e93b0b7d5b7501944cfec
 
   constructor(
     private authService: AuthService,
-<<<<<<< HEAD
     private gameService: GameService,
     private offlineQueue: OfflineQueueService,
-    private validationService: ValidationService
-||||||| 594c059
-    private gameService: GameService
-=======
-    private gameService: GameService,
+    private validationService: ValidationService,
     private router: Router,
     private dataCollection: DataCollectionService
->>>>>>> f404b768ace07bc6863e93b0b7d5b7501944cfec
   ) {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
     this.initializeGame();
   }
-
-<<<<<<< HEAD
-||||||| 594c059
-  private initializeGame(): void {
-    this.guesses = {
-      'sampleA': { age: 0, proof: 0, mashbill: '' },
-      'sampleB': { age: 0, proof: 0, mashbill: '' },
-      'sampleC': { age: 0, proof: 0, mashbill: '' },
-      'sampleD': { age: 0, proof: 0, mashbill: '' }
-    };
-  }
-
-  getQuarterTitle(): string {
-    return `Quarter ${this.quarterId}`;
-  }
-
-  selectSample(index: number): void {
-    this.currentSample = index;
-  }
-
-  getSampleLetter(index: number): string {
-    return String.fromCharCode(65 + index); // A, B, C, D
-  }
-
-  getSampleAriaLabel(num: number): string {
-    return `Sample ${this.getSampleLetter(num - 1)}`;
-  }
-
-  getSampleData(index: number): any {
-    return this.quarterData?.samples?.[`sample${this.getSampleLetter(index)}`];
-  }
-
-  updateStarRating(sample: number, rating: number): void {
-    this.starRatings[`sample${this.getSampleLetter(sample)}`] = rating;
-  }
-
-  showSubmitAllButton(): boolean {
-    return Object.values(this.guesses).every(guess => 
-      guess.age > 0 && guess.proof > 0 && guess.mashbill !== '');
-  }
-
-=======
   async ngOnInit() {
+    throw new Error('Method not implemented.');
     await this.loadQuarterData();
     await this.dataCollection.initializeSession(this.quarterId).toPromise();
   }
-
+  
   private async loadQuarterData(): Promise<void> {
     if (!this.isValidQuarter(this.quarterId)) {
       this.handleError('Invalid quarter ID');
       return;
     }
+
+    try {
+      this.quarterData = await this.gameService.loadQuarter(this.quarterId);
+    } catch (error) {
+      this.handleError('Error loading quarter data');
+    }
+  }
 
     try {
       this.quarterData = await this.gameService.loadQuarter(this.quarterId);
@@ -208,23 +139,7 @@ export class GameComponent implements OnInit {
       guess.age > 0 && guess.proof > 0 && guess.mashbill !== '');
   }
 
->>>>>>> f404b768ace07bc6863e93b0b7d5b7501944cfec
   async submitGuesses(): Promise<void> {
-<<<<<<< HEAD
-    try {
-      const validation = this.validationService.validateQuarter(this.quarterId);
-      if (!validation.isValid) {
-        throw new Error(validation.message);
-      }
-||||||| 594c059
-    const score = await this.gameService.calculateScore(this.guesses);
-    this.scores = score.sampleScores;
-    this.totalScore = score.totalScore;
-    this.gameCompleted = true;
-    this.showResults = true;
-    this.gameComplete.emit(this.totalScore);
-  }
-=======
     try {
       const score = await this.gameService.calculateScore(this.guesses);
       this.scores = score.sampleScores;
@@ -245,39 +160,7 @@ export class GameComponent implements OnInit {
       this.handleError('Error submitting guesses');
     }
   }
->>>>>>> f404b768ace07bc6863e93b0b7d5b7501944cfec
 
-<<<<<<< HEAD
-      const score = await this.gameService.calculateScore(this.guesses);
-      this.scores = score.sampleScores;
-      this.totalScore = score.totalScore;
-      this.gameCompleted = true;
-      this.showResults = true;
-      this.gameComplete.emit(this.totalScore);
-    } catch (error) {
-      console.error('Error submitting guesses:', error);
-      // Handle error display to user
-||||||| 594c059
-  submitScore(): void {
-    this.gameService.submitScore(this.quarterId, this.totalScore);
-  }
-
-  share(): void {
-    // Implement share functionality
-  }
-
-  playAgain(): void {
-    this.initializeGame();
-    this.gameCompleted = false;
-    this.showResults = false;
-  }
-
-  handleAuth(): void {
-    if (this.isGuest) {
-      this.authService.login();
-    } else {
-      this.authService.logout();
-=======
   async submitScore(): Promise<void> {
     try {
       await this.gameService.submitScore(this.quarterId, this.totalScore);
@@ -325,30 +208,9 @@ export class GameComponent implements OnInit {
       this.authService.login();
     } else {
       this.authService.logout();
->>>>>>> f404b768ace07bc6863e93b0b7d5b7501944cfec
     }
   }
 
-  async submitScore(): Promise<void> {
-    try {
-      await this.offlineQueue.enqueueScore(this.quarterId, this.totalScore);
-    } catch (error) {
-      console.error('Error queueing score:', error);
-      // Handle error display to user
-    }
-  }
-
-<<<<<<< HEAD
-  // ... [Rest of the component remains unchanged]
-}
-
-// FOR_CLAUDE: Updated with offline queue integration
-||||||| 594c059
-  getImagePath(filename: string): string {
-    return `assets/images/${filename}`;
-  }
-}
-=======
   getImagePath(filename: string): string {
     return `assets/images/${filename}`;
   }
@@ -365,4 +227,3 @@ export class GameComponent implements OnInit {
     // You can implement more robust error handling here
   }
 }
->>>>>>> f404b768ace07bc6863e93b0b7d5b7501944cfec
