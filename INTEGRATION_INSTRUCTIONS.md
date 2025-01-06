@@ -1,95 +1,98 @@
-# Whiskey Wiz Integration Instructions
+# WhiskeyWiz Shopify Integration Guide
 
-## Admin Panel Integration
-Add this code to your Shopify page where you want the admin panel:
-\\\html
-<whiskey-wiz-admin></whiskey-wiz-admin>
-\\\
+## Quick Start
 
-## Quarter Game Integration
-Add these tags where you want to embed specific quarter games:
+1. Add the WhiskeyWiz script to your theme.liquid file:
+```html
+<!-- WhiskeyWiz Integration -->
+<script src="https://whiskeywiz2.web.app/elements/whiskey-wiz.js" defer></script>
+```
 
-### 2022
+2. Add the game component to your product page or custom section:
+```html
+<whiskey-wiz-game 
+  quarter-id="{{ quarter_id }}" 
+  class="whiskey-wiz-container">
+</whiskey-wiz-game>
+```
 
-\\\html
-<whiskey-wiz-0322></whiskey-wiz-0322> <!-- Q1 2022 -->
-\\\`n
-\\\html
-<whiskey-wiz-0122></whiskey-wiz-0122> <!-- Q1 2022 -->
-\\\`n
-\\\html
-<whiskey-wiz-0622></whiskey-wiz-0622> <!-- Q2 2022 -->
-\\\`n
-\\\html
-<whiskey-wiz-0922></whiskey-wiz-0922> <!-- Q3 2022 -->
-\\\`n
-\\\html
-<whiskey-wiz-1222></whiskey-wiz-1222> <!-- Q4 2022 -->
-\\\`n
-### 2023
+## Styling Options
 
-\\\html
-<whiskey-wiz-0323></whiskey-wiz-0323> <!-- Q1 2023 -->
-\\\`n
-\\\html
-<whiskey-wiz-0623></whiskey-wiz-0623> <!-- Q2 2023 -->
-\\\`n
-\\\html
-<whiskey-wiz-0923></whiskey-wiz-0923> <!-- Q3 2023 -->
-\\\`n
-\\\html
-<whiskey-wiz-1223></whiskey-wiz-1223> <!-- Q4 2023 -->
-\\\`n
-### 2024
+### Custom CSS Variables
+The game supports these CSS variables for customization:
+```css
+.whiskey-wiz-container {
+  --ww-primary: #FFD700;      /* Primary color */
+  --ww-background: #1A1A1A;   /* Background color */
+  --ww-text: #FFFFFF;         /* Text color */
+}
+```
 
-\\\html
-<whiskey-wiz-0324></whiskey-wiz-0324> <!-- Q1 2024 -->
-\\\`n
-\\\html
-<whiskey-wiz-0624></whiskey-wiz-0624> <!-- Q2 2024 -->
-\\\`n
-\\\html
-<whiskey-wiz-0924></whiskey-wiz-0924> <!-- Q3 2024 -->
-\\\`n
-\\\html
-<whiskey-wiz-1224></whiskey-wiz-1224> <!-- Q4 2024 -->
-\\\`n
-### 2025
+### Responsive Design
+The game container is responsive by default. You can control its size:
+```css
+whiskey-wiz-game {
+  max-width: 800px;
+  margin: 0 auto;
+  display: block;
+}
+```
 
-\\\html
-<whiskey-wiz-0325></whiskey-wiz-0325> <!-- Q1 2025 -->
-\\\`n
-\\\html
-<whiskey-wiz-0625></whiskey-wiz-0625> <!-- Q2 2025 -->
-\\\`n
-\\\html
-<whiskey-wiz-0925></whiskey-wiz-0925> <!-- Q3 2025 -->
-\\\`n
-\\\html
-<whiskey-wiz-1225></whiskey-wiz-1225> <!-- Q4 2025 -->
-\\\`n
-### 2026
+## Advanced Configuration
 
-\\\html
-<whiskey-wiz-0326></whiskey-wiz-0326> <!-- Q1 2026 -->
-\\\`n
-\\\html
-<whiskey-wiz-0626></whiskey-wiz-0626> <!-- Q2 2026 -->
-\\\`n
-\\\html
-<whiskey-wiz-0926></whiskey-wiz-0926> <!-- Q3 2026 -->
-\\\`n
-## Required Scripts
-Add this script to your Shopify theme.liquid file:
-\\\html
-<!-- Whiskey Wiz Dependencies -->
-<script src="{{ 'whiskey-wiz.js' | asset_url }}" type="text/javascript" async></script>
-\\\
+### Quarter ID Format
+- Format: MMYY (e.g., "0124" for January 2024)
+- Dynamic assignment: `quarter-id="Q{{ 'now' | date: '%m%y' }}"`
 
-## Important Notes
-* Upload whiskey-wiz.js to Shopify's Files section (Settings > Files)
-* The admin panel should only be embedded on admin-specific pages
-* Each quarter component can be embedded independently
-* Components will automatically handle authentication
-* Changes made in admin panel affect all embedded instances
-* Make sure to configure Firebase authentication settings
+### Error Handling
+The component includes built-in error handling and will display user-friendly messages if:
+- The game fails to load
+- The quarter ID is invalid
+- The connection is lost
+
+### Performance Notes
+- The game uses lazy loading
+- Assets are loaded only when the component is visible
+- State is preserved across page navigations
+
+## Testing Integration
+
+1. Verify the script is loading:
+```javascript
+console.log(customElements.get('whiskey-wiz-game')); // Should return constructor
+```
+
+2. Check for proper initialization:
+```html
+<whiskey-wiz-game quarter-id="0124" onload="console.log('Game loaded')">
+</whiskey-wiz-game>
+```
+
+3. Verify state preservation:
+- Navigate away from the page and back
+- Game state should be preserved
+
+## Troubleshooting
+
+Common issues and solutions:
+
+1. Script not loading:
+- Check CORS headers
+- Verify script URL
+- Check browser console for errors
+
+2. Game not displaying:
+- Verify quarter ID format
+- Check container visibility
+- Inspect shadow DOM for errors
+
+3. Style conflicts:
+- Use shadow DOM inspector
+- Check for CSS reset conflicts
+- Verify theme compatibility
+
+## Support
+
+For technical support:
+- GitHub Issues: https://github.com/nuwud/whiskeywiz/issues
+- Documentation: https://whiskeywiz2.web.app/docs
