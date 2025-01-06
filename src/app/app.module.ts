@@ -2,16 +2,27 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
-import { provideAuth, getAuth } from '@angular/fire/auth';
-import { provideFirestore, getFirestore } from '@angular/fire/firestore';
-import { provideStorage, getStorage } from '@angular/fire/storage';
-import { provideAnalytics, getAnalytics } from '@angular/fire/analytics';
-import { provideDatabase, getDatabase } from '@angular/fire/database';
+import { AppRoutingModule } from './app-routing.module';
+import { environment } from '../environments/environment';
 
 import { AppComponent } from './app.component';
-import { GameComponent } from './shared/game/game.component';
-import { environment } from '../environments/environment';
+import { SharedModule } from './shared/shared.module';
+
+// Firebase imports
+import { initializeApp } from '@angular/fire/app';
+import { getAuth } from '@angular/fire/auth';
+import { getFirestore } from '@angular/fire/firestore';
+import { getStorage } from '@angular/fire/storage';
+import { getAnalytics } from '@angular/fire/analytics';
+import { getDatabase } from '@angular/fire/database';
+
+// Initialize Firebase app
+const app = initializeApp(environment.firebase);
+const auth = getAuth(app);
+const firestore = getFirestore(app);
+const storage = getStorage(app);
+const analytics = getAnalytics(app);
+const database = getDatabase(app);
 
 @NgModule({
   declarations: [
@@ -20,15 +31,17 @@ import { environment } from '../environments/environment';
   imports: [
     BrowserModule,
     FormsModule,
-    RouterModule.forRoot([]),
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
-    provideStorage(() => getStorage()),
-    provideAnalytics(() => getAnalytics()),
-    provideDatabase(() => getDatabase())
+    AppRoutingModule,
+    SharedModule
   ],
-  providers: [],
+  providers: [
+    { provide: 'FIREBASE_APP', useValue: app },
+    { provide: 'FIREBASE_AUTH', useValue: auth },
+    { provide: 'FIREBASE_FIRESTORE', useValue: firestore },
+    { provide: 'FIREBASE_STORAGE', useValue: storage },
+    { provide: 'FIREBASE_ANALYTICS', useValue: analytics },
+    { provide: 'FIREBASE_DATABASE', useValue: database }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
