@@ -1,37 +1,22 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-
-// Components
-import { GameModule } from './game/game.module';
-import { GameBannerComponent } from './components/game-banner/game-banner.component';
-import { StarRatingComponent } from './components/star-rating/star-rating.component';
+import { FormsModule } from '@angular/forms';
+import { GameComponent } from './game/game.component';
 import { ResultsComponent } from './results/results.component';
 
-const COMPONENTS = [
-  GameBannerComponent,
-  StarRatingComponent,
-  ResultsComponent
-];
-
 @NgModule({
-  declarations: [...COMPONENTS],
+  declarations: [
+    GameComponent,
+    ResultsComponent
+  ],
   imports: [
     CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    RouterModule,
-    GameModule
+    FormsModule
   ],
   exports: [
-    ...COMPONENTS,
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    RouterModule,
-    GameModule
-  ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    GameComponent,
+    ResultsComponent,
+    FormsModule
+  ]
 })
 export class SharedModule { }
