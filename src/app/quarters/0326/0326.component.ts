@@ -1,54 +1,21 @@
-import { Component, Inject, ChangeDetectorRef, Input } from '@angular/core';
-import { BaseQuarterComponent } from '../base-quarter.component';
-import { AuthService } from '../../services/auth.service';
+import { Component } from '@angular/core';
 import { FirebaseService } from '../../services/firebase.service';
-import { NgForm } from '@angular/forms';
-import { FirebaseApp } from '@angular/fire/app';
-import { FIREBASE_APP } from '../../app.module';
-import { AnalyticsService } from 'src/app/services/analytics.service';
-
+import { AuthService } from '../../services/auth.service';
+import { GameService } from '../../services/game.service';
+import { AnalyticsService } from '../../services/analytics.service';
+import { BaseQuarterComponent } from '../base-quarter.component';
 
 @Component({
-  selector: 'app-quarter-0326',
-  template: `
-    <app-game-banner 
-      [quarterId]="quarterId"
-      [quarterName]="quarterName || 'March 2026'">
-    </app-game-banner>
-  `,
-  styles: [`
-    small { color: red; }
-  `]
+  selector: 'app-0326',
+  template: '<ng-container *ngTemplateOutlet="template"></ng-container>'
 })
 export class Q0326Component extends BaseQuarterComponent {
-  @Input() override quarterId: string = '0326';
-  @Input() quarterName: string = 'March 2026';
-
   constructor(
-    @Inject(FIREBASE_APP) app: FirebaseApp,
     firebaseService: FirebaseService,
     authService: AuthService,
-    analyticsService: AnalyticsService,
-    private changeDetectorRef: ChangeDetectorRef
+    gameService: GameService,
+    analyticsService: AnalyticsService
   ) {
-    super(app, firebaseService, authService, analyticsService);
-    this.quarterId = '0326';
-  }
-
-  onSubmit(form: NgForm) {
-    if (!this.app) {
-      console.error('Firebase not initialized');
-      return;
-    }
-    
-    if (form.valid) {
-      const guess = {
-        age: form.value.ageGuess,
-        proof: form.value.proofGuess,
-        mashbill: form.value.mashbillGuess
-      };
-      super.submitGuess(guess);
-      this.changeDetectorRef.detectChanges();
-    }
+    super(firebaseService, authService, gameService, analyticsService);
   }
 }

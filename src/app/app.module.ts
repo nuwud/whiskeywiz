@@ -1,38 +1,28 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { HashLocationStrategy, LocationStrategy } from '@angular/common';
-
-// Firebase imports
-import { FirebaseApp, initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { getAuth, provideAuth } from '@angular/fire/auth';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { getStorage, provideStorage } from '@angular/fire/storage';
-import { getAnalytics, provideAnalytics, ScreenTrackingService, UserTrackingService } from '@angular/fire/analytics';
-import { getDatabase, provideDatabase } from '@angular/fire/database';
 import { environment } from '../environments/environment';
 
-// Feature Modules
+import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
-import { QuartersModule } from './quarters/quarters.module';
 
-// Services
-import { FirebaseService } from './services/firebase.service';
-import { AuthService } from './services/auth.service';
-import { GameService } from './services/game.service';
-import { ScoreService } from './services/score.service';
-import { HermonaFontService } from './services/hermona-font.service';
-import { QuarterPopulationService } from './services/quarter-population.service';
-import { ShopifyService } from './services/shopify.service';
-import { ValidationService } from './services/validation.service';
-import { OfflineQueueService } from './services/offline-queue.service';
-import { DataCollectionService } from './services/data-collection.service';
-import { GameStateService } from './services/game-state.service';
-import { ScoreSharingService } from './services/score-sharing.service';
-import { AnalyticsService } from './services/analytics.service';
+// Firebase imports
+import { initializeApp } from '@angular/fire/app';
+import { getAuth } from '@angular/fire/auth';
+import { getFirestore } from '@angular/fire/firestore';
+import { getStorage } from '@angular/fire/storage';
+import { getAnalytics } from '@angular/fire/analytics';
+import { getDatabase } from '@angular/fire/database';
+
+// Initialize Firebase app
+const app = initializeApp(environment.firebase);
+const auth = getAuth(app);
+const firestore = getFirestore(app);
+const storage = getStorage(app);
+const analytics = getAnalytics(app);
+const database = getDatabase(app);
 
 @NgModule({
   declarations: [
@@ -40,42 +30,18 @@ import { AnalyticsService } from './services/analytics.service';
   ],
   imports: [
     BrowserModule,
-    BrowserAnimationsModule,
-    AppRoutingModule,
     FormsModule,
-    ReactiveFormsModule,
-    SharedModule,
-    QuartersModule,
-    
-    // Firebase initialization
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
-    provideStorage(() => getStorage()),
-    provideAnalytics(() => getAnalytics()),
-    provideDatabase(() => getDatabase())
+    AppRoutingModule,
+    SharedModule
   ],
   providers: [
-    { provide: LocationStrategy, useClass: HashLocationStrategy },
-    FirebaseService,
-    AuthService,
-    GameService,
-    ScoreService,
-    HermonaFontService,
-    QuarterPopulationService,
-    ShopifyService,
-    ValidationService,
-    OfflineQueueService,
-    DataCollectionService,
-    GameStateService,
-    ScoreSharingService,
-    AnalyticsService,
-    ScreenTrackingService,
-    UserTrackingService
+    { provide: 'FIREBASE_APP', useValue: app },
+    { provide: 'FIREBASE_AUTH', useValue: auth },
+    { provide: 'FIREBASE_FIRESTORE', useValue: firestore },
+    { provide: 'FIREBASE_STORAGE', useValue: storage },
+    { provide: 'FIREBASE_ANALYTICS', useValue: analytics },
+    { provide: 'FIREBASE_DATABASE', useValue: database }
   ],
-  bootstrap: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  bootstrap: [AppComponent]
 })
 export class AppModule { }
-
-export const FIREBASE_APP = initializeApp(environment.firebase);

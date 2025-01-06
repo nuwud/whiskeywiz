@@ -1,42 +1,21 @@
-import { Component, Input } from '@angular/core';
-import { BaseQuarterComponent } from '../base-quarter.component';
-import { AuthService } from '../../services/auth.service';
+import { Component } from '@angular/core';
 import { FirebaseService } from '../../services/firebase.service';
-import { NgForm } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { GameService } from '../../services/game.service';
 import { AnalyticsService } from '../../services/analytics.service';
+import { BaseQuarterComponent } from '../base-quarter.component';
 
 @Component({
-  selector: 'app-quarter-0626',
-  template: `
-    <app-game-banner 
-      [quarterId]="quarterId"
-      [quarterName]="quarterName || 'June 2026'">
-    </app-game-banner>
-  `,
-  styles: [`
-    small { color: red; }
-  `]
+  selector: 'app-0626',
+  template: '<ng-container *ngTemplateOutlet="template"></ng-container>'
 })
 export class Q0626Component extends BaseQuarterComponent {
-  @Input() override quarterId: string = '0626';
-  @Input() override quarterName: string = 'June 2026';
-
   constructor(
     firebaseService: FirebaseService,
     authService: AuthService,
+    gameService: GameService,
     analyticsService: AnalyticsService
   ) {
-    super(firebaseService, authService, analyticsService);
-  }
-
-  onSubmit(form: NgForm) {
-    if (form.valid) {
-      const guess = {
-        age: form.value.ageGuess,
-        proof: form.value.proofGuess,
-        mashbill: form.value.mashbillGuess
-      };
-      this.submitGuess(guess);
-    }
+    super(firebaseService, authService, gameService, analyticsService);
   }
 }

@@ -1,39 +1,29 @@
+export interface GameState {
+  id: string;
+  name: string;
+  currentSample: 'A' | 'B' | 'C' | 'D';
+  guesses: {
+    [key: string]: {
+      age: number;
+      proof: number;
+      mashbill: string;
+    };
+  };
+  status: string;
+  lastUpdated: number;
+}
+
 export interface Sample {
+  id: string;
   age: number;
   proof: number;
   mashbill: string;
+  rating?: number;
 }
 
 export interface Quarter {
   id: string;
   name: string;
   active: boolean;
-  videoUrl?: string;
-  samples: {
-    [key: string]: Sample;
-  };
-}
-
-export interface PlayerScore {
-  id?: string;
-  playerId: string;
-  playerName: string;
-  score: number;
-  quarterId: string;
-  timestamp?: any; // Firebase Timestamp
-  guesses?: {
-    [key: string]: {
-      age: number;
-      proof: number;
-      mashbill: string;
-      rating?: number;
-    };
-  };
-}
-
-export interface GameState {
-  id: string;
-  name: string;
-  status: string;
-  // Add other properties as needed
+  samples: Sample[];
 }

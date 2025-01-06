@@ -1,17 +1,3 @@
-export interface GameState {
-  quarterId: string;
-  currentSample: number;
-  guesses: {
-    [key: string]: SampleGuess;
-  };
-  scores: {
-    [key: string]: number;
-  };
-  totalScore: number;
-  isComplete: boolean;
-  playerId?: string;
-}
-
 export interface SampleGuess {
   age: number;
   proof: number;
@@ -19,30 +5,25 @@ export interface SampleGuess {
   rating?: number;
 }
 
-export interface GameData {
+export interface GameState {
+  currentSample: 'A' | 'B' | 'C' | 'D';
+  guesses: { [key: string]: SampleGuess };
+  isComplete: boolean;
+  lastUpdated: number;
   quarterId: string;
-  playerId?: string;
-  guesses: {
-    [key: string]: SampleGuess;
-  };
-  scores: {
+  totalScore?: number;
+}
+
+export interface ScoreResult {
+  totalScore: number;
+  sampleScores: {
     [key: string]: number;
   };
-  ratings?: {
-    [key: string]: number;
-  };
-  location?: {
-    country: string;
-    region: string;
-    city: string;
-  };
-  deviceInfo?: {
-    platform: string;
-    userAgent: string;
-    language: string;
-    screenSize: string;
-  };
-  shopifyCustomerId?: string;
-  completionTime?: number;
-  timestamp?: string;
+}
+
+export interface QuarterInfo {
+  id: string;
+  name: string;
+  active: boolean;
+  completedBy?: string[];
 }

@@ -1,108 +1,76 @@
 import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environment';
-import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, User, setPersistence, browserLocalPersistence } from '@angular/fire/auth';
-import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
-import { Observable, from, of, BehaviorSubject, interval, defer } from 'rxjs';
-import { map, switchMap, catchError, tap, take, startWith } from 'rxjs/operators';
+import { Auth, User, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from '@angular/fire/auth';
+import { BehaviorSubject, Observable, from, of } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
 
-interface UserData {
-  email: string;
-  isAdmin: boolean;
-  createdAt: Date;
-  lastLogin?: Date;
-}
-
-interface GuestSession {
-  id: string;
-  created: number;
-  expires: number;
-}
-
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly shopifyConfig = environment.shopify;
-  private readonly adminEmails = ['nuwudorder@gmail.com', 'bobby@blindbarrels.com'];
-  private readonly GUEST_SESSION_KEY = 'guestSession';
-  private readonly SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
-  
-  private currentUser = new BehaviorSubject<User | null>(null);
-  private userRoles = new BehaviorSubject<{ isAdmin: boolean; isGuest: boolean; }>({ 
-    isAdmin: false, 
-    isGuest: true 
+  private readonly userRoles = new BehaviorSubject<{ isAdmin: boolean; isGuest: boolean; }>({
+    isAdmin: false,
+    isGuest: false
   });
 
-  redirectUrl: string | null = null;
+  private readonly user$ = new BehaviorSubject<User | null>(null);
 
-  constructor(
-    private auth: Auth,
-    private firestore: Firestore
-  ) {
-    this.initializeAuth();
-  }
-
-  private async initializeAuth() {
-    await setPersistence(this.auth, browserLocalPersistence);
-    this.setupAuthStateChange();
-    this.setupTokenRefresh();
-    this.recoverAuthState();
-  }
-
-  private setupAuthStateChange() {
-    onAuthStateChanged(this.auth, async (user) => {
-      this.currentUser.next(user);
-      if (user) {
-        const roles = await this.loadUserRoles(user).toPromise();
-        this.userRoles.next(roles);
-        this.saveAuthState(roles);
-      } else {
-        await this.handleGuestSession().toPromise();
-      }
+  constructor(private auth: Auth) {
+    auth.onAuthStateChanged(user => {
+      this.user$.next(user);
     });
   }
 
-  private setupTokenRefresh() {
-    this.user$.pipe(
-      switchMap(user => {
-        if (!user) return of(null);
-        return interval(10 * 60 * 1000).pipe(
-          startWith(0),
-          switchMap(() => from(user.getIdToken(true)))
-        );
-      })
-    ).subscribe();
+  isAuthenticated(): Observable<boolean> {
+    return this.user$.pipe(
+      map(user => !!user)
+    );
   }
 
-  private recoverAuthState() {
-    const stored = localStorage.getItem('authState');
-    if (stored) {
-      try {
-        const state = JSON.parse(stored);
-        this.userRoles.next(state);
-      } catch (e) {
-        localStorage.removeItem('authState');
-      }
+  isAdmin(): Observable<boolean> {
+    return this.userRoles.pipe(
+      map(roles => roles.isAdmin)
+    );
+  }
+
+  getCurrentUserId(): Observable<string | null> {
+    return this.user$.pipe(
+      map(user => user?.uid || null)
+    );
+  }
+
+  async signIn(email: string, password: string): Promise<void> {
+    try {
+      await signInWithEmailAndPassword(this.auth, email, password);
+    } catch (error) {
+      console.error('Sign in error:', error);
+      throw error;
     }
   }
 
-  private saveAuthState(state: { isAdmin: boolean; isGuest: boolean }) {
-    localStorage.setItem('authState', JSON.stringify(state));
+  async register(email: string, password: string): Promise<void> {
+    try {
+      await createUserWithEmailAndPassword(this.auth, email, password);
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    }
   }
 
-  private handleGuestSession(): Observable<string> {
-    return defer(() => {
-      const stored = localStorage.getItem(this.GUEST_SESSION_KEY);
-      if (stored) {
-        const session: GuestSession = JSON.parse(stored);
-        if (session.expires > Date.now()) {
-          this.userRoles.next({ isAdmin: false, isGuest: true });
-          return of(session.id);
-        }
-      }
-      return this.createGuestSession();
-    });
+  async signOut(): Promise<void> {
+    try {
+      await signOut(this.auth);
+    } catch (error) {
+      console.error('Sign out error:', error);
+      throw error;
+    }
   }
 
-  [... rest of the auth methods remain the same ...]
+  createGuestSession(): Observable<string> {
+    const guestId = `guest_${Date.now()}`;
+    this.userRoles.next({ ...this.userRoles.value, isGuest: true });
+    return of(guestId);
+  }
+
+  async transferGuestScores(guestId: string, userId: string): Promise<void> {
+    // Implement transfer logic
+    console.log(`Transferring scores from ${guestId} to ${userId}`);
+  }
 }

@@ -1,88 +1,62 @@
-    <div class="guess-form">
-        <!-- Age Statement -->
-        <div class="form-group">
-          <div class="label-group">
-            <h3 class="font-hermona-2xl age">
-              What do you think the age statement is?
-              <span class="value font-hermona-2xl">
-                {{ guesses['sample' + getSampleLetter(currentSample)]?.age || 0 }} Years
-              </span>
-            </h3>
-          </div>
-          <span class="slider-container">
-            <img src="assets/images/Track.png" class="slider-track" alt="track">
-            <input type="range" class="custom-slider" min="1" max="10" title="Age Slider"
-              [(ngModel)]="guesses['sample' + getSampleLetter(currentSample)].age">
-          </span>
-        </div>
+<div class="game-container">
+  <div class="samples-nav">
+    <button 
+      *ngFor="let letter of ['A', 'B', 'C', 'D']"
+      [class.active]="currentSample === letter"
+      (click)="currentSample = letter"
+      [attr.aria-label]="'Sample ' + letter">
+      Sample {{letter}}
+    </button>
+  </div>
 
-        <!-- Proof -->
-        <div class="form-group">
-          <span class="label-group">
-            <h3 class="font-hermona-2xl">
-              What do you think the proof is?
-              <span class="value font-hermona-2xl">
-                {{ guesses['sample' + getSampleLetter(currentSample)]?.proof || 0 }} Proof
-              </span>
-            </h3>
-          </span>
-          <span class="slider-container">
-            <img src="assets/images/Track.png" class="slider-track" alt="track">
-            <input type="range" class="custom-slider" min="80" max="130" title="Proof Slider"
-              [(ngModel)]="guesses['sample' + getSampleLetter(currentSample)].proof">
-          </span>
-        </div>
+  <div class="sample-form" *ngIf="!showResults">
+    <h2>Sample {{currentSample}}</h2>
 
-        <!-- Mashbill -->
-        <div class="form-group">
-          <h3 class="font-hermona-2xl">What do you think the mashbill is?</h3>
-          <div class="mashbill-options">
-            <div *ngFor="let type of mashbillTypes" class="mashbill-option">
-              <input type="radio" [id]="'mashbill-' + type" [value]="type" title="Mashbill Type: {{ type }}"
-                [(ngModel)]="guesses['sample' + getSampleLetter(currentSample)].mashbill" [name]="'mashbill' + currentSample">
-              <label [for]="'mashbill-' + type" class="helvetica-text">
-                <img src="assets/images/Ellipse_W.png" class="radio-unchecked" alt="unchecked">
-                <img src="assets/images/Ellipse_B.png" class="radio-checked" alt="checked">
-                <span class="label-text">{{ type }}</span>
-              </label>
-            </div>
-          </div>
-        </div>
+    <div class="form-group">
+      <label for="age">Age (years)</label>
+      <input 
+        type="number" 
+        id="age"
+        [(ngModel)]="guesses[currentSample].age"
+        min="0"
+        max="30">
+    </div>
 
-        <!-- Star-Rating -->
-        <div class="form-group">
-          <span class="label-group">
-            <h3 class="font-hermona-2xl">
-              How do you rate this whiskey?
-              <span class="value font-hermona-2xl" *ngIf="starRatings['sample'+getSampleLetter(currentSample)]">
-                {{ starRatings['sample'+getSampleLetter(currentSample)] }}/10
-              </span>
-            </h3>
-          </span>
-          <div class="rating-container">
-            <app-star-rating [rating]="starRatings['sample' + getSampleLetter(currentSample)] || 0"
-              (ratingChange)="updateStarRating(currentSample, $event)" [readonly]="false">
-            </app-star-rating>
-          </div>
-        </div>
+    <div class="form-group">
+      <label for="proof">Proof</label>
+      <input 
+        type="number" 
+        id="proof"
+        [(ngModel)]="guesses[currentSample].proof"
+        min="80"
+        max="160">
+    </div>
 
-        <!-- Submit Button -->
-        <div class="submit-section" *ngIf="showSubmitAllButton()">
-          <button class="submit-button" (click)="submitGuesses()">
-            <img src="assets/images/Submit_All_Guesses_Button.png" alt="Submit All Guesses">
-          </button>
-        </div>
+    <div class="form-group">
+      <label>Mashbill</label>
+      <select [(ngModel)]="guesses[currentSample].mashbill">
+        <option value="">Select type...</option>
+        <option value="Bourbon">Bourbon</option>
+        <option value="Rye">Rye</option>
+        <option value="Wheat">Wheat</option>
+        <option value="Single Malt">Single Malt</option>
+        <option value="Specialty">Specialty</option>
+      </select>
     </div>
   </div>
 
-  <!-- Results Component -->
-  <app-results *ngIf="gameCompleted && showResults" 
-    [quarterData]="quarterData" 
-    [guesses]="guesses" 
-    [scores]="scores"
-    [totalScore]="totalScore" 
-    (playAgain)="playAgain()" 
-    (shareResults)="share()" 
-    (submitScore)="submitScore()">
-  </app-results>
+  <div class="results" *ngIf="showResults">
+    <h2>Results</h2>
+    <p>Total Score: {{totalScore}}/70</p>
+    <button (click)="share()">Share Results</button>
+  </div>
+
+  <div class="actions">
+    <button 
+      *ngIf="!showResults"
+      (click)="submitGuesses()"
+      class="submit-btn">
+      Submit Guesses
+    </button>
+  </div>
 </div>

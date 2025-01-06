@@ -1,405 +1,90 @@
-/* game.component.scss */
-@use '../../../styles/variables';
-@use '../../../styles/fonts';
+:host {
+  display: block;
+  --primary: #FFD700;
+  --background: #1A1A1A;
+  --text: #FFFFFF;
+}
 
-/* Base Container */
 .game-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 5px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background-color: transparent;
-    color: var(--color-gold);
-    position: relative;
+  background: var(--background);
+  color: var(--text);
+  padding: 2rem;
+  border-radius: 8px;
 }
 
-/* Game Content Container */
-.game-content {
-    background: linear-gradient(145deg, #2a2a2a 0%, #1a1a1a 100%);
-    border: 2px solid #FFD700;
-    border-radius: 8px;
-    padding: 2rem;
-    margin-bottom: 2rem;
+.samples-nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
 
-    @media (max-width: 768px) {
-        padding: 1rem;
-        border-width: 1px;
+  button {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--primary);
+    background: transparent;
+    color: var(--primary);
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &.active {
+      background: var(--primary);
+      color: var(--background);
     }
-}
-
-/* Auth Styles */
-.auth-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.85);
-    z-index: 1000;
-}
-
-.auth-content {
-    background-color: rgba(0, 0, 0, 0.9);
-    border: 2px solid var(--color-gold);
-    border-radius: 8px;
-    padding: 2rem;
-    text-align: center;
-    color: var(--color-gold);
-    max-width: 400px;
-    width: 90%;
-
-    h2 {
-        margin-bottom: 1rem;
-    }
-
-    p {
-        margin-bottom: 2rem;
-        color: white;
-    }
-}
-
-.auth-button {
-    justify-self: end;
-    margin-right: 1rem;
-    background: none;
-    border: none;
-    padding: 0;
-    z-index: 10;
-
-    img {
-        width: 125px;
-        height: auto;
-        transition: transform 0.2s ease;
-    }
-
-    &:hover img {
-        transform: scale(1.05);
-    }
-}
-
-/* Header Section */
-.header-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    max-width: 1200px;
-    margin: 0 auto;
-
-    .logo-header {
-        justify-self: center;
-    }
-}
-
-/* Sample Navigation */
-.sample-navigation {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin: 2rem 0;
-    padding: 0 1rem;
-
-    .sample-button {
-        background: none;
-        border: 2px solid var(--color-gold);
-        color: var(--color-gold);
-        padding: 0.75rem 1.5rem;
-        font-family: Hermona, sans-serif;
-        font-size: 1.25rem;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-
-        &:hover {
-            background-color: rgba(255, 215, 0, 0.1);
-        }
-
-        &.active {
-            background-color: var(--color-gold);
-            color: black;
-        }
-
-        &.completed {
-            border-color: #28a745;
-            &:not(.active) {
-                color: #28a745;
-            }
-        }
-    }
-}
-
-/* Sample Instructions */
-.sample-instructions {
-    text-align: center;
-    font-family: Hermona, sans-serif;
-    font-size: 1.5rem;
-    color: white;
-    margin: 2rem 0;
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-}
-
-/* Title Layout */
-
-.quarter-title {
-    font-family: Hermona, sans-serif;
-    font-size: 2.5rem;
-    color: var(--color-gold);
-    margin: 0;
-    text-align: left;
-    padding-right: 1rem;
-}
-
-@media (max-width: 768px) {
-    .quarter-title {
-        font-size: 1.75rem;
-    }
-}
-
-
-/* Game Form Area */
-.guess-form {
-    position: relative;
-    padding: 2rem;
-    margin: 1.5rem;
-    background: linear-gradient(145deg, rgba(42, 42, 42, 0.95) 0%, rgba(26, 26, 26, 0.95) 100%);
-    border: 2px solid #FFD700;
-    border-radius: 8px;
-
-    @media (max-width: 768px) {
-        padding: 0.5rem 1rem;
-        margin: 0.5rem 0;
-    }
+  }
 }
 
 .form-group {
-    margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 
-    @media (min-width: 769px) {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        gap: 2rem;
-        align-items: center;
-    }
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--primary);
+  }
 
-    .label-group {
-
-        h3 {
-            font-family: Hermona, sans-serif;
-            color: var(--color-gold);
-            white-space: nowrap;
-            margin: 0;
-            font-size: 1.5rem;          ;
-
-        .value {
-            color: white;
-            margin-left: 1rem;
-            margin-top: 0;
-            @media (max-width: 768px) {
-                margin: 0;
-                }
-            }
-        }
-
-        &.rating-group {
-            @media (min-width: 769px) {
-                display: flex;
-                align-items: left;
-                gap: 1rem;
-            }
-        }
-    }
-}
-
-/* Slider Styling */
-.slider-container {
-    position: relative;
-    margin: 0 0 1rem 0;
-    padding: 0;
-    height: 56px;
+  input,
+  select {
     width: 100%;
-
-    .slider-track {
-        position: absolute;
-        width: 100%;
-        bottom: 2px;
-        z-index: 1;
-    }
-
-    .custom-slider {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        height: 56px;
-        background: transparent;
-        outline: none;
-        z-index: 2;
-        margin: 0;
-        padding: 0;
-        -webkit-appearance: none;
-        appearance: none;
-
-        &::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 90px;
-            height: 27px;
-            background: url('../../../assets/images/dial_x.png') no-repeat center center;
-            background-size: contain;
-            cursor: pointer;
-            position: relative;
-            bottom: -4px;
-        }
-
-        &::-moz-range-thumb {
-            width: 90px;
-            height: 27px;
-            background: url('../../../assets/images/dial_x.png') no-repeat center center;
-            background-size: contain;
-            cursor: pointer;
-            border: none;
-            position: relative;
-            bottom: -4px;
-        }
-    }
-
-    @media (max-width: 768px) {
-        margin: 0.25rem 0;
-
-        .custom-slider {
-            &::-webkit-slider-thumb,
-            &::-moz-range-thumb {
-                width: 90px; // Maintain dial size on mobile
-                height: 27px;
-            }
-        }
-    }
+    padding: 0.5rem;
+    background: var(--background);
+    border: 1px solid var(--primary);
+    color: var(--text);
+  }
 }
 
-/* Mashbill Options */
-.mashbill-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
+.actions {
+  margin-top: 2rem;
+  text-align: center;
+
+  .submit-btn {
+    padding: 1rem 2rem;
+    background: var(--primary);
+    border: none;
+    color: var(--background);
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}
+
+.results {
+  text-align: center;
+
+  h2 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+  }
+
+  button {
     margin-top: 1rem;
-}
-
-.mashbill-option {
-    input[type="radio"] {
-        display: none;
-
-        & + label {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-
-            .radio-unchecked { display: block; }
-            .radio-checked { display: none; }
-            .label-text {
-                color: white;
-                font-size: 1.1rem;
-            }
-        }
-
-        &:checked + label {
-            .radio-unchecked { display: none; }
-            .radio-checked { display: block; }
-            .label-text { color: var(--color-gold); }
-        }
-    }
-}
-
-/* Rating Container */
-.rating-container {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow: hidden;
-    padding: 0;
-    margin-top: 1rem;
-}
-
-/* Submit Button */
-.submit-section {
-    display: flex;
-    justify-content: center;
-    margin-top: 3rem;
-
-    .submit-button {
-        background: none;
-        border: none;
-        padding: 0;
-        cursor: pointer;
-        transition: transform 0.2s ease;
-
-        &:hover {
-            transform: scale(1.05);
-        }
-
-        img {
-            max-width: 300px;
-            height: auto;
-        }
-    }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .quarter-title {
-        font-size: 1.5rem;
-        text-align: center;
-    }
-
-    .sample-navigation {
-        flex-wrap: wrap;
-        gap: 0.5rem;
-
-        .sample-button {
-            flex: 1;
-            min-width: 120px;
-            padding: 0.5rem 1rem;
-            font-size: 1rem;
-        }
-    }
-
-    .sample-instructions {
-        font-size: 1.2rem;
-        margin: 1rem 0;
-    }
-
-    .form-group {
-        margin-bottom: 1.5rem;
-
-        .label-group h3 {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-        }
-    }
-
-    .mashbill-options {
-        grid-template-columns: 1fr;
-    }
-
-    .slider-container {
-        height: 44px;
-
-        .custom-slider {
-            height: 44px;
-
-            &::-webkit-slider-thumb,
-            &::-moz-range-thumb {
-                width: 66px;
-                height: 20px;
-            }
-        }
-    }
+    padding: 0.5rem 1rem;
+    background: var(--primary);
+    border: none;
+    color: var(--background);
+    cursor: pointer;
+  }
 }
