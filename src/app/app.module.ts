@@ -7,7 +7,7 @@ import { AppComponent } from './app.component';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 // Firebase imports
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { FirebaseApp, initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getStorage, provideStorage } from '@angular/fire/storage';
@@ -27,6 +27,12 @@ import { ScoreService } from './services/score.service';
 import { HermonaFontService } from './services/hermona-font.service';
 import { QuarterPopulationService } from './services/quarter-population.service';
 import { ShopifyService } from './services/shopify.service';
+import { ValidationService } from './services/validation.service';
+import { OfflineQueueService } from './services/offline-queue.service';
+import { DataCollectionService } from './services/data-collection.service';
+import { GameStateService } from './services/game-state.service';
+import { ScoreSharingService } from './services/score-sharing.service';
+import { AnalyticsService } from './services/analytics.service';
 
 @NgModule({
   declarations: [
@@ -58,6 +64,12 @@ import { ShopifyService } from './services/shopify.service';
     HermonaFontService,
     QuarterPopulationService,
     ShopifyService,
+    ValidationService,
+    OfflineQueueService,
+    DataCollectionService,
+    GameStateService,
+    ScoreSharingService,
+    AnalyticsService,
     ScreenTrackingService,
     UserTrackingService
   ],
@@ -65,3 +77,5 @@ import { ShopifyService } from './services/shopify.service';
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule { }
+
+export const FIREBASE_APP = initializeApp(environment.firebase);

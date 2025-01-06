@@ -1,29 +1,26 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
 import { GameComponent } from './game.component';
-import { StarRatingComponent } from '../components/star-rating/star-rating.component';
-import { ResultsComponent } from '../results/results.component';
+import { AuthService } from '../../services/auth.service';
+import { GameService } from '../../services/game.service';
+import { OfflineQueueService } from '../../services/offline-queue.service';
+import { ValidationService } from '../../services/validation.service';
 
 @NgModule({
-  declarations: [
-    GameComponent,
-    StarRatingComponent,
-    ResultsComponent
-  ],
+  declarations: [GameComponent],
   imports: [
     CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    RouterModule,
-    BrowserAnimationsModule
+    FormsModule
   ],
-  exports: [
-    GameComponent,
-    StarRatingComponent,
-    ResultsComponent
+  exports: [GameComponent],
+  providers: [
+    AuthService,
+    GameService,
+    OfflineQueueService,
+    ValidationService
   ]
 })
 export class GameModule { }
+
+// FOR_CLAUDE: Added new services to module providers
