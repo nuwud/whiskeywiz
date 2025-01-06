@@ -85,7 +85,7 @@ export class GameComponent implements OnInit {
     this.initializeRatings();
   }
 
-  private initializeRatings(): void {
+  private initializeRatings(); void {
     this.starRatings = {
       'sampleA': 0,
       'sampleB': 0,
