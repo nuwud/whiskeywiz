@@ -1,97 +1,93 @@
 <div class="results-container">
-    <!-- Header Section -->
-    <div class="results-header">
-        <h2 class="game-completed font-hermona-2xl">Game Completed!</h2>
-        <div class="total-score">{{ totalScore }}</div>
-        <div class="score-quip">{{ scoreService.getScoreQuip(totalScore) }}</div>
-    </div>
-
+  <!-- Score Overview -->
+  <div class="score-overview">
+    <h2 class="text-4xl mb-6">Your Score: {{totalScore}} points</h2>
+    <h3 class="text-2xl mb-4">{{getScoreMessage()}}</h3>
+    
     <!-- Video Section -->
-    <div class="video-section" *ngIf="quarterData?.videoUrl">
-        <h3 class="font-hermona-xl">Watch the Reveal</h3>
-        <video 
-            class="reveal-video" 
-            [src]="quarterData?.videoUrl" 
-            controls 
-            poster="assets/images/video-placeholder.png">
-        </video>
+    <div *ngIf="quarter?.videoUrl" class="video-section mb-8">
+      <h3 class="text-2xl mb-4">Reveal Video</h3>
+      <div class="video-container">
+        <iframe [src]="quarter.videoUrl | safeUrl" 
+               frameborder="0" 
+               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+               allowfullscreen>
+        </iframe>
+      </div>
     </div>
+  </div>
 
-    <!-- Score Overview -->
-    <div class="score-overview">
-        <div class="score-header" (click)="toggleScoreDetails()">
-            <h3 class="font-hermona-xl">Your Guesses</h3>
-            <button class="info-button" (click)="toggleScoringInfo(); $event.stopPropagation()">
-                <img src="assets/images/info-icon.png" alt="Scoring Info">
+  <!-- Sample Results -->
+  <div class="samples-grid grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div *ngFor="let result of sampleResults" 
+         class="sample-card p-6 rounded-lg shadow-md">
+      <h3 class="text-2xl mb-4">Sample {{result.letter}}</h3>
+
+      <!-- Guesses -->
+      <div class="guesses mb-4">
+        <h4 class="text-xl mb-2">Your Guesses</h4>
+        <ul>
+          <li>Age: {{result.guess.age}} years</li>
+          <li>Proof: {{result.guess.proof}}</li>
+          <li>Mashbill: {{result.guess.mashbill}}</li>
+        </ul>
+      </div>
+
+      <!-- Actual Values (if revealed) -->
+      <div *ngIf="result.revealed" class="actual-values mb-4">
+        <h4 class="text-xl mb-2">Actual Values</h4>
+        <ul>
+          <li>Age: {{result.sample.age}} years</li>
+          <li>Proof: {{result.sample.proof}}</li>
+          <li>Mashbill: {{result.sample.mashbill}}</li>
+        </ul>
+
+        <!-- Product Info -->
+        <div *ngIf="result.sample.shopifyProduct" class="product-info mt-4">
+          <h4 class="text-xl mb-2">Available for Purchase</h4>
+          <div class="product-card p-4 rounded bg-gray-50">
+            <h5 class="font-bold">{{result.sample.shopifyProduct.title}}</h5>
+            <p class="price">{{result.sample.shopifyProduct.price}}</p>
+            <button *ngIf="result.sample.shopifyProduct.available"
+                    (click)="addToCart(result.sample.shopifyProduct)"
+                    [disabled]="isAddingToCart"
+                    class="buy-button mt-2 px-4 py-2 bg-gold text-white rounded">
+              {{isAddingToCart ? 'Adding...' : 'Add to Cart'}}
             </button>
-            <div class="expand-icon">{{ showScoreDetails ? '▼' : '▲' }}</div>
+            <p *ngIf="!result.sample.shopifyProduct.available" 
+               class="out-of-stock mt-2 text-red-600">
+              Currently Out of Stock
+            </p>
+          </div>
         </div>
+      </div>
 
-        <!-- Scoring Info Tooltip -->
-        <div class="scoring-info" *ngIf="showScoringInfo">
-            <div class="info-content">
-                <h4>How Scoring Works</h4>
-                <div class="info-text" [innerHTML]="getScoringExplanation()"></div>
-            </div>
-        </div>
-
-        <!-- Detailed Scores -->
-        <div class="score-details" [@expandCollapse]="showScoreDetails ? 'expanded' : 'collapsed'">
-            <div class="result-card" *ngFor="let sampleNum of sampleNumbers">
-                <div class="score-display">
-                    <span class="label">Sample {{ getSampleLetter(sampleNum) }}</span>
-                    <span class="score">{{ getSampleScore(sampleNum) }}</span>
-                    <span class="emoji-score">{{ scoreService.getEmojiScore(getSampleScore(sampleNum)) }}</span>
-                </div>
-
-                <div class="comparison-grid">
-                    <div class="guess-column">
-                        <h5>Your Guess</h5>
-                        <p>Age: {{ getGuessValue(sampleNum, 'age') }} years</p>
-                        <p>Proof: {{ getGuessValue(sampleNum, 'proof') }}</p>
-                        <p>Type: {{ getGuessValue(sampleNum, 'mashbill') }}</p>
-                        <p *ngIf="showRatings">Rating: {{ getGuessValue(sampleNum, 'rating') }}/10</p>
-                    </div>
-
-                    <div class="actual-column">
-                        <h5>Actual</h5>
-                        <p>Age: {{ getActualValue(sampleNum, 'age') }} years</p>
-                        <p>Proof: {{ getActualValue(sampleNum, 'proof') }}</p>
-                        <p>Type: {{ getActualValue(sampleNum, 'mashbill') }}</p>
-                    </div>
-                </div>
-
-                <div class="perfect-score" *ngIf="isPerfectGuess(sampleNum)">
-                    🎯 Perfect Score!
-                </div>
-            </div>
-        </div>
+      <!-- Score -->
+      <div class="score-section mt-4">
+        <p class="text-xl">Score: {{result.score}} points</p>
+      </div>
     </div>
+  </div>
 
-    <!-- Action Buttons -->
-    <div class="results-actions">
-        <button class="action-button" 
-                (mouseover)="shareHovered = true"
-                (mouseout)="shareHovered = false"
-                (click)="handleShare()">
-            <img [src]="getButtonImage('share', shareHovered)" alt="Share Results">
-        </button>
+  <!-- Share Section -->
+  <div class="share-section mt-8 flex gap-4 justify-center">
+    <button (click)="shareResults('clipboard')" 
+            class="share-button px-6 py-3 bg-gold text-white rounded">
+      Copy to Clipboard
+    </button>
+    <button *ngIf="canShare" 
+            (click)="shareResults('native')"
+            class="share-button px-6 py-3 bg-gold text-white rounded">
+      Share
+    </button>
+    <button *ngIf="canShareTwitter"
+            (click)="shareResults('twitter')"
+            class="share-button px-6 py-3 bg-twitter text-white rounded">
+      Share on Twitter
+    </button>
+  </div>
 
-        <button class="action-button"
-                (mouseover)="playAgainHovered = true"
-                (mouseout)="playAgainHovered = false"
-                (click)="handlePlayAgain()">
-            <img [src]="getButtonImage('play-again', playAgainHovered)" alt="Play Again">
-        </button>
-    </div>
-
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" *ngIf="isLoading">
-        <div class="spinner"></div>
-    </div>
-
-    <!-- Error Message -->
-    <div class="error-message" *ngIf="error">
-        {{ error }}
-    </div>
+  <div *ngIf="error" class="error-message">
+    {{error}}
+  </div>
 </div>

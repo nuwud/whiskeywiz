@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -8,10 +8,12 @@ import { Router, ActivatedRoute } from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+  @Input() returnQuarter: string = '';
+  @Output() authComplete = new EventEmitter<boolean>();
+  
   email: string = '';
   password: string = '';
   error: string = '';
-  @Input() returnQuarter: string = '';
   returnUrl: string = '/';
   isLoading: boolean = false;
 
@@ -26,8 +28,6 @@ export class LoginComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.returnQuarter = params['quarter'] || localStorage.getItem('lastPlayedQuarter');
       this.returnUrl = params['returnUrl'] || '/';
-      console.log('Return quarter:', this.returnQuarter);
-      console.log('Return URL:', this.returnUrl);
     });
 
     // Check if already authenticated
@@ -45,16 +45,20 @@ export class LoginComponent implements OnInit {
       this.authService.isAdmin().subscribe(isAdmin => {
         if (isAdmin) {
           this.router.navigateByUrl(this.returnUrl);
+          this.authComplete.emit(true);
         } else {
           this.router.navigate(['/']);
+          this.authComplete.emit(false);
         }
       });
     } else if (this.returnQuarter) {
       // Navigate to specific quarter
       this.router.navigate(['/quarters', this.returnQuarter]);
+      this.authComplete.emit(true);
     } else {
       // Default navigation
       this.router.navigateByUrl(this.returnUrl);
+      this.authComplete.emit(true);
     }
   }
 
@@ -67,9 +71,11 @@ export class LoginComponent implements OnInit {
       } else {
         this.router.navigate(['/']);
       }
+      this.authComplete.emit(true);
     } catch (error) {
       console.error('Guest session error:', error);
       this.error = 'Failed to create guest session';
+      this.authComplete.emit(false);
     } finally {
       this.isLoading = false;
     }
@@ -103,10 +109,10 @@ export class LoginComponent implements OnInit {
       
       // Handle navigation based on user role and return parameters
       this.handleNavigation();
-
     } catch (error: any) {
       console.error('Login error:', error);
       this.error = error.message || 'Failed to log in';
+      this.authComplete.emit(false);
     } finally {
       this.isLoading = false;
     }

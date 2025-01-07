@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-auth-button',
@@ -21,7 +21,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
       <div class="auth-modal-content">
         <app-login 
           [returnQuarter]="currentQuarter"
-          (authComplete)="handleAuthComplete($event)">
+          (authComplete)="onAuthComplete($event)">
         </app-login>
       </div>
     </div>
@@ -90,25 +90,13 @@ export class AuthButtonComponent implements OnInit, OnDestroy {
       });
     this.route.queryParams.subscribe(params => {
         this.currentQuarter = params['quarter'] || '';
-      });
+    });
   }
 
   ngOnDestroy() {
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
     }
-  }
-
-  get buttonImage(): string {
-    return this.getImagePath(
-      this.isLoggedIn 
-        ? this.isHovered ? 'Logout_Button_Hover.png' : 'Logout_Button.png'
-        : this.isHovered ? 'Login_Button_Hover.png' : 'Login_Button.png'
-    );
-  }
-
-  get buttonAlt(): string {
-    return this.isLoggedIn ? 'Logout' : 'Login';
   }
 
   getButtonImage(): string {
@@ -118,31 +106,28 @@ export class AuthButtonComponent implements OnInit, OnDestroy {
   }
 
   openAuthModal(): void {
-    this.showAuthModal = true;
-  }
-
-  handleAuthComplete(success: boolean): void {
-    this.showAuthModal = false;
-    if (success) {
-      // Handle successful auth
-      this.router.navigate(['/game'], { queryParams: { quarter: this.currentQuarter } });
-      
+    if (this.isLoggedIn) {
+      this.handleLogout();
+    } else {
+      this.showAuthModal = true;
     }
   }
 
-  private getImagePath(filename: string): string {
-    return `assets/images/${filename}`;
+  onAuthComplete(success: boolean): void {
+    this.showAuthModal = false;
+    if (success && this.currentQuarter) {
+      this.router.navigate(['/game'], { 
+        queryParams: { quarter: this.currentQuarter } 
+      });
+    }
   }
 
-  async handleAuth(): Promise<void> {
-    if (this.isLoggedIn) {
+  private async handleLogout(): Promise<void> {
+    try {
       await this.authService.signOut();
-      this.router.navigate(['/login']);
-    } else {
-      const currentUrl = this.router.url;
-      this.router.navigate(['/login'], { 
-        queryParams: { returnUrl: currentUrl }
-      });
+      this.router.navigate(['/']);
+    } catch (error) {
+      console.error('Logout error:', error);
     }
   }
 }

@@ -1,104 +1,67 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FirebaseService } from '../services/firebase.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
+import { Quarter, Sample, MashbillType, SampleLetter } from '../shared/models/quarter.model';
 
-interface Sample {
-  mashbill: string;
+interface PlayerGuess {
+  mashbill: MashbillType;
   proof: number;
   age: number;
 }
 
-interface Quarter {
-  id: string;
-  name: string;
-  samples: Sample[];
-}
-
 @Component({
   selector: 'app-player',
-  template: `
-    <div class="container mx-auto p-4">
-      <select 
-        class="mb-4 p-2 border rounded" 
-        (change)="onQuarterSelect($event)">
-        <option value="">Select Quarter</option>
-        <option *ngFor="let quarter of quarters$ | async" [value]="quarter.id">
-          {{ quarter.name }}
-        </option>
-      </select>
-
-      <div *ngIf="currentQuarter$ | async as quarter" class="space-y-4">
-        <div *ngFor="let sample of quarter.samples; let i = index" class="p-4 border rounded">
-          <div class="mb-4">
-            <label class="block mb-2">Sample {{ i + 1 }} - Select Mashbill:</label>
-            <select 
-              class="p-2 border rounded" 
-              [(ngModel)]="guesses[i].mashbill">
-              <option *ngFor="let type of mashbillTypes" [value]="type">{{ type }}</option>
-            </select>
-          </div>
-
-          <div class="mb-4">
-            <label class="block mb-2">Guess Proof: {{ guesses[i].proof }}</label>
-            <input 
-              type="range" 
-              min="80" 
-              max="130" 
-              [(ngModel)]="guesses[i].proof"
-              class="w-full">
-          </div>
-
-          <div class="mb-4">
-            <label class="block mb-2">Guess Age: {{ guesses[i].age }}</label>
-            <input 
-              type="range" 
-              min="1" 
-              max="10" 
-              [(ngModel)]="guesses[i].age"
-              class="w-full">
-          </div>
-        </div>
-
-        <button 
-          *ngIf="quarter.samples?.length"
-          (click)="submitAnswers()"
-          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          Submit Answers
-        </button>
-
-        <div *ngIf="showResults" class="mt-4 p-4 border rounded">
-          <div *ngFor="let score of sampleScores; let i = index">
-            Sample {{ i + 1 }}: {{ score }} points
-          </div>
-          <div class="mt-2 font-bold">
-            Total Score: {{ totalScore }} points
-          </div>
-        </div>
-      </div>
-    </div>
-  `
+  templateUrl: './player.component.html',
+  styleUrls: ['./player.component.scss']
 })
-export class PlayerComponent implements OnInit {
+export class PlayerComponent implements OnInit, OnDestroy {
   quarters$ = new BehaviorSubject<Quarter[]>([]);
   currentQuarter$ = new BehaviorSubject<Quarter | null>(null);
-  guesses: Sample[] = [];
-  sampleScores: number[] = [];
+  guesses: Record<SampleLetter, PlayerGuess> = this.initializeGuesses();
+  sampleScores: Record<SampleLetter, number> = this.initializeScores();
   totalScore = 0;
   showResults = false;
+  private subscriptions: Subscription[] = [];
 
-  mashbillTypes = ['Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Blend', 'Specialty'];
+  readonly sampleLetters: SampleLetter[] = ['A', 'B', 'C', 'D'];
+  readonly mashbillTypes: MashbillType[] = [
+    'Bourbon', 'Rye', 'Wheat', 'Single Malt', 'Blend', 'Specialty'
+  ];
+  readonly proofRange = { min: 80, max: 130 };
+  readonly ageRange = { min: 1, max: 10 };
 
   constructor(private firebaseService: FirebaseService) {}
 
   ngOnInit() {
-    // Fetch quarters
-    this.firebaseService.getQuarters().subscribe(quarters => {
-      const mappedQuarters = quarters.map(quarter => ({
-        ...quarter,
-        samples: Object.values(quarter.samples)
-      }));
-      this.quarters$.next(mappedQuarters);
-    });
+    this.loadQuarters();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  private initializeGuesses(): Record<SampleLetter, PlayerGuess> {
+    return {
+      'A': { mashbill: 'Bourbon', proof: 100, age: 5 },
+      'B': { mashbill: 'Bourbon', proof: 100, age: 5 },
+      'C': { mashbill: 'Bourbon', proof: 100, age: 5 },
+      'D': { mashbill: 'Bourbon', proof: 100, age: 5 }
+    };
+  }
+
+  private initializeScores(): Record<SampleLetter, number> {
+    return {
+      'A': 0, 'B': 0, 'C': 0, 'D': 0
+    };
+  }
+
+  private loadQuarters() {
+    const quartersSub = this.firebaseService.getAllQuarters()
+      .subscribe(quarters => {
+        this.quarters$.next(quarters);
+      });
+    this.subscriptions.push(quartersSub);
   }
 
   onQuarterSelect(event: Event) {
@@ -106,54 +69,70 @@ export class PlayerComponent implements OnInit {
     const quarterId = select.value;
     
     if (quarterId) {
-      this.firebaseService.getQuarterById(quarterId).subscribe((quarter: Quarter) => {
-        if (quarter) {
-          this.currentQuarter$.next(quarter);
-          this.guesses = quarter.samples.map(() => ({
-            mashbill: this.mashbillTypes[0],
-            proof: 100,
-            age: 5
-          }));
-          this.showResults = false;
-        }
-      });
+      this.firebaseService.getQuarterById(quarterId)
+        .pipe(take(1))
+        .subscribe(quarter => {
+          if (quarter) {
+            this.currentQuarter$.next(quarter);
+            this.resetGuesses();
+            this.showResults = false;
+          }
+        });
     } else {
       this.currentQuarter$.next(null);
-      this.guesses = [];
+      this.resetGuesses();
     }
+  }
+
+  private resetGuesses() {
+    this.guesses = this.initializeGuesses();
+    this.sampleScores = this.initializeScores();
+    this.totalScore = 0;
   }
 
   submitAnswers() {
     const quarter = this.currentQuarter$.value;
     if (!quarter) return;
 
-    this.sampleScores = this.guesses.map((guess, index) => {
-      const actualSample = quarter.samples[index];
-      let score = 0;
-
-      if (guess.mashbill === actualSample.mashbill) score += 10;
-      score += 10 - Math.abs(guess.proof - actualSample.proof);
-      score += 10 - Math.abs(guess.age - actualSample.age);
-
-      return score;
+    this.sampleLetters.forEach(letter => {
+      const guess = this.guesses[letter];
+      const sample = this.getSampleFromLetter(quarter, letter);
+      if (sample) {
+        this.sampleScores[letter] = this.calculateSampleScore(guess, sample);
+      }
     });
 
-    this.totalScore = this.sampleScores.reduce((a, b) => a + b, 0);
+    this.totalScore = Object.values(this.sampleScores).reduce((a, b) => a + b, 0);
     this.showResults = true;
 
     // Submit score to Firebase
-    this.firebaseService.submitScore({
-      quarterId: quarter.id,
-      score: this.totalScore,
-      timestamp: new Date(),
-      guesses: this.guesses
-    }).subscribe();
+    this.firebaseService.saveScore(quarter.id, 'player', this.totalScore);
   }
 
-  setSampleScores(quarter: Quarter): void {
-    this.guesses = quarter.samples.map((_, index): Sample => ({
-      mashbill: this.mashbillTypes[0],
-      proof: 100,
-      age: 5
-    }));
-  }}
+  private getSampleFromLetter(quarter: Quarter, letter: SampleLetter): Sample {
+    const sampleMap = {
+      'A': quarter.samples.sample1,
+      'B': quarter.samples.sample2,
+      'C': quarter.samples.sample3,
+      'D': quarter.samples.sample4
+    };
+    return sampleMap[letter];
+  }
+
+  private calculateSampleScore(guess: PlayerGuess, actual: Sample): number {
+    let score = 0;
+
+    // Mashbill score (10 points)
+    if (guess.mashbill === actual.mashbill) score += 10;
+
+    // Proof score (up to 10 points)
+    const proofDiff = Math.abs(guess.proof - actual.proof);
+    score += Math.max(0, 10 - proofDiff);
+
+    // Age score (up to 10 points)
+    const ageDiff = Math.abs(guess.age - actual.age);
+    score += Math.max(0, 10 - (ageDiff * 2));
+
+    return score;
+  }
+}

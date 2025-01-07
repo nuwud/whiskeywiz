@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { FirebaseService } from '../services/firebase.service';
 import { ValidationService } from '../services/validation.service';
+import { Quarter, PlayerScore } from '../shared/models/quarter.model';
+import { Subscription, forkJoin } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 interface QuarterPreview {
   id: string;
@@ -49,8 +52,9 @@ interface QuarterPreview {
     }
   `]
 })
-export class QuartersComponent implements OnInit {
+export class QuartersComponent implements OnInit, OnDestroy {
   quarters: QuarterPreview[] = [];
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private router: Router,
@@ -58,28 +62,57 @@ export class QuartersComponent implements OnInit {
     private validationService: ValidationService
   ) {}
 
-  async ngOnInit() {
-    try {
-      const availableQuarters = await this.firebaseService.getQuarters();
-      const userScores = await this.firebaseService.getUserScores();
-      
-      this.quarters = availableQuarters.map(quarter => ({
-        id: quarter.id,
-        formattedName: this.validationService.formatQuarter(quarter.id),
-        completed: userScores?.some(score => score.quarterId === quarter.id) ?? false,
-        highScore: userScores
-          ?.filter(score => score.quarterId === quarter.id)
-          ?.reduce((max, score) => Math.max(max, score.value), 0)
-      })).sort((a, b) => b.id.localeCompare(a.id));  // Sort by newest first
-      
-    } catch (error) {
-      console.error('Error loading quarters:', error);
-    }
+  ngOnInit() {
+    this.loadQuarters();
   }
 
-  playQuarter(mmyy: string) {
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  private loadQuarters() {
+    const quartersSub = forkJoin({
+      quarters: this.firebaseService.getAllQuarters().pipe(take(1)),
+      scores: this.firebaseService.getQuarterScores('all').pipe(take(1))
+    }).subscribe({
+      next: ({ quarters, scores }) => {
+        this.processQuarters(quarters, scores);
+      },
+      error: (error) => {
+        console.error('Error loading quarters:', error);
+      }
+    });
+
+    this.subscriptions.push(quartersSub);
+  }
+
+  private processQuarters(quarters: Quarter[], scores: PlayerScore[]): void {
+    this.quarters = quarters.map(quarter => ({
+      id: quarter.id,
+      formattedName: this.formatQuarter(quarter.id),
+      completed: scores.some(score => score.quarterId === quarter.id),
+      highScore: this.getHighScore(scores, quarter.id)
+    })).sort((a, b) => b.id.localeCompare(a.id));  // Sort by newest first
+  }
+
+  private formatQuarter(mmyy: string): string {
+    const month = parseInt(mmyy.substring(0, 2));
+    const year = parseInt(mmyy.substring(2));
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${months[month - 1]} '${year.toString().padStart(2, '0')}`;
+  }
+
+  private getHighScore(scores: PlayerScore[], quarterId: string): number {
+    return Math.max(
+      0,
+      ...scores
+        .filter(score => score.quarterId === quarterId)
+        .map(score => score.score)
+    );
+  }
+
+  playQuarter(mmyy: string): void {
     this.router.navigate(['/quarters', mmyy]);
   }
 }
-
-// FOR_CLAUDE: Quarter selection interface that shows available quarters and user progress

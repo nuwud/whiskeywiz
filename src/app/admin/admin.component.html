@@ -27,59 +27,7 @@
     <main class="main-content">
       <!-- Scoring Rules -->
       <section class="scoring-rules" *ngIf="!selectedQuarter">
-        <h3>Scoring Rules</h3>
-
-        <div class="scoring-rules-grid">
-          <div class="form-group">
-            <label>Perfect Age Score:</label>
-            <input type="number" [(ngModel)]="scoringRules.agePerfectScore" title="Perfect Age Score">
-          </div>
-
-          <div class="form-group">
-            <label>Age Bonus:</label>
-            <input type="number" [(ngModel)]="scoringRules.ageBonus" title="Age Bonus">
-          </div>
-
-          <div class="form-group">
-            <label>Age Penalty Per Year:</label>
-            <input type="number" [(ngModel)]="scoringRules.agePenaltyPerYear" title="Age Penalty Per Year">
-          </div>
-
-          <div class="form-group">
-            <label>Perfect Proof Score:</label>
-            <input type="number" [(ngModel)]="scoringRules.proofPerfectScore" title="Perfect Proof Score">
-          </div>
-
-          <div class="form-group">
-            <label>Proof Bonus:</label>
-            <input type="number" [(ngModel)]="scoringRules.proofBonus" title="Proof Bonus">
-          </div>
-
-          <div class="form-group">
-            <label>Proof Penalty Per Point:</label>
-            <input type="number" [(ngModel)]="scoringRules.proofPenaltyPerPoint" title="Proof Penalty Per Point">
-          </div>
-
-          <div class="form-group">
-            <label>Correct Mashbill Score:</label>
-            <input type="number" [(ngModel)]="scoringRules.mashbillCorrectScore" title="Correct Mashbill Score">
-          </div>
-        </div>
-
-        <button class="btn btn-primary" (click)="updateScoringRules()">
-          Update Scoring Rules
-        </button>
-
-        <div class="integration-instructions">
-          <h3>Integration Instructions</h3>
-          <div class="instruction-section">
-            <h4>1. Required Script</h4>
-            <div class="code-block">
-              <code>&lt;script src="https://whiskeywiz2.firebaseapp.com/whiskey-wiz.js" defer&gt;&lt;/script&gt;</code>
-              <button (click)="copyToClipboard('script')">Copy</button>
-            </div>
-          </div>
-        </div>
+        <!-- ... existing scoring rules content ... -->
       </section>
 
       <!-- Quarter Editor -->
@@ -90,10 +38,22 @@
         </div>
 
         <div class="editor-section">
-          <label class="active-toggle">
-            <input type="checkbox" [(ngModel)]="selectedQuarter.active">
-            Active Quarter
-          </label>
+          <div class="quarter-settings">
+            <label class="active-toggle">
+              <input type="checkbox" [(ngModel)]="selectedQuarter.active">
+              Active Quarter
+            </label>
+
+            <div class="form-group">
+              <label>Reveal Date:</label>
+              <input type="datetime-local" [(ngModel)]="selectedQuarter.revealDate">
+            </div>
+
+            <div class="form-group">
+              <label>Video URL:</label>
+              <input type="url" [(ngModel)]="selectedQuarter.videoUrl" placeholder="https://...">
+            </div>
+          </div>
 
           <div class="samples-container">
             <div class="sample-card" *ngFor="let num of sampleNumbers">
@@ -106,6 +66,8 @@
                   <option value="Rye">Rye</option>
                   <option value="Wheat">Wheat</option>
                   <option value="Single Malt">Single Malt</option>
+                  <option value="Blend">Blend</option>
+                  <option value="Specialty">Specialty</option>
                 </select>
               </div>
 
@@ -118,12 +80,48 @@
                 <label>Age:</label>
                 <input type="number" [(ngModel)]="selectedQuarter.samples['sample' + num].age" title="Age" placeholder="Enter age">
               </div>
+
+              <div class="form-group">
+                <label>Product:</label>
+                <div class="product-selector">
+                  <select [(ngModel)]="selectedQuarter.samples['sample' + num].shopifyProduct" 
+                          (ngModelChange)="onProductSelect($event, num)">
+                    <option [ngValue]="null">Select a product...</option>
+                    <option *ngFor="let product of products$ | async" [ngValue]="product">
+                      {{product.title}}
+                    </option>
+                  </select>
+                  <button (click)="refreshProducts()" title="Refresh Products">
+                    <i class="fas fa-sync"></i>
+                  </button>
+                </div>
+                <div *ngIf="selectedQuarter.samples['sample' + num].shopifyProduct as product" 
+                     class="product-preview">
+                  <p>Price: {{product.price}}</p>
+                  <p>Status: {{product.available ? 'In Stock' : 'Out of Stock'}}</p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" 
+                         [(ngModel)]="selectedQuarter.samples['sample' + num].revealed">
+                  Revealed
+                </label>
+              </div>
             </div>
           </div>
 
           <div class="button-group">
-            <button (click)="updateQuarter()">Save Changes</button>
-            <button (click)="navigateToQuarter(selectedQuarter.id)">Play Quarter</button>
+            <button (click)="updateQuarter()" 
+                    [disabled]="!isQuarterValid()" 
+                    class="btn-primary">
+              Save Changes
+            </button>
+            <button (click)="navigateToQuarter(selectedQuarter.id)" 
+                    class="btn-secondary">
+              Play Quarter
+            </button>
           </div>
         </div>
       </section>

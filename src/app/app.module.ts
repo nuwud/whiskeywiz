@@ -1,12 +1,13 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
 import { environment } from '../environments/environment';
 
 import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
+import { AuthModule } from './auth/auth.module';
 
 // Firebase imports
 import { initializeApp } from '@angular/fire/app';
@@ -31,8 +32,10 @@ const database = getDatabase(app);
   imports: [
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     AppRoutingModule,
-    SharedModule
+    SharedModule,
+    AuthModule
   ],
   providers: [
     { provide: 'FIREBASE_APP', useValue: app },

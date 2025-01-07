@@ -1,151 +1,115 @@
-import { Injectable, Inject } from '@angular/core';
-import { 
-  Firestore, CollectionReference, collection, 
-  doc, getDoc, setDoc, updateDoc, deleteDoc,
-  query, where, orderBy, getDocs
-} from '@angular/fire/firestore';
-import { Router } from '@angular/router';
-import { Analytics } from '@angular/fire/analytics';
-import { Observable, from, of, throwError } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
-import { Quarter } from '../shared/models/quarter.model';
-import { GameState, QuarterInfo } from '../shared/models/game.model';
-import { AuthService } from './auth.service';
+import { Injectable } from '@angular/core';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Quarter, Sample, PlayerScore, SampleLetter, QuarterWithLetters } from '../shared/models/quarter.model';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class FirebaseService {
-  private quartersRef: CollectionReference;
-  private gameStatesRef: CollectionReference;
-  private scoresRef: CollectionReference;
-  private initialized = true;
+  constructor(private firestore: AngularFirestore) {}
 
-  constructor(
-    @Inject('FIREBASE_FIRESTORE') private firestore: Firestore,
-    private router: Router,
-    @Inject('FIREBASE_ANALYTICS') private analytics: Analytics,
-    private authService: AuthService
-  ) {
-    try {
-      this.quartersRef = collection(this.firestore, 'quarters');
-      this.gameStatesRef = collection(this.firestore, 'gameStates');
-      this.scoresRef = collection(this.firestore, 'scores');
-    } catch (error) {
-      this.initialized = false;
-      this.router.navigate(['/']);
-      throw error;
-    }
-  }
-
-  getQuarters(): Observable<Quarter[]> {
-    return from(
-      getDocs(collection(this.firestore, 'quarters')).then(snapshot => 
-        snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        } as Quarter))
-      )
-    );
-  }
-
-  getQuarterById(id: number): Observable<Quarter[]> {
-    return this.afs.collection<Quarter>('quarters', ref => ref.where('id', '==', quarterId)).valueChanges().pipe(
-
-    
-      map(quarters => quarters[0])
-
-      )
-    ;
-  }
-
-
-
-
-
-
-
-  getUserScores(): Promise<any[]> {
-    return this.authService.getCurrentUserId().toPromise().then(userId => {
-      const scoresQuery = query(
-        collection(this.firestore, 'scores'),
-        where('userId', '==', userId)
+  // Quarter Management
+  getAllQuarters(): Observable<Quarter[]> {
+    return this.firestore.collection<Quarter>('quarters')
+      .valueChanges({ idField: 'id' })
+      .pipe(
+        map(quarters => quarters.sort((a, b) => 
+          this.parseQuarterId(b.id) - this.parseQuarterId(a.id))
+        )
       );
-      return getDocs(scoresQuery).then(snapshot => snapshot.docs.map(doc => doc.data()));
-    });
   }
 
+  getQuarterById(mmyy: string): Observable<Quarter | null> {
+    return this.firestore.doc<Quarter>(`quarters/${mmyy}`)
+      .valueChanges()
+      .pipe(
+        map(quarter => quarter ? { ...quarter, id: mmyy } : null)
+      );
+  }
 
-  saveScore(
-    scoreOrPlayerId: { score: number, timestamp?: number } | string, 
-    quarterId?: string, 
-    score?: number
-  ): Observable<void> {
-    return this.authService.getCurrentUserId().pipe(
-      switchMap(userId => {
-        // Determine playerId
-        const defaultPlayerId = 'guest_' + Date.now();
-        const playerId = userId || defaultPlayerId;
-        
-        let finalScore: number;
-        let finalQuarterId: string;
-        let timestamp: number;
+  updateQuarter(quarter: Quarter): Promise<void> {
+    const { id, ...quarterData } = quarter;
+    return this.firestore.doc(`quarters/${id}`).update(quarterData);
+  }
 
-        // Handle object input
-        if (typeof scoreOrPlayerId === 'object') {
-          finalScore = scoreOrPlayerId.score;
-          timestamp = scoreOrPlayerId.timestamp || Date.now();
-          finalQuarterId = quarterId || 'unknown';
-        } 
-        // Handle separate arguments
-        else {
-          finalScore = score || 0;
-          finalQuarterId = quarterId || 'unknown';
-          timestamp = Date.now();
-        }
+  setQuarterActive(quarterId: string, active: boolean): Promise<void> {
+    return this.firestore.doc(`quarters/${quarterId}`).update({ active });
+  }
 
-        const scoreDocId = `${playerId}_${finalQuarterId}`;
-        return from(setDoc(doc(this.scoresRef, scoreDocId), {
-          playerId,
-          quarterId: finalQuarterId,
-          score: finalScore,
-          timestamp
-        }));
-      }),
-      catchError(error => {
-        console.error('Error saving score:', error);
-        return throwError(() => error);
-      })
+  saveQuarter(quarter: Quarter): Promise<void> {
+    const { id, ...data } = quarter;
+    return this.firestore.doc(`quarters/${id}`).set(data);
+  }
+
+  // Score Management
+  saveScore(quarterId: string, userId: string, score: number): Promise<void> {
+    const scoreData: PlayerScore = {
+      score,
+      timestamp: Date.now(),
+      playerId: userId,
+      quarterId
+    };
+    return this.firestore.collection('scores').add(scoreData).then();
+  }
+
+  getQuarterScores(quarterId: string): Observable<PlayerScore[]> {
+    return this.firestore.collection<PlayerScore>('scores', ref => 
+      ref.where('quarterId', '==', quarterId)
+         .orderBy('score', 'desc')
+         .limit(100)
+    ).valueChanges({ idField: 'id' });
+  }
+
+  getUserScores(userId: string): Observable<PlayerScore[]> {
+    return this.firestore.collection<PlayerScore>('scores', ref =>
+      ref.where('playerId', '==', userId)
+         .orderBy('timestamp', 'desc')
+    ).valueChanges({ idField: 'id' });
+  }
+
+  // Validation and Utilities
+  validateQuarter(quarter: Quarter): boolean {
+    return !!(
+      quarter.id &&
+      quarter.name &&
+      quarter.samples?.sample1 &&
+      quarter.samples?.sample2 &&
+      quarter.samples?.sample3 &&
+      quarter.samples?.sample4
     );
   }
-  getQuarterStats = (): Observable<Quarter[]> => {
-    return this.authService.getCurrentUserId().pipe(
-      switchMap(userId => {
-        const queryRef = query(
-          this.scoresRef,
-          where('playerId', '==', userId || 'guest_' + Date.now())
-        );
-        return from(getDocs(queryRef));
-      }),
-      map(snapshot => snapshot.docs.map(doc => doc.data() as Quarter)),
-      catchError(error => {
-        console.error('Error fetching quarter stats:', error);
-        return throwError(() => error);
-        })
+
+  validateSample(sample: Sample): boolean {
+    return !!(
+      sample &&
+      typeof sample.age === 'number' &&
+      typeof sample.proof === 'number' &&
+      sample.mashbill &&
+      sample.age >= 0 &&
+      sample.proof >= 0
     );
   }
-  getPlayerStats = (): Observable<Quarter[]> => {
-    return this.authService.getCurrentUserId().pipe(
-      switchMap(userId => {
-        const queryRef = query(
-          this.scoresRef,
-          where('playerId', '==', userId || 'guest_' + Date.now())
-        );
-        return from(getDocs(queryRef));
-      }),
-      map(snapshot => snapshot.docs.map(doc => doc.data() as Quarter)),
-      catchError(error => {
-        console.error('Error fetching player stats:', error);
-        return throwError(() => error);
-      })
-    );
+
+  // Helper Methods
+  private parseQuarterId(id: string): number {
+    const month = parseInt(id.substring(0, 2));
+    const year = parseInt(id.substring(2));
+    return (year * 12) + month;
+  }
+
+  convertToLetterFormat(quarter: Quarter): QuarterWithLetters {
+    const { samples, ...rest } = quarter;
+    const letterSamples: Record<SampleLetter, Sample> = {
+      'A': samples.sample1,
+      'B': samples.sample2,
+      'C': samples.sample3,
+      'D': samples.sample4
+    };
+    return {
+      ...rest,
+      samples: letterSamples
+    };
   }
 }

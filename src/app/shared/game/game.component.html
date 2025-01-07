@@ -1,8 +1,22 @@
-<div class="game-container">
+<div class="game-container" [class.loading]="loadingStates.initializing">
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="loadingStates.initializing">
+    <div class="spinner"></div>
+    <p>Loading game...</p>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar">
+    <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+  </div>
+
+  <!-- Sample Navigation -->
   <div class="samples-nav">
     <button 
       *ngFor="let letter of sampleLetters"
       [class.active]="currentSample === letter"
+      [class.completed]="sampleStatus[letter].completed"
+      [class.has-errors]="sampleStatus[letter].hasErrors"
       (click)="setSample(letter)"
       [attr.aria-label]="'Sample ' + letter">
       Sample {{letter}}
@@ -18,8 +32,10 @@
         type="number" 
         id="age"
         [(ngModel)]="guesses[currentSample].age"
+        (ngModelChange)="validateCurrentSample()"
         min="0"
         max="30">
+      <span class="hint">0-30 years</span>
     </div>
 
     <div class="form-group">
@@ -28,13 +44,18 @@
         type="number" 
         id="proof"
         [(ngModel)]="guesses[currentSample].proof"
+        (ngModelChange)="validateCurrentSample()"
         min="80"
         max="160">
+      <span class="hint">80-160 proof</span>
     </div>
 
     <div class="form-group">
       <label>Mashbill</label>
-      <select [(ngModel)]="guesses[currentSample].mashbill" title="Mashbill">
+      <select 
+        [(ngModel)]="guesses[currentSample].mashbill"
+        (ngModelChange)="validateCurrentSample()"
+        title="Mashbill">
         <option value="">Select type...</option>
         <option value="Bourbon">Bourbon</option>
         <option value="Rye">Rye</option>
@@ -43,20 +64,24 @@
         <option value="Specialty">Specialty</option>
       </select>
     </div>
-  </div>
 
-  <div class="results" *ngIf="showResults">
-    <h2>Results</h2>
-    <p>Total Score: {{totalScore}}/70</p>
-    <button (click)="share()">Share Results</button>
+    <div class="validation-message" *ngIf="sampleStatus[currentSample].hasErrors">
+      {{sampleStatus[currentSample].errorMessage}}
+    </div>
   </div>
 
   <div class="actions">
     <button 
       *ngIf="!showResults"
       (click)="submitGuesses()"
+      [disabled]="!canSubmit()"
       class="submit-btn">
-      Submit Guesses
+      {{loadingStates.submitting ? 'Submitting...' : 'Submit Guesses'}}
     </button>
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-toast" *ngIf="error" [@fadeInOut]>
+    {{error}}
   </div>
 </div>
