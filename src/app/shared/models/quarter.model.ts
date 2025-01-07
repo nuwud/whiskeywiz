@@ -1,16 +1,10 @@
-export interface GameState {
+export interface Quarter {
   id: string;
   name: string;
-  currentSample: 'A' | 'B' | 'C' | 'D';
-  guesses: {
-    [key: string]: {
-      age: number;
-      proof: number;
-      mashbill: string;
-    };
-  };
-  status: string;
-  lastUpdated: number;
+  active: boolean;
+  samples: Sample[];
+  startDate?: Date;
+  endDate?: Date;
 }
 
 export interface Sample {
@@ -18,12 +12,13 @@ export interface Sample {
   age: number;
   proof: number;
   mashbill: string;
-  rating?: number;
+  name?: string;
+  distillery?: string;
 }
 
-export interface Quarter {
-  id: string;
-  name: string;
-  active: boolean;
-  samples: Sample[];
+export interface PlayerScore {
+  score: number;
+  timestamp: number;
+  playerId?: string;
+  quarterId?: string;
 }

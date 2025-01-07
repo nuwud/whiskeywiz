@@ -1,31 +1,36 @@
+/// <reference types="jasmine" />
+
 import { TestBed } from '@angular/core/testing';
-import * as jasmine from 'jasmine-core';
 import { Router } from '@angular/router';
 import { FirebaseService } from './firebase.service';
-import { Firestore } from '@angular/fire/firestore';
+import { Firestore, collection, doc } from '@angular/fire/firestore';
 import { GameState } from '../shared/models/game.model';
-import { Quarter } from '../shared/models/quarter.model';
+import { QuarterInfo } from '../shared/models/game.model';
 
 describe('FirebaseService', () => {
   let service: FirebaseService;
-  let firestoreSpy: jasmine.SpyObj<Firestore>;
+  let firestoreMock: any;
   let routerSpy: jasmine.SpyObj<Router>;
 
   beforeEach(() => {
-    const fsSpy = jasmine.createSpyObj('Firestore', ['collection', 'doc']);
-    const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
+    firestoreMock = {
+      collection: jasmine.createSpy('collection').and.returnValue({
+        doc: jasmine.createSpy('doc')
+      }),
+      doc: jasmine.createSpy('doc')
+    };
+    
+    routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate']);
 
     TestBed.configureTestingModule({
       providers: [
         FirebaseService,
-        { provide: Firestore, useValue: fsSpy },
-        { provide: Router, useValue: routerSpyObj }
+        { provide: Firestore, useValue: firestoreMock },
+        { provide: Router, useValue: routerSpy }
       ]
     });
 
     service = TestBed.inject(FirebaseService);
-    firestoreSpy = TestBed.inject(Firestore) as jasmine.SpyObj<Firestore>;
-    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
   });
 
   it('should be created', () => {
@@ -34,18 +39,16 @@ describe('FirebaseService', () => {
 
   describe('Quarter Management', () => {
     it('should validate MMYY format correctly', () => {
-      const validQuarter: Quarter = {
+      const validQuarter: QuarterInfo = {
         id: '0324',
         name: 'March 2024',
-        active: true,
-        samples: []
+        active: true
       };
 
-      const invalidQuarter: Quarter = {
-        id: '1524', // Invalid month
+      const invalidQuarter: QuarterInfo = {
+        id: '1524',
         name: 'Invalid Month',
-        active: false,
-        samples: []
+        active: false
       };
 
       expect(service['isValidMMYY'](validQuarter.id)).toBe(true);
@@ -58,16 +61,16 @@ describe('FirebaseService', () => {
       const playerId = 'player123';
       const quarterId = '0324';
       const gameState: GameState = {
-        id: quarterId,
-        status: 'active',
-        name: 'Test Game'
+        currentSample: 'A',
+        guesses: {},
+        isComplete: false,
+        lastUpdated: Date.now(),
+        quarterId
       };
 
-      // Test the game state save method
       service.saveGameProgress(playerId, gameState).subscribe();
 
-      // The doc reference should be created with the correct ID format
-      expect(firestoreSpy.doc).toHaveBeenCalledWith(
+      expect(firestoreMock.doc).toHaveBeenCalledWith(
         jasmine.anything(),
         `${playerId}_${quarterId}`
       );
@@ -76,16 +79,14 @@ describe('FirebaseService', () => {
 
   describe('Error Handling', () => {
     it('should redirect to home on initialization failure', () => {
-      firestoreSpy.collection.and.throwError('Firebase not initialized');
+      firestoreMock.collection.and.throwError('Firebase not initialized');
       
-      // Create a new instance to trigger the error
-      const errorService = new FirebaseService(firestoreSpy, routerSpy);
+      const errorService = new FirebaseService(firestoreMock, routerSpy);
       
       expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
     });
 
     it('should throw error for uninitialized service', () => {
-      // Force the service to be uninitialized
       service['initialized'] = false;
       
       expect(() => service.getQuarters().subscribe())

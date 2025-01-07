@@ -1,0 +1,29 @@
+.share-container {
+  background-color: #1A1A1A;
+  border: 1px solid var(--primary-color);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+
+  .share-title {
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .share-text-preview {
+    background-color: #000;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    font-family: monospace;
+    white-space: pre-wrap;
+    margin-bottom: 1rem;
+  }
+
+  .hermona-button {
+    &.copied {
+      background-color: #4CAF50;
+    }
+  }
+}

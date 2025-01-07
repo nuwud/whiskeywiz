@@ -2,19 +2,12 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FirebaseService } from '../../services/firebase.service';
 import { AuthService } from '../../services/auth.service';
 import { GameService } from '../../services/game.service';
-import { SampleGuess } from '../../shared/models/game.model';
+import { SampleGuess, GameState } from '../models/game.model';
 import { OfflineQueueService } from '../../services/offline-queue.service';
 import { ValidationService } from '../../services/validation.service';
-import { Observable, from } from 'rxjs';
-import { animate, style, transition, trigger } from '@angular/animations';
+import { Observable, from, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { DataCollectionService } from '../../services/data-collection.service';
-
-interface SampleGuess {
-  age: number;
-  proof: number;
-  mashbill: string;
-}
 
 @Component({
   selector: 'app-game',
@@ -22,8 +15,8 @@ interface SampleGuess {
   styleUrls: ['./game.component.scss']
 })
 export class GameComponent implements OnInit {
-  currentSample = 'A';
-  isLoggedIn$: Observable<boolean>;
+  currentSample: 'A' | 'B' | 'C' | 'D' = 'A';
+  isLoggedIn$: Observable<boolean> = of(false); // Initialize with default value
   guesses: { [key: string]: SampleGuess } = {};
   totalScore = 0;
   showResults = false;
@@ -32,7 +25,11 @@ export class GameComponent implements OnInit {
   constructor(
     private firebaseService: FirebaseService,
     private authService: AuthService,
-    private gameService: GameService
+    private gameService: GameService,
+    private router: Router,
+    private offlineQueue: OfflineQueueService,
+    private validation: ValidationService,
+    private dataCollection: DataCollectionService
   ) {}
 
   ngOnInit() {
@@ -42,18 +39,27 @@ export class GameComponent implements OnInit {
 
   private async initializeGame() {
     try {
-      await this.loadSampleData();
+      const gameData = await this.loadSampleData();
+      if (gameData && !this.validation.isValidGameData(gameData)) {
+        throw new Error('Invalid game data');
+      }
       this.setupGameState();
+      await this.offlineQueue.processQueue();
     } catch (error) {
       console.error('Error initializing game:', error);
       this.handleError('Unable to initialize game');
+      this.router.navigate(['/error']);
     }
   }
 
-  private async loadSampleData() {
+  private async loadSampleData(): Promise<GameState | null> {
     try {
       const gameData = await this.gameService.loadGameData();
-      // Process game data
+      if (!gameData) {
+        this.dataCollection.logError('No game data available');
+        return null;
+      }
+      return gameData;
     } catch (error) {
       console.error('Error loading game data:', error);
       throw error;
@@ -91,7 +97,7 @@ export class GameComponent implements OnInit {
       });
     } catch (error) {
       console.error('Error saving score:', error);
-      // Don't show error to user, score save is non-critical
+      this.dataCollection.logError('Non-critical: Error saving score');
     }
   }
 
@@ -107,7 +113,6 @@ export class GameComponent implements OnInit {
         });
       } else {
         await navigator.clipboard.writeText(text);
-        // Show toast or notification that text was copied
       }
     } catch (error) {
       console.error('Error sharing:', error);
@@ -116,7 +121,6 @@ export class GameComponent implements OnInit {
   }
 
   private handleError(message: string) {
-    // Show error message to user
-    console.error(message);
+    this.dataCollection.logError(message);
   }
 }
