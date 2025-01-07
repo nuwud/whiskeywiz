@@ -10,6 +10,7 @@ import { Quarter } from '../shared/models/quarter.model';
 import { GameState } from '../shared/models/game.model';
 import { Score } from '../shared/models/score.model';
 import { QuarterStats, PlayerStats } from '../shared/models/analytics.model';
+import { GameService } from './game.service';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseService {
@@ -19,11 +20,24 @@ export class FirebaseService {
 
   constructor(
     @Inject('FIREBASE_FIRESTORE') private firestore: Firestore,
-    @Inject('FIREBASE_ANALYTICS') private analytics: Analytics
+    @Inject('FIREBASE_ANALYTICS') private analytics: Analytics,
+    private gameService: GameService
   ) {
     this.quartersRef = collection(this.firestore, 'quarters');
     this.gameStatesRef = collection(this.firestore, 'gameStates');
     this.scoresRef = collection(this.firestore, 'scores');
+  }
+
+  async getCurrentQuarterId(): Promise<string> {
+    const gameData = await this.gameService.loadGameData();
+    return gameData?.quarterId || this.getCurrentQuarterString();
+  }
+
+  private getCurrentQuarterString(): string {
+    const now = new Date();
+    const year = now.getFullYear().toString().slice(2);
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    return `${month}${year}`;
   }
 
   getQuarter(quarterId: string): Observable<Quarter | null> {
@@ -49,9 +63,9 @@ export class FirebaseService {
     await setDoc(doc(this.scoresRef), { quarterId, ...score });
   }
 
-  // Added to align with game component
   async saveScore(score: { score: number, timestamp: number }): Promise<void> {
-    await this.submitScore('CURRENT_QUARTER', { 
+    const currentQuarterId = await this.getCurrentQuarterId();
+    await this.submitScore(currentQuarterId, { 
       score: score.score, 
       timestamp: score.timestamp 
     });
