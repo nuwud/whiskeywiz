@@ -3,6 +3,7 @@ import { FirebaseService } from '../../services/firebase.service';
 import { AuthService } from '../../services/auth.service';
 import { GameService } from '../../services/game.service';
 import { SampleGuess, GameState } from '../models/game.model';
+import { SampleLetter } from '../models/quarter.model';
 import { OfflineQueueService } from '../../services/offline-queue.service';
 import { ValidationService } from '../../services/validation.service';
 import { Observable, from, of } from 'rxjs';
@@ -15,9 +16,15 @@ import { DataCollectionService } from '../../services/data-collection.service';
   styleUrls: ['./game.component.scss']
 })
 export class GameComponent implements OnInit {
-  currentSample: 'A' | 'B' | 'C' | 'D' = 'A';
-  isLoggedIn$: Observable<boolean> = of(false); // Initialize with default value
-  guesses: { [key: string]: SampleGuess } = {};
+  readonly sampleLetters: SampleLetter[] = ['A', 'B', 'C', 'D'];
+  currentSample: SampleLetter = 'A';
+  isLoggedIn$: Observable<boolean> = of(false);
+  guesses: Record<SampleLetter, SampleGuess> = {
+    'A': { age: 0, proof: 0, mashbill: '' },
+    'B': { age: 0, proof: 0, mashbill: '' },
+    'C': { age: 0, proof: 0, mashbill: '' },
+    'D': { age: 0, proof: 0, mashbill: '' }
+  };
   totalScore = 0;
   showResults = false;
   @Output() gameComplete = new EventEmitter<number>();
@@ -35,6 +42,10 @@ export class GameComponent implements OnInit {
   ngOnInit() {
     this.isLoggedIn$ = this.authService.isAuthenticated();
     this.initializeGame();
+  }
+
+  setSample(letter: SampleLetter): void {
+    this.currentSample = letter;
   }
 
   private async initializeGame() {
@@ -68,10 +79,10 @@ export class GameComponent implements OnInit {
 
   private setupGameState() {
     this.guesses = {
-      A: { age: 0, proof: 0, mashbill: '' },
-      B: { age: 0, proof: 0, mashbill: '' },
-      C: { age: 0, proof: 0, mashbill: '' },
-      D: { age: 0, proof: 0, mashbill: '' }
+      'A': { age: 0, proof: 0, mashbill: '' },
+      'B': { age: 0, proof: 0, mashbill: '' },
+      'C': { age: 0, proof: 0, mashbill: '' },
+      'D': { age: 0, proof: 0, mashbill: '' }
     };
   }
 
@@ -101,18 +112,18 @@ export class GameComponent implements OnInit {
     }
   }
 
-  async share() {
+  share() {
     const text = `I scored ${this.totalScore} points in WhiskeyWiz!\nPlay now: https://whiskeywiz2.web.app`;
     
     try {
       if (navigator.share) {
-        await navigator.share({
+        navigator.share({
           title: 'WhiskeyWiz Score',
           text,
           url: 'https://whiskeywiz2.web.app'
         });
       } else {
-        await navigator.clipboard.writeText(text);
+        navigator.clipboard.writeText(text);
       }
     } catch (error) {
       console.error('Error sharing:', error);
