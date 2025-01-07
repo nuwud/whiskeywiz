@@ -2,12 +2,12 @@
   "name": "whiskeywiz",
   "version": "0.0.1",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "ng": "nx",
+    "start": "nx serve",
+    "build": "nx build",
+    "watch": "nx build --watch --configuration development",
     "test": "nx test",
-    "build:elements": "ng build --configuration production --output-hashing none && node concat.js"
+    "build:elements": "nx build --configuration production --output-hashing none && node concat.js"
   },
   "private": true,
   "dependencies": {
@@ -20,13 +20,13 @@
     "@angular/platform-browser": "17.0.0",
     "@angular/platform-browser-dynamic": "17.0.0",
     "@angular/router": "17.0.0",
-    "firebase": "10.7.0",
+    "firebase": "^10.14.1",
     "rxjs": "7.8.0",
     "tslib": "2.3.0",
     "zone.js": "0.14.2"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "17.0.0",
+    "@angular-devkit/build-angular": "^17.3.11",
     "@angular/cli": "17.0.0",
     "@angular/compiler-cli": "17.0.0",
     "@types/jasmine": "4.3.0",
