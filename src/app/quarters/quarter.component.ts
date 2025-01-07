@@ -14,9 +14,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 
       <!-- Game Mode -->
       <div *ngIf="!isEmbedded || isExpanded" class="game-mode">
-        <app-game 
+        <app-game
           [quarterId]="quarterId"
-          (gameComplete)="onGameComplete($event)">
+          (gameComplete)="handleGameComplete($event)">
         </app-game>
       </div>
     </div>
@@ -47,7 +47,6 @@ export class QuarterComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // If not embedded, get quarterId from route
     if (!this.isEmbedded) {
       this.route.params.subscribe(params => {
         const mmyy = params['mmyy'];
@@ -59,6 +58,10 @@ export class QuarterComponent implements OnInit {
         }
       });
     }
+  }
+
+  handleGameComplete(score: number) {
+    console.log(`Game completed for quarter ${this.quarterId} with score ${score}`);
   }
 
   formatQuarterDisplay(mmyy: string): string {
@@ -73,11 +76,9 @@ export class QuarterComponent implements OnInit {
   isValidMMYY(mmyy: string): boolean {
     if (!mmyy || mmyy.length !== 4) return false;
     
-    // Check month validity (01-12)
     const month = parseInt(mmyy.substring(0, 2));
     if (month < 1 || month > 12) return false;
 
-    // Check year validity (20-99)
     const year = parseInt(mmyy.substring(2, 4));
     if (year < 20 || year > 99) return false;
 
@@ -86,9 +87,5 @@ export class QuarterComponent implements OnInit {
 
   expand() {
     this.isExpanded = true;
-  }
-
-  onGameComplete(score: number) {
-    console.log(`Game completed for quarter ${this.quarterId} with score ${score}`);
   }
 }

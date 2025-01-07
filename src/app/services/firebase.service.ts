@@ -1,123 +1,55 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import {
-  Firestore,
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  setDoc,
-  query,
-  where,
-  orderBy,
-  CollectionReference,
-  DocumentReference
+import { Injectable, Inject } from '@angular/core';
+import { 
+  Firestore, CollectionReference, collection, 
+  doc, getDoc, setDoc, updateDoc, deleteDoc,
+  query, where, orderBy, getDocs
 } from '@angular/fire/firestore';
-import { Observable, from, throwError } from 'rxjs';
-import { map, tap, catchError } from 'rxjs/operators';
+import { Analytics } from '@angular/fire/analytics';
+import { Observable, from, of } from 'rxjs';
+import { Quarter } from '../shared/models/quarter.model';
 import { GameState } from '../shared/models/game.model';
-import { PlayerScore, Quarter } from '../shared/models/quarter.model';
+import { Score } from '../shared/models/score.model';
+import { QuarterStats, PlayerStats } from '../shared/models/analytics.model';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class FirebaseService {
-  private initialized = false;
   private quartersRef: CollectionReference;
   private gameStatesRef: CollectionReference;
   private scoresRef: CollectionReference;
 
   constructor(
-    private firestore: Firestore,
-    private router: Router
+    @Inject('FIREBASE_FIRESTORE') private firestore: Firestore,
+    @Inject('FIREBASE_ANALYTICS') private analytics: Analytics
   ) {
-    try {
-      this.quartersRef = collection(this.firestore, 'quarters');
-      this.gameStatesRef = collection(this.firestore, 'gameStates');
-      this.scoresRef = collection(this.firestore, 'scores');
-      this.initialized = true;
-    } catch (error) {
-      console.error('Error initializing Firebase service:', error);
-      this.router.navigate(['/']);
-    }
-  }
-
-  getQuarters(): Observable<Quarter[]> {
-    if (!this.initialized) {
-      return throwError(() => new Error('Firebase service not properly initialized'));
-    }
-
-    const quarterQuery = query(this.quartersRef, where('active', '==', true));
-    return from(getDocs(quarterQuery)).pipe(
-      map(snapshot => {
-        const quarters: Quarter[] = [];
-        snapshot.forEach(doc => {
-          quarters.push({ id: doc.id, ...doc.data() } as Quarter);
-        });
-        return quarters;
-      }),
-      catchError(error => {
-        console.error('Error fetching quarters:', error);
-        return throwError(() => new Error('Failed to fetch quarters'));
-      })
-    );
+    this.quartersRef = collection(this.firestore, 'quarters');
+    this.gameStatesRef = collection(this.firestore, 'gameStates');
+    this.scoresRef = collection(this.firestore, 'scores');
   }
 
   getQuarter(quarterId: string): Observable<Quarter | null> {
-    if (!this.isValidMMYY(quarterId)) {
-      return throwError(() => new Error('Invalid quarter ID format'));
-    }
-
-    const quarterRef = doc(this.quartersRef, quarterId);
-    return from(getDoc(quarterRef)).pipe(
-      map(doc => {
-        if (!doc.exists()) return null;
-        return { id: doc.id, ...doc.data() } as Quarter;
-      }),
-      catchError(error => {
-        console.error(`Error fetching quarter ${quarterId}:`, error);
-        return throwError(() => new Error('Failed to fetch quarter'));
-      })
-    );
+    return from(getDoc(doc(this.quartersRef, quarterId)))
+      .pipe(map(doc => doc.exists() ? doc.data() as Quarter : null));
   }
 
-  saveGameProgress(playerId: string, state: GameState): Observable<void> {
-    if (!this.initialized) {
-      return throwError(() => new Error('Firebase service not properly initialized'));
-    }
-
-    const stateRef = doc(this.gameStatesRef, `${playerId}_${state.quarterId}`);
-    
-    return from(setDoc(stateRef, {
-      ...state,
-      lastUpdated: Date.now()
-    })).pipe(
-      tap(() => console.log(`Saved game state for player ${playerId} in quarter ${state.quarterId}`)),
-      catchError(error => {
-        console.error('Error saving game state:', error);
-        return throwError(() => new Error('Failed to save game state'));
-      })
-    );
+  async saveQuarter(quarter: Quarter): Promise<void> {
+    await setDoc(doc(this.quartersRef, quarter.id), quarter);
   }
 
-  saveScore(score: PlayerScore): Promise<void> {
-    if (!this.initialized) {
-      return Promise.reject(new Error('Firebase service not properly initialized'));
-    }
-
-    const scoreRef = doc(this.scoresRef);
-    return setDoc(scoreRef, {
-      ...score,
-      timestamp: Date.now()
-    });
+  getQuarterStats(): Observable<QuarterStats[]> {
+    return from(getDocs(query(collection(this.firestore, 'quarterStats'))))
+      .pipe(map(snapshot => snapshot.docs.map(doc => doc.data() as QuarterStats)));
   }
 
-  private isValidMMYY(quarterId: string): boolean {
-    if (!quarterId || quarterId.length !== 4) return false;
-    
-    const month = parseInt(quarterId.slice(0, 2));
-    const year = parseInt(quarterId.slice(2));
-    
-    return month >= 1 && month <= 12;
+  getPlayerStats(): Observable<PlayerStats[]> {
+    return from(getDocs(query(collection(this.firestore, 'playerStats'))))
+      .pipe(map(snapshot => snapshot.docs.map(doc => doc.data() as PlayerStats)));
+  }
+
+  async submitScore(quarterId: string, score: Score): Promise<void> {
+    await setDoc(doc(this.scoresRef), { quarterId, ...score });
+  }
+
+  logEvent(eventName: string, params?: Record<string, any>) {
+    this.analytics.logEvent(eventName, params);
   }
 }

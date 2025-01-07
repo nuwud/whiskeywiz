@@ -1,10 +1,13 @@
+export type SampleLetter = 'A' | 'B' | 'C' | 'D';
+
 export interface Quarter {
   id: string;
   name: string;
   active: boolean;
-  samples: Sample[];
+  samples: Record<SampleLetter, Sample>;
   startDate?: Date;
   endDate?: Date;
+  videoUrl?: string;
 }
 
 export interface Sample {
