@@ -3,7 +3,6 @@ import { FirebaseService } from '../../services/firebase.service';
 import { AuthService } from '../../services/auth.service';
 import { GameService } from '../../services/game.service';
 import { SampleGuess, GameState } from '../models/game.model';
-import { SampleLetter } from '../models/quarter.model';
 import { OfflineQueueService } from '../../services/offline-queue.service';
 import { ValidationService } from '../../services/validation.service';
 import { Observable, from, of } from 'rxjs';
@@ -16,15 +15,9 @@ import { DataCollectionService } from '../../services/data-collection.service';
   styleUrls: ['./game.component.scss']
 })
 export class GameComponent implements OnInit {
-  readonly sampleLetters: SampleLetter[] = ['A', 'B', 'C', 'D'];
-  currentSample: SampleLetter = 'A';
-  isLoggedIn$: Observable<boolean> = of(false);
-  guesses: Record<SampleLetter, SampleGuess> = {
-    'A': { age: 0, proof: 0, mashbill: '' },
-    'B': { age: 0, proof: 0, mashbill: '' },
-    'C': { age: 0, proof: 0, mashbill: '' },
-    'D': { age: 0, proof: 0, mashbill: '' }
-  };
+  currentSample: 'A' | 'B' | 'C' | 'D' = 'A';
+  isLoggedIn$: Observable<boolean> = of(false); // Initialize with default value
+  guesses: { [key: string]: SampleGuess } = {};
   totalScore = 0;
   showResults = false;
   @Output() gameComplete = new EventEmitter<number>();
@@ -42,10 +35,6 @@ export class GameComponent implements OnInit {
   ngOnInit() {
     this.isLoggedIn$ = this.authService.isAuthenticated();
     this.initializeGame();
-  }
-
-  setSample(letter: SampleLetter): void {
-    this.currentSample = letter;
   }
 
   private async initializeGame() {
@@ -79,10 +68,10 @@ export class GameComponent implements OnInit {
 
   private setupGameState() {
     this.guesses = {
-      'A': { age: 0, proof: 0, mashbill: '' },
-      'B': { age: 0, proof: 0, mashbill: '' },
-      'C': { age: 0, proof: 0, mashbill: '' },
-      'D': { age: 0, proof: 0, mashbill: '' }
+      A: { age: 0, proof: 0, mashbill: '' },
+      B: { age: 0, proof: 0, mashbill: '' },
+      C: { age: 0, proof: 0, mashbill: '' },
+      D: { age: 0, proof: 0, mashbill: '' }
     };
   }
 
