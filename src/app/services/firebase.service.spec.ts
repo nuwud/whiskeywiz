@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import * as jasmine from 'jasmine-core';
 import { Router } from '@angular/router';
 import { FirebaseService } from './firebase.service';
 import { Firestore } from '@angular/fire/firestore';
@@ -37,14 +38,14 @@ describe('FirebaseService', () => {
         id: '0324',
         name: 'March 2024',
         active: true,
-        samples: {}
+        samples: []
       };
 
       const invalidQuarter: Quarter = {
         id: '1524', // Invalid month
         name: 'Invalid Month',
         active: false,
-        samples: {}
+        samples: []
       };
 
       expect(service['isValidMMYY'](validQuarter.id)).toBe(true);

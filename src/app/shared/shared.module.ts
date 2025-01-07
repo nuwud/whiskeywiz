@@ -1,12 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { GameComponent } from './game/game.component';
 import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
-    GameComponent
   ],
   imports: [
     CommonModule,
@@ -14,8 +12,9 @@ import { RouterModule } from '@angular/router';
     RouterModule
   ],
   exports: [
-    GameComponent,
-    FormsModule
+    CommonModule,
+    FormsModule,
+    RouterModule
   ]
 })
 export class SharedModule { }

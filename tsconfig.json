@@ -16,11 +16,13 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "strictPropertyInitialization": false,
+    "allowSyntheticDefaultImports": true,
     "typeRoots": [
       "node_modules/@types"
     ],
     "types": [
-      "node"
+      "node",
+      "jasmine"
     ],
     "lib": [
       "ES2020",
