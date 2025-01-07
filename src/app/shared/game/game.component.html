@@ -1,9 +1,9 @@
 <div class="game-container">
   <div class="samples-nav">
     <button 
-      *ngFor="let letter of ['A', 'B', 'C', 'D']"
+      *ngFor="let letter of sampleLetters"
       [class.active]="currentSample === letter"
-      (click)="currentSample = letter"
+      (click)="setSample(letter)"
       [attr.aria-label]="'Sample ' + letter">
       Sample {{letter}}
     </button>
