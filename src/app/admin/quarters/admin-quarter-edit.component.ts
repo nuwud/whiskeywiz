@@ -3,6 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FirebaseService } from '../../services/firebase.service';
 import { Quarter } from '../../shared/models/quarter.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { take as rxjsTake, catchError } from 'rxjs/operators';
+import { of as observableOf } from 'rxjs';
 
 @Component({
   selector: 'app-admin-quarter-edit',
@@ -142,8 +145,10 @@ export class AdminQuarterEditComponent implements OnInit {
 
   private async loadQuarter(mmyy: string) {
     try {
-      const quarter = await this.firebaseService.getQuarterById(mmyy)
-        .toPromise();
+      const quarter = await this.firebaseService.getQuarterById(mmyy).pipe(
+        take(1),
+        catchError(() => of(null))
+      ).toPromise();
       if (quarter) {
         this.quarterForm.patchValue(quarter);
       } else {
@@ -154,6 +159,29 @@ export class AdminQuarterEditComponent implements OnInit {
       console.error('Error:', error);
     }
   }
+
+  private async saveQuarter (quarterData: Quarter) {
+    if (this.quarterId) {
+      quarterData.id = this.quarterId;
+    }
+    const quarterId = quarterData.id;
+    if (!quarterId) {
+      throw new Error('Quarter ID is required');
+    }
+    
+    delete quarterData.id;
+    this.quarterId = quarterId;
+    await this.firebaseService.saveQuarter(quarterData, quarterId);
+    this.router.navigate(['/admin/quarters']);
+    this.quarterForm.reset();
+  }
+  
+  private async updateQuarter(quarterData: Quarter, quarterId: string) {
+    if (!quarterId) {
+      throw new Error('Quarter ID is required');
+    };
+  }
+
 
   async onSubmit() {
     if (this.quarterForm.valid) {
@@ -177,3 +205,17 @@ export class AdminQuarterEditComponent implements OnInit {
     this.router.navigate(['/admin/quarters']);
   }
 }
+function take<T>(count: number): (source: Observable<T>) => Observable<T> {
+  return (source: Observable<T>) => source.pipe(rxjsTake(count));
+}
+
+function take(arg0: number): import("rxjs").OperatorFunction<Quarter[], unknown> {
+  throw new Error('Function not implemented.');
+}
+function of<T>(value: T): Observable<T> {
+  return observableOf(value);
+}
+function of(arg0: null): any {
+  throw new Error('Function not implemented.');
+}
+

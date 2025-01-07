@@ -106,7 +106,7 @@ export class PlayerComponent implements OnInit {
     const quarterId = select.value;
     
     if (quarterId) {
-      this.firebaseService.getQuarterById().subscribe(quarter => {
+      this.firebaseService.getQuarterById(quarterId).subscribe((quarter: Quarter) => {
         if (quarter) {
           this.currentQuarter$.next(quarter);
           this.guesses = quarter.samples.map(() => ({
@@ -149,4 +149,11 @@ export class PlayerComponent implements OnInit {
       guesses: this.guesses
     }).subscribe();
   }
-}
+
+  setSampleScores(quarter: Quarter): void {
+    this.guesses = quarter.samples.map((_, index): Sample => ({
+      mashbill: this.mashbillTypes[0],
+      proof: 100,
+      age: 5
+    }));
+  }}

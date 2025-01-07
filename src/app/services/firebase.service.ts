@@ -48,15 +48,31 @@ export class FirebaseService {
   }
 
   getQuarterById(id: number): Observable<Quarter[]> {
-    return from(
-      getDocs(query(this.quartersRef, where('id', '==', id))).then(snapshot =>
-          snapshot.docs.map(doc => ({
-          id: doc.id,
-        ...doc.data()
-        } as Quarter))
+    return this.afs.collection<Quarter>('quarters', ref => ref.where('id', '==', quarterId)).valueChanges().pipe(
+
+    
+      map(quarters => quarters[0])
+
       )
-    );
+    ;
   }
+
+
+
+
+
+
+
+  getUserScores(): Promise<any[]> {
+    return this.authService.getCurrentUserId().toPromise().then(userId => {
+      const scoresQuery = query(
+        collection(this.firestore, 'scores'),
+        where('userId', '==', userId)
+      );
+      return getDocs(scoresQuery).then(snapshot => snapshot.docs.map(doc => doc.data()));
+    });
+  }
+
 
   saveScore(
     scoreOrPlayerId: { score: number, timestamp?: number } | string, 

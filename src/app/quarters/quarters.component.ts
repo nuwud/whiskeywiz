@@ -17,9 +17,9 @@ interface QuarterPreview {
       
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div *ngFor="let quarter of quarters" 
-             class="quarter-card p-6 rounded-lg shadow-md cursor-pointer"
-             [class.completed]="quarter.completed"
-             (click)="playQuarter(quarter.id)">
+            class="quarter-card p-6 rounded-lg shadow-md cursor-pointer"
+            [class.completed]="quarter.completed"
+            (click)="playQuarter(quarter.id)">
           
           <h3 class="font-hermona-xl mb-4">{{quarter.formattedName}}</h3>
           
