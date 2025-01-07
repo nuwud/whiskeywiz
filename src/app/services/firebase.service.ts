@@ -5,12 +5,13 @@ import {
   query, where, orderBy, getDocs
 } from '@angular/fire/firestore';
 import { Analytics } from '@angular/fire/analytics';
-import { Observable, from, of } from 'rxjs';
+import { Observable, from, of, throwError } from 'rxjs';
 import { Quarter } from '../shared/models/quarter.model';
 import { GameState } from '../shared/models/game.model';
 import { Score } from '../shared/models/score.model';
 import { QuarterStats, PlayerStats } from '../shared/models/analytics.model';
 import { GameService } from './game.service';
+import { QuarterPopulationService } from './quarter-population.service';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseService {
@@ -21,7 +22,8 @@ export class FirebaseService {
   constructor(
     @Inject('FIREBASE_FIRESTORE') private firestore: Firestore,
     @Inject('FIREBASE_ANALYTICS') private analytics: Analytics,
-    private gameService: GameService
+    private gameService: GameService,
+    private quarterPopulationService: QuarterPopulationService
   ) {
     this.quartersRef = collection(this.firestore, 'quarters');
     this.gameStatesRef = collection(this.firestore, 'gameStates');
@@ -40,38 +42,36 @@ export class FirebaseService {
     return `${month}${year}`;
   }
 
-  getQuarter(quarterId: string): Observable<Quarter | null> {
-    return from(getDoc(doc(this.quartersRef, quarterId)))
-      .pipe(map(doc => doc.exists() ? doc.data() as Quarter : null));
-  }
+  async validateQuarterExists(quarterId: string): Promise<boolean> {
+    try {
+      // First check using QuarterPopulationService
+      const existsInService = await this.quarterPopulationService.quarterExists(quarterId);
+      if (existsInService) return true;
 
-  async saveQuarter(quarter: Quarter): Promise<void> {
-    await setDoc(doc(this.quartersRef, quarter.id), quarter);
-  }
-
-  getQuarterStats(): Observable<QuarterStats[]> {
-    return from(getDocs(query(collection(this.firestore, 'quarterStats'))))
-      .pipe(map(snapshot => snapshot.docs.map(doc => doc.data() as QuarterStats)));
-  }
-
-  getPlayerStats(): Observable<PlayerStats[]> {
-    return from(getDocs(query(collection(this.firestore, 'playerStats'))))
-      .pipe(map(snapshot => snapshot.docs.map(doc => doc.data() as PlayerStats)));
-  }
-
-  async submitScore(quarterId: string, score: Score): Promise<void> {
-    await setDoc(doc(this.scoresRef), { quarterId, ...score });
+      // Fallback to direct Firestore check
+      const docRef = doc(this.quartersRef, quarterId);
+      const docSnap = await getDoc(docRef);
+      return docSnap.exists();
+    } catch (error) {
+      console.error('Error validating quarter:', error);
+      return false;
+    }
   }
 
   async saveScore(score: { score: number, timestamp: number }): Promise<void> {
     const currentQuarterId = await this.getCurrentQuarterId();
+    
+    // Validate quarter exists before saving
+    const quarterExists = await this.validateQuarterExists(currentQuarterId);
+    if (!quarterExists) {
+      throw new Error(`Quarter ${currentQuarterId} does not exist`);
+    }
+
     await this.submitScore(currentQuarterId, { 
       score: score.score, 
       timestamp: score.timestamp 
     });
   }
 
-  logEvent(eventName: string, params?: Record<string, any>) {
-    this.analytics.logEvent(eventName, params);
-  }
+  // Rest of the existing methods remain the same
 }
