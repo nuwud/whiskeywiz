@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -14,10 +14,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 
       <!-- Game Mode -->
       <div *ngIf="!isEmbedded || isExpanded" class="game-mode">
-        <app-game
+        <app-quarter
           [quarterId]="quarterId"
           (gameComplete)="handleGameComplete($event)">
-        </app-game>
+        </app-quarter>
       </div>
     </div>
   `,
@@ -40,6 +40,8 @@ export class QuarterComponent implements OnInit {
   @Input() quarterId: string = '';
   @Input() isEmbedded: boolean = false;
   isExpanded: boolean = false;
+
+  @Output() gameComplete = new EventEmitter<number>();
 
   constructor(
     private route: ActivatedRoute,
@@ -69,7 +71,7 @@ export class QuarterComponent implements OnInit {
     const month = parseInt(mmyy.substring(0, 2));
     const year = '20' + mmyy.substring(2, 4);
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return `${monthNames[month - 1]} ${year}`;
   }
 
@@ -83,6 +85,11 @@ export class QuarterComponent implements OnInit {
     if (year < 20 || year > 99) return false;
 
     return true;
+  }
+
+  // When emitting the score:
+  onGameComplete(score: number) {
+    this.gameComplete.emit(score);
   }
 
   expand() {

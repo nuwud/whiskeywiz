@@ -93,7 +93,11 @@ export class PlayerComponent implements OnInit {
   ngOnInit() {
     // Fetch quarters
     this.firebaseService.getQuarters().subscribe(quarters => {
-      this.quarters$.next(quarters);
+      const mappedQuarters = quarters.map(quarter => ({
+        ...quarter,
+        samples: Object.values(quarter.samples)
+      }));
+      this.quarters$.next(mappedQuarters);
     });
   }
 
@@ -102,7 +106,7 @@ export class PlayerComponent implements OnInit {
     const quarterId = select.value;
     
     if (quarterId) {
-      this.firebaseService.getQuarterById(quarterId).subscribe(quarter => {
+      this.firebaseService.getQuarterById().subscribe(quarter => {
         if (quarter) {
           this.currentQuarter$.next(quarter);
           this.guesses = quarter.samples.map(() => ({

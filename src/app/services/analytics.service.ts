@@ -2,20 +2,41 @@ import { Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { firstValueFrom } from 'rxjs';
 import { Chart } from 'chart.js';
+import { Quarter, PlayerScore } from '../shared/models/quarter.model';
 import { QuarterStats, PlayerStats } from '../shared/models/analytics.model';
 
 @Injectable({ providedIn: 'root' })
 export class AnalyticsService {
   constructor(private firebaseService: FirebaseService) {}
 
+  private mapQuarterToStats(quarters: Quarter[]): QuarterStats[] {
+    return quarters.map(quarter => ({
+      quarterId: quarter.id,
+      playerCount: this.calculatePlayerCount(quarter),
+      averageScore: this.calculateAverageScore(quarter)
+    }));
+  }
+
+  private calculatePlayerCount(quarter: Quarter): number {
+    return new Set(quarter.scores?.map(score => score.playerId)).size || 0;
+  }
+
+  private calculateAverageScore(quarter: Quarter): number {
+    if (!quarter.scores?.length) return 0;
+    const sum = quarter.scores.reduce((acc, score) => acc + score.score, 0);
+    return sum / quarter.scores.length;
+  }
+
   async getAnalyticsData() {
     try {
-      const quarterStats = await this.firebaseService.getQuarterStats().toPromise();
-      const playerStats = await this.firebaseService.getPlayerStats().toPromise();
+      const quarters = await firstValueFrom(this.firebaseService.getQuarterStats());
+      const playerStats = await firstValueFrom(this.firebaseService.getPlayerStats());
+      
+      const quarterStats = this.mapQuarterToStats(quarters || []);
 
       return {
-        participation: this.processParticipationTrend(quarterStats || []),
-        accuracy: this.processAccuracyStats(quarterStats || []),
+        participation: this.processParticipationTrend(quarterStats),
+        accuracy: this.processAccuracyStats(quarterStats),
         devices: this.processDeviceStats(playerStats || []),
         locations: this.processLocationStats(playerStats || [])
       };

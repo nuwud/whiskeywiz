@@ -36,6 +36,28 @@ export class FirebaseService {
     }
   }
 
+  getQuarters(): Observable<Quarter[]> {
+    return from(
+      getDocs(collection(this.firestore, 'quarters')).then(snapshot => 
+        snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        } as Quarter))
+      )
+    );
+  }
+
+  getQuarterById(id: number): Observable<Quarter[]> {
+    return from(
+      getDocs(query(this.quartersRef, where('id', '==', id))).then(snapshot =>
+          snapshot.docs.map(doc => ({
+          id: doc.id,
+        ...doc.data()
+        } as Quarter))
+      )
+    );
+  }
+
   saveScore(
     scoreOrPlayerId: { score: number, timestamp?: number } | string, 
     quarterId?: string, 
@@ -74,6 +96,38 @@ export class FirebaseService {
       }),
       catchError(error => {
         console.error('Error saving score:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+  getQuarterStats = (): Observable<Quarter[]> => {
+    return this.authService.getCurrentUserId().pipe(
+      switchMap(userId => {
+        const queryRef = query(
+          this.scoresRef,
+          where('playerId', '==', userId || 'guest_' + Date.now())
+        );
+        return from(getDocs(queryRef));
+      }),
+      map(snapshot => snapshot.docs.map(doc => doc.data() as Quarter)),
+      catchError(error => {
+        console.error('Error fetching quarter stats:', error);
+        return throwError(() => error);
+        })
+    );
+  }
+  getPlayerStats = (): Observable<Quarter[]> => {
+    return this.authService.getCurrentUserId().pipe(
+      switchMap(userId => {
+        const queryRef = query(
+          this.scoresRef,
+          where('playerId', '==', userId || 'guest_' + Date.now())
+        );
+        return from(getDocs(queryRef));
+      }),
+      map(snapshot => snapshot.docs.map(doc => doc.data() as Quarter)),
+      catchError(error => {
+        console.error('Error fetching player stats:', error);
         return throwError(() => error);
       })
     );

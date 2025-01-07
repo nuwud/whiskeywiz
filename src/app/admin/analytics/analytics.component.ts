@@ -34,11 +34,11 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   }
 
   private async loadCharts() {
-    const data = await this.analyticsService.getAnalyticsData(parseInt(this.selectedPeriod));
+    const data = await this.analyticsService.getAnalyticsData();
     if (!data) return;
 
     this.createParticipationChart(data.participation);
-    this.createCompletionChart(data.completion);
+    this.createCompletionChart(data.participation);
     this.createDeviceChart(data.devices);
     this.createAccuracyChart(data.accuracy);
   }

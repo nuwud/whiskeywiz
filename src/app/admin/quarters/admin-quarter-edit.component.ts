@@ -105,6 +105,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   `]
 })
 export class AdminQuarterEditComponent implements OnInit {
+  quarterId!: string;
   quarterForm: FormGroup;
   isNew: boolean = true;
   saving: boolean = false;

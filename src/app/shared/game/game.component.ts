@@ -6,7 +6,7 @@ import { SampleGuess, GameState } from '../models/game.model';
 import { OfflineQueueService } from '../../services/offline-queue.service';
 import { ValidationService } from '../../services/validation.service';
 import { Observable, from, of } from 'rxjs';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { DataCollectionService } from '../../services/data-collection.service';
 
 @Component({
@@ -15,6 +15,7 @@ import { DataCollectionService } from '../../services/data-collection.service';
   styleUrls: ['./game.component.scss']
 })
 export class GameComponent implements OnInit {
+  sampleLetters: string[] = ['A', 'B', 'C', 'D', 'E'];
   currentSample: 'A' | 'B' | 'C' | 'D' = 'A';
   isLoggedIn$: Observable<boolean> = of(false); // Initialize with default value
   guesses: { [key: string]: SampleGuess } = {};
@@ -27,6 +28,7 @@ export class GameComponent implements OnInit {
     private authService: AuthService,
     private gameService: GameService,
     private router: Router,
+    private route: ActivatedRoute,
     private offlineQueue: OfflineQueueService,
     private validation: ValidationService,
     private dataCollection: DataCollectionService
@@ -122,5 +124,9 @@ export class GameComponent implements OnInit {
 
   private handleError(message: string) {
     this.dataCollection.logError(message);
+  }
+
+  completeGame(score: number) {
+    this.gameComplete.emit(score);
   }
 }
