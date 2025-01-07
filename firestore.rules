@@ -11,7 +11,35 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
-    // Analytics collection
+    // Scores collection - Enhanced rules
+    match /scores/{scoreId} {
+      // Allow reading all scores
+      allow read: if true;
+      
+      // Create rules: 
+      // - Authenticated users can create their own scores
+      // - Guest scores can be created without authentication
+      // - Prevent injection of malicious data
+      allow create: if 
+        (request.auth != null) || 
+        (request.resource.data.keys().hasAll(['isGuest', 'sessionId']) && 
+         request.resource.data.isGuest == true &&
+         request.resource.data.sessionId is string &&
+         request.resource.data.sessionId.size() > 0 &&
+         request.resource.data.playerId is string);
+      
+      // Update rules:
+      // - Only the original player or admin can modify the score
+      // - Prevent modifying critical fields after creation
+      allow update: if 
+        isAuthenticated() && 
+        (request.auth.uid == resource.data.playerId || isAdmin()) &&
+        // Prevent changing critical fields
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['totalScore', 'quarterScores', 'updatedAt']);
+    }
+
+    // Existing rules for other collections remain the same
     match /analytics/{sessionId} {
       allow create: if true;  
       allow read: if isAuthenticated() &&
@@ -19,7 +47,6 @@ service cloud.firestore {
       allow update: if isAuthenticated();
     }
 
-    // Sessions collection
     match /sessions/{sessionId} {
       allow create: if true;
       allow read: if isAuthenticated() &&
@@ -28,7 +55,6 @@ service cloud.firestore {
         (resource.data.userId == request.auth.uid || !resource.data.userId);
     }
 
-    // Users collection
     match /users/{userId} {
       allow read: if isAuthenticated() && 
         (request.auth.uid == userId || isAdmin());
@@ -41,33 +67,20 @@ service cloud.firestore {
       }
     }
     
-    // Game progress collection
     match /gameProgress/{docId} {
       allow read, write: if isAuthenticated();
     }
     
-    // Quarters collection
     match /quarters/{quarterId} {
       allow read: if true;
       allow write: if isAdmin();
     }
-    
-    // Scores collection
-    match /scores/{scoreId} {
-      allow read: if true;
-      allow create: if request.auth != null || 
-      request.resource.data.isGuest == true;
-      allow write: if isAuthenticated() && 
-        (request.auth.uid == resource.data.playerId || isAdmin());
-    }
 
-    // Config collection
     match /config/{configId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // Custom events collection
     match /customEvents/{eventId} {
       allow read: if true;
       allow write: if isAdmin();
