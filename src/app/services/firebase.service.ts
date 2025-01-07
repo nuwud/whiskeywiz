@@ -49,6 +49,14 @@ export class FirebaseService {
     await setDoc(doc(this.scoresRef), { quarterId, ...score });
   }
 
+  // Added to align with game component
+  async saveScore(score: { score: number, timestamp: number }): Promise<void> {
+    await this.submitScore('CURRENT_QUARTER', { 
+      score: score.score, 
+      timestamp: score.timestamp 
+    });
+  }
+
   logEvent(eventName: string, params?: Record<string, any>) {
     this.analytics.logEvent(eventName, params);
   }
