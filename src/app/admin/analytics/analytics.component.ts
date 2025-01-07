@@ -14,6 +14,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   @ViewChild('deviceChart') deviceChartRef!: ElementRef;
   @ViewChild('participationChart') participationChartRef!: ElementRef;
 
+  selectedPeriod: string = '30'; // Default to 30 days
   private charts: Record<string, Chart> = {};
   private subscription: Subscription = new Subscription();
 
@@ -28,8 +29,12 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     Object.values(this.charts).forEach(chart => chart.destroy());
   }
 
+  updatePeriod() {
+    this.loadCharts(); // Reload charts with new period
+  }
+
   private async loadCharts() {
-    const data = await this.analyticsService.getAnalyticsData();
+    const data = await this.analyticsService.getAnalyticsData(parseInt(this.selectedPeriod));
     if (!data) return;
 
     this.createParticipationChart(data.participation);
@@ -56,5 +61,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Similar implementations for other chart creation methods...
+  // Add additional chart creation methods as placeholders
+  private createCompletionChart(data: any) {}
+  private createDeviceChart(data: any) {}
+  private createAccuracyChart(data: any) {}
 }

@@ -1,88 +1,62 @@
 # Whiskey Wiz Project Overview
 
-## Strategic Vision
-Interactive whiskey tasting platform transforming consumer engagement through gamification, data collection, and community building.
+## Recent Major Updates
+- Firebase Service `saveScore` method enhanced
+- Authentication handling improved
+- Analytics component error resolution
+- Module declaration conflicts fixed
 
-## Technical Architecture
+## Technical Stack
+- Angular 17.2
+- Firebase/Firestore
+- Web Components
+- Firebase Authentication
 
-### Technology Stack
-- Frontend: Angular 17.2
-- Backend: Firebase/Firestore
-- Authentication: Firebase Auth
-- Deployment: Shopify, Firebase Hosting
-- Design: Custom Hermona typography
+## Key Architectural Components
 
-### Core Systems
-1. **Game Engine**
-   - Quarterly sample-based gameplay
-   - Dynamic scoring algorithm
-   - Real-time leaderboard tracking
+### Services
+- `FirebaseService`: Flexible score saving
+  - Handles authenticated and guest users
+  - Supports multiple score saving scenarios
+- `AuthService`: User authentication management
+- `GameService`: Game state and scoring logic
+- `AnalyticsService`: Game performance tracking
 
-2. **Data Collection**
-   - Anonymized user interactions
-   - Whiskey preference mapping
-   - Analytics-driven product development
+### Recent Technical Improvements
+1. Dynamic score saving mechanism
+2. Robust user ID handling
+3. Flexible authentication methods
+4. Error-tolerant score submission
 
-3. **Authentication Framework**
-   - Guest/Registered user modes
-   - Role-based access control
-   - Seamless Shopify integration
+## Current Development Focus
+1. Web component stability
+2. Firebase integration refinement
+3. Score calculation optimization
+4. Mobile responsiveness
+5. Analytics tracking improvements
 
-## Game Mechanics
-
-### Scoring Model
-- Age Guess: 0-30 points
-- Proof Estimation: 0-30 points
-- Mashbill Identification: 10 points
-- Bonus: Perfect guesses
-
-### Quarterly Progression
-- 4 unique whiskey samples
-- MMYY routing format
-- Progressive difficulty
-
-## Technical Challenges & Solutions
-
-### Authentication
-- Token refresh mechanism
-- Persistent session management
-- Secure role assignment
-
-### Firebase Integration
-- Centralized configuration
-- Provider pattern implementation
-- Robust error handling
-
-### Routing Strategy
-- Hash-based navigation
-- Web component embedding
-- Dynamic quarter loading
-
-## Performance Optimization
-- Lazy-loaded modules
-- Minimal bundle size
-- Responsive design
-- Progressive web app principles
-
-## Data Strategy
-- Anonymized user tracking
-- Preference pattern analysis
-- Product recommendation engine
-
-## Roadmap
-1. Advanced analytics dashboard
-2. Enhanced mobile experience
-3. Social sharing features
-4. Machine learning integration
-
-## Technical Debt Tracking
+## Known Technical Challenges
 - Authentication state management
-- Mobile UI refinements
-- Performance monitoring
+- Firebase initialization complexity
+- Routing intricacies
+- Mobile UI optimization
 
-## Ecosystem
-- Platform: Shopify
-- Deployment: Firebase
-- Design: Blind Barrels Brand
+## Deployment Workflow
+```bash
+# Clean previous builds
+npm run clean
+
+# Build web components
+npm run build:elements
+
+# Deploy to Firebase
+firebase deploy --only hosting
+```
+
+## Next Implementation Steps
+1. Complete comprehensive analytics dashboard
+2. Enhance mobile user experience
+3. Implement advanced data export features
+4. Refine Shopify integration
 
 Last Updated: January 2025
