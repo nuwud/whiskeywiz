@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist/whiskey-wiz",
+    "public": "dist/whiskeywiz",
     "ignore": [
       "firebase.json",
       "**/.*",
