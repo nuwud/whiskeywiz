@@ -91,6 +91,11 @@ yarn-error.log
 .history/*
 .angular
 
-
+# NX Cache
 .nx/cache
 .nx/workspace-data
+
+# Docker specific
+.docker
+docker-compose.override.yml
+*.env.docker

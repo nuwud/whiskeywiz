@@ -12,8 +12,8 @@ RUN apt-get update && apt-get install -y \
 # Copy project configuration files
 COPY package*.json ./
 COPY nx.json ./
+COPY project.json ./
 COPY tsconfig*.json ./
-COPY angular.json ./
 
 # Install global dependencies
 RUN npm install -g @angular/cli @nrwl/nx

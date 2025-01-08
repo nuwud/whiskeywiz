@@ -1,13 +1,42 @@
-node_modules
+# Version control
 .git
 .gitignore
-README.md
+
+# Dependencies
+node_modules
+.nx/cache
+.angular
+
+# Build outputs
 dist
 coverage
-.angular
-.nx
-*.log
+
+# Environment
 .env
-.dockerignore
-Dockerfile
-docker-compose.yml
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+firebase-debug.log*
+
+# IDE
+.idea
+.vscode
+*.sublime-workspace
+*.sublime-project
+
+# Test
+coverage
+
+# Docker
+.docker
+docker-compose.override.yml
+
+# Misc
+.DS_Store
+*.md
+!README.md
+!DOCKER_CLEANUP.md
