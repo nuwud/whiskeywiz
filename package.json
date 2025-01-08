@@ -29,10 +29,12 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^17.3.11",
-    "@angular/cli": "17.0.0",
+    "@angular/cli": "^17.0.0",
     "@angular/compiler-cli": "17.0.0",
-    "@nrwl/angular": "^17.2.0",
-    "@nrwl/workspace": "^17.2.0",
+    "@nrwl/angular": "^17.3.2",
+    "@nrwl/workspace": "^17.3.2",
+    "@nx/angular": "20.3.1",
+    "@nx/workspace": "20.3.1",
     "@types/jasmine": "4.3.0",
     "@types/node": "16.11.35",
     "jasmine-core": "4.6.0",
@@ -41,7 +43,7 @@
     "karma-coverage": "2.2.0",
     "karma-jasmine": "5.1.0",
     "karma-jasmine-html-reporter": "2.1.0",
-    "nx": "^17.2.0",
+    "nx": "20.3.1",
     "typescript": "5.2.2"
   }
 }
