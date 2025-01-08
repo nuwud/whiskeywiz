@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist/whiskeywiz",
+    "public": "dist/whiskey-wiz",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -13,18 +13,35 @@
       }
     ]
   },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
   "emulators": {
-    "hosting": {
-      "port": 5000
-    },
-    "ui": {
-      "enabled": true
-    },
     "auth": {
       "port": 9099
     },
+    "functions": {
+      "port": 5001
+    },
     "firestore": {
       "port": 8080
+    },
+    "database": {
+      "port": 9000
+    },
+    "hosting": {
+      "port": 5000
+    },
+    "storage": {
+      "port": 9199
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000
     }
   }
 }

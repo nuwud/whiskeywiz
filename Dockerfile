@@ -1,36 +1,27 @@
-# Use official Node.js LTS image
-FROM node:20.18.1
+# Use official Node.js LTS image with Alpine for smaller size
+FROM node:20.18.1-alpine
 
 # Set working directory
 WORKDIR /app
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
-    git \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache git
 
-# Install Firebase Tools globally
-RUN npm install -g firebase-tools
+# Install global dependencies in a single layer
+RUN npm install -g @nrwl/cli nx firebase-tools
 
-# Copy package files
+# Copy package files first for better caching
 COPY package*.json ./
-COPY nx.json ./
-COPY project.json ./
+COPY nx.json project.json ./
 COPY tsconfig*.json ./
 
-# Install global dependencies
-RUN npm install -g @nrwl/cli
-RUN npm install -g nx
+# Install all dependencies in a single layer
+RUN npm ci && \
+    npm install chart.js @types/chart.js sass && \
+    npm cache clean --force
 
-# Install project dependencies
-RUN npm install
-
-# Copy project files
+# Copy the rest of the application
 COPY . .
-
-# Install additional dependencies
-RUN npm install chart.js @types/chart.js
-RUN npm install sass
 
 # Expose port
 EXPOSE 4200

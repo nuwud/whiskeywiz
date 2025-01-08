@@ -1,13 +1,15 @@
 services:
   web:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "4200:4200"
     volumes:
       - .:/app
       - /app/node_modules
     environment:
-      - FIREBASE_TOKEN=${FIREBASE_TOKEN}
+      - NODE_ENV=development
       - FIREBASE_PROJECT_ID=whiskeywiz2
       - FIREBASE_API_KEY=AIzaSyCqZMaGpJGf5veYgTXmytg1bLerva-of0U
       - FIREBASE_AUTH_DOMAIN=whiskeywiz2.firebaseapp.com
@@ -17,13 +19,25 @@ services:
       - FIREBASE_APP_ID=1:555320797929:web:0d4b062d7f2ab330fc1e78
       - FIREBASE_MEASUREMENT_ID=G-SK0TJJEPF5
     command: npx nx serve whiskey-wiz --host 0.0.0.0
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:4200"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   firebase:
-    image: andreysenov/firebase-tools
+    image: andreysenov/firebase-tools:latest
+    ports:
+      - "4000:4000"  # Emulator UI
+      - "5000:5000"  # Hosting
+      - "8080:8080"  # Firestore
+      - "9000:9000"  # Realtime Database
+      - "9099:9099"  # Auth
+      - "9199:9199"  # Storage
     volumes:
       - .:/app
+    working_dir: /app
     environment:
       - FIREBASE_TOKEN=${FIREBASE_TOKEN}
       - FIREBASE_PROJECT_ID=whiskeywiz2
-    working_dir: /app
     command: firebase emulators:start --project whiskeywiz2
