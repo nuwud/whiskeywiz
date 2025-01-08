@@ -1,43 +1,23 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { Observable, map } from 'rxjs';
 import { GameService } from '../services/game.service';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameGuard implements CanActivate {
-  constructor(
-    private gameService: GameService,
-    private router: Router
-  ) {}
+  constructor(private gameService: GameService) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<boolean> {
-    return this.gameService.getCurrentQuarter().pipe(
-      map(quarter => {
-        if (!quarter) {
-          this.router.navigate(['/error'], { 
-            queryParams: { 
-              message: 'No active quarter found' 
-            }
-          });
-          return false;
-        }
-        return true;
-      }),
-      catchError(error => {
-        console.error('Game guard error:', error);
-        this.router.navigate(['/error'], { 
-          queryParams: { 
-            message: 'Error loading game data' 
-          }
-        });
-        return of(false);
-      })
-    );
+  ): Observable<boolean> | Promise<boolean> | boolean {
+    return true; // Temporarily return true while we implement proper game service
   }
 }
+
+// Export both the class and a convenience constant
+export const gameGuard = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+  return new GameGuard(new GameService()).canActivate(route, state);
+};

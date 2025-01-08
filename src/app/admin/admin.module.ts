@@ -1,27 +1,21 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { AdminRoutingModule } from './admin-routing.module';
 import { AdminComponent } from './admin.component';
 import { SharedModule } from '../shared/shared.module';
-import { AnalyticsComponent } from './analytics/analytics.component';
-import { AdminQuartersComponent } from './quarters/admin-quarters.component';
-import { AdminQuarterEditComponent } from './quarters/admin-quarter-edit.component';
-import { AdminRoutingModule } from './admin-routing.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @NgModule({
   declarations: [
-    AdminComponent,
-    AnalyticsComponent,
-    AdminQuartersComponent,
-    AdminQuarterEditComponent
+    AdminComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
+    AdminRoutingModule,
     SharedModule,
-    AdminRoutingModule
-  ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    AnalyticsModule
+  ]
 })
 export class AdminModule { }

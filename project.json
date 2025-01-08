@@ -1,10 +1,4 @@
 {
-  // 🚨 IMPORTANT PROJECT CONFIGURATION NOTE 🚨
-  // This project uses Nx workspace with project.json instead of angular.json
-  // If you're looking for Angular project configuration, this is the correct file
-  // Do NOT search for or use angular.json, as it is not used in this Nx workspace
-  // Refer to README.md for more details about project configuration
-
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "name": "whiskey-wiz",
   "projectType": "application",
@@ -12,6 +6,57 @@
   "sourceRoot": "src",
   "prefix": "app",
   "targets": {
-    // ... rest of the configuration remains the same
+    "build": {
+      "executor": "@angular-devkit/build-angular:browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/whiskey-wiz",
+        "index": "src/index.html",
+        "main": "src/main.ts",
+        "polyfills": ["zone.js"],
+        "tsConfig": "tsconfig.app.json",
+        "assets": ["src/favicon.ico", "src/assets"],
+        "styles": ["src/styles.css"],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "browserTarget": "whiskey-wiz:build:production"
+        },
+        "development": {
+          "browserTarget": "whiskey-wiz:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    }
   }
 }

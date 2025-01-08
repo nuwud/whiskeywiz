@@ -43,5 +43,10 @@
       "!{projectRoot}/eslint.config.js"
     ]
   },
-  "nxCloudId": "6716788a7d41ed36a4e8ed61"
+  "nxCloud": {
+    "enabled": false,
+    "useDaemonProcess": false,
+    "accessToken": ""
+  },
+  "parallel": 1
 }
