@@ -5,15 +5,13 @@
     "types": [
       "jasmine",
       "node"
-    ],
-    "esModuleInterop": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowJs": true,
-    "skipLibCheck": true
+    ]
   },
   "include": [
     "src/**/*.spec.ts",
     "src/**/*.d.ts"
+  ],
+  "files": [
+    "src/test.ts"
   ]
 }

@@ -17,5 +17,21 @@
             "priority": 4
         }
     ],
-    "mocha.enabled": false
+    "mocha.enabled": false,
+    "angular-schematics.schematicsDefaultOptions": {
+        "angular-*": {
+            "style": "scss",
+            "externalTemplate": true,
+            "shadowDom": true,
+            "inlineStyle": true
+        },
+        "angular-component": {
+            "ngOnInit": true,
+            "skipPathSubfolder": true
+        },
+        "angular-page": {
+            "skipNgOnInit": false,
+            "skipPathSubfolder": true
+        }
+    }
 }
