@@ -1,82 +1,113 @@
-# WhiskeyWiz
+# Whiskey Wiz Game
 
-## 👋 HEY CLAUDE! START HERE!
-Before doing ANYTHING else:
-1. READ docs/FOR_CLAUDE.md FIRST
-2. ALWAYS verify files exist before suggesting changes
-3. NEVER modify core game rules or patterns
-4. Each quarter has EXACTLY 4 samples (A, B, C, D)
-5. Quarter IDs are ALWAYS MMYY format (e.g., 0324)
+## 🎮 Project Overview
+A web-based whiskey tasting game that allows players to guess attributes of whiskey samples and compete quarterly. Built with Angular and Firebase, designed to be embedded in Shopify pages.
 
-## For Human Developers
+## 📋 Key Features
+- Quarterly whiskey tasting challenges
+- Guest and authenticated play modes
+- Score tracking and leaderboards
+- Analytics and user tracking
+- Shopify integration via web components
 
-### Project Configuration
-🚨 **Angular Configuration Alert** 🚨
+## 🛠 Technical Stack
+- Angular 17.2
+- Firebase/Firestore
+- Custom web components for Shopify
+- Firebase Authentication
+- Firebase Analytics
 
-This project uses Nx workspace with `project.json` instead of the traditional `angular.json`. If you're looking for project configuration:
-
-- **Do NOT use `angular.json`**
-- **Use `project.json` for build and development settings**
-
-### Quick Links
-- [Project Documentation](docs/FOR_CLAUDE.md)
-- [Architecture Overview](docs/ARCHITECTURE_JAN2025.md)
-- [Nx Documentation](https://nx.dev)
-- [Angular Nx Guide](https://nx.dev/angular/overview)
-
-### Development Setup
-1. Ensure you have Nx CLI installed:
-   ```bash
-   npm install -g @nrwl/cli
-   ```
-
-2. Install project dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Run the development server:
-   ```bash
-   nx serve
-   ```
-
-### Build and Deployment
-Use Nx commands for building:
-```bash
-nx build
-nx serve
-nx test
+## 🗂 Project Structure
+```
+src/
+├── app/
+│   ├── shared/           # Shared components and models
+│   ├── quarters/         # Quarterly game components
+│   ├── services/         # Firebase and game services
+│   ├── admin/           # Admin interface
+│   └── elements/        # Web component wrappers
+└── assets/
+    └── images/          # UI elements and assets
 ```
 
-### Troubleshooting
-If you encounter configuration-related issues:
-- Check `project.json`
-- Verify Nx and Angular CLI versions
-- Ensure Node.js is compatible with the project's Angular version
+## 🎯 Important Notes for Claude
+1. Check `/docs/FOR_CLAUDE.md` first - Contains essential setup and MCP usage instructions
+2. Implementation notes in `/docs/IMPLEMENTATION_NOTES.md` track all changes
+3. Use quarters/1225 as reference for component implementation
+4. All quarters follow standard template pattern
 
-## About WhiskeyWiz
-This is a quarterly whiskey tasting game where players:
-- Receive 4 whiskey samples each quarter
-- Guess age, proof, and mashbill for each
-- Earn points based on accuracy
-- Can share their results
+## 🔑 Key Components
+1. BaseQuarterComponent: Base class for all quarters
+2. QuarterComponent: Router component for dynamic loading
+3. GameBanner: Main game interface component
+4. AdminComponent: Quarter management interface
 
-The game integrates with Shopify via web components and uses Firebase for the backend.
-
-## For Claude: File Verification
-ALWAYS use these commands to verify files before suggesting changes:
+## 📝 Component Template
 ```typescript
-// Check if files exist:
-<function_calls>
-<invoke name="list_directory">
-<parameter name="path">path/to/check</parameter>
-</invoke>
+export class Q[MMYY]Component extends BaseQuarterComponent {
+  @Input() override quarterId: string = '[MMYY]';
+  @Input() override quarterName: string = '[Month YYYY]';
 
-// Read file contents:
-<function_calls>
-<invoke name="read_file">
-<parameter name="path">file/to/read</parameter>
-</invoke>
+  constructor(
+    firebaseService: FirebaseService,
+    authService: AuthService,
+    analyticsService: AnalyticsService
+  ) {
+    super(firebaseService, authService, analyticsService);
+  }
+}
 ```
 
-Remember: VERIFY FIRST, suggest changes second!
+## 🔄 Recent Updates
+- Standardized all quarter components
+- Removed direct FIREBASE_APP injection
+- Updated module architecture
+- Enhanced analytics tracking
+
+## 🚀 Development Workflow
+1. Check FOR_CLAUDE.md for setup
+2. Follow implementation notes for context
+3. Use standard quarter template
+4. Update documentation
+
+## 📚 Documentation Index
+1. /docs/FOR_CLAUDE.md - Essential setup instructions
+2. /docs/IMPLEMENTATION_NOTES.md - Change history
+3. README.md - Project overview
+
+## 🔍 Common Tasks
+1. Adding new quarters: Follow quarter template in quarters/
+2. Component updates: Check implementation notes
+3. Working with files: Use window.fs.readFile in components
+4. Firebase operations: Use service methods
+
+## 🚨 Error Handling
+1. Firebase Connection:
+   - Always use try/catch with async operations
+   - Implement reconnection logic
+   - Provide clear user feedback
+
+2. Game State:
+   - Save progress periodically
+   - Handle session timeouts
+   - Provide recovery options
+
+3. Data Validation:
+   - Validate all form inputs
+   - Check score calculations
+   - Verify quarter data integrity
+
+4. Common Issues:
+   - Network disconnections during gameplay
+   - Score submission failures
+   - Authentication timeouts
+   - Browser compatibility
+
+## 🤝 Contributing
+Please update implementation notes when making changes.
+
+## 📎 Important Files
+- src/app/quarters/base-quarter.component.ts
+- src/app/shared/shared.module.ts
+- src/app/quarters/quarters.module.ts
+- docs/FOR_CLAUDE.md
