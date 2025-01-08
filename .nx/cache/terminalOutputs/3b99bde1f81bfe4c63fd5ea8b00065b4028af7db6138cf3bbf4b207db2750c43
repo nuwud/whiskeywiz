@@ -1,0 +1,566 @@
+Option "browserTarget" is deprecated: Use 'buildTarget' instead.
+
+Warning: This is a simple server for use in testing or debugging Angular applications
+locally. It hasn't been reviewed for security issues.
+
+Binding this server to an open connection can result in compromising your application or
+computer. Using a different host than the one passed to the "--host" flag might result in
+websocket connection issues. You might need to use "--disable-host-check" if that's the
+case.
+    
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+
+Initial chunk files              | Names              |  Raw size
+vendor.js                        | vendor             |   5.79 MB | 
+polyfills.js                     | polyfills          | 331.82 kB | 
+main.js                          | main               | 192.60 kB | 
+runtime.js                       | runtime            |  12.63 kB | 
+
+                                 | Initial total      |   6.32 MB
+
+Lazy chunk files                 | Names              |  Raw size
+src_app_admin_admin_module_ts.js | admin-admin-module |  67.84 kB | 
+
+Build at: 2025-01-08T22:07:53.546Z - Hash: 6e3ec126e89ec4cd - Time: 20913ms
+
+./src/app/admin/analytics/analytics.component.ts:2:0-33 - Error: Module not found: Error: Can't resolve 'chart.js' in '/app/src/app/admin/analytics'
+
+./src/main.ts:3:0-48 - Error: Module not found: Error: Can't resolve 'chart.js' in '/app/src'
+
+Error: Module not found: Error: Can't resolve '/app/src/app/admin/admin.component.scss?ngResource' in '/app'
+
+Error: [96msrc/app/admin/admin.component.html[0m:[93m64[0m:[93m38[0m - [91merror[0m[90m TS7053: [0mElement implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+  No index signature with a parameter of type 'string' was found on type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+
+[7m64[0m                 <select [(ngModel)]="selectedQuarter.samples['sample' + num].mashbill" title="Mashbill">
+[7m  [0m [91m                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  [96msrc/app/admin/admin.component.ts[0m:[93m21[0m:[93m16[0m
+    [7m21[0m   templateUrl: './admin.component.html',
+    [7m  [0m [96m               ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    Error occurs in the template of component AdminComponent.
+
+
+Error: [96msrc/app/admin/admin.component.html[0m:[93m64[0m:[93m38[0m - [91merror[0m[90m TS7053: [0mElement implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+  No index signature with a parameter of type 'string' was found on type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+
+[7m64[0m                 <select [(ngModel)]="selectedQuarter.samples['sample' + num].mashbill" title="Mashbill">
+[7m  [0m [91m                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  [96msrc/app/admin/admin.component.ts[0m:[93m21[0m:[93m16[0m
+    [7m21[0m   templateUrl: './admin.component.html',
+    [7m  [0m [96m               ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    Error occurs in the template of component AdminComponent.
+
+
+Error: [96msrc/app/admin/admin.component.html[0m:[93m76[0m:[93m51[0m - [91merror[0m[90m TS7053: [0mElement implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+  No index signature with a parameter of type 'string' was found on type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+
+[7m76[0m                 <input type="number" [(ngModel)]="selectedQuarter.samples['sample' + num].proof" title="Proof">
+[7m  [0m [91m                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  [96msrc/app/admin/admin.component.ts[0m:[93m21[0m:[93m16[0m
+    [7m21[0m   templateUrl: './admin.component.html',
+    [7m  [0m [96m               ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    Error occurs in the template of component AdminComponent.
+
+
+Error: [96msrc/app/admin/admin.component.html[0m:[93m76[0m:[93m51[0m - [91merror[0m[90m TS7053: [0mElement implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+  No index signature with a parameter of type 'string' was found on type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+
+[7m76[0m                 <input type="number" [(ngModel)]="selectedQuarter.samples['sample' + num].proof" title="Proof">
+[7m  [0m [91m                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  [96msrc/app/admin/admin.component.ts[0m:[93m21[0m:[93m16[0m
+    [7m21[0m   templateUrl: './admin.component.html',
+    [7m  [0m [96m               ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    Error occurs in the template of component AdminComponent.
+
+
+Error: [96msrc/app/admin/admin.component.html[0m:[93m81[0m:[93m51[0m - [91merror[0m[90m TS7053: [0mElement implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+  No index signature with a parameter of type 'string' was found on type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+
+[7m81[0m                 <input type="number" [(ngModel)]="selectedQuarter.samples['sample' + num].age" title="Age" placeholder="Enter age">
+[7m  [0m [91m                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  [96msrc/app/admin/admin.component.ts[0m:[93m21[0m:[93m16[0m
+    [7m21[0m   templateUrl: './admin.component.html',
+    [7m  [0m [96m               ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    Error occurs in the template of component AdminComponent.
+
+
+Error: [96msrc/app/admin/admin.component.html[0m:[93m81[0m:[93m51[0m - [91merror[0m[90m TS7053: [0mElement implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+  No index signature with a parameter of type 'string' was found on type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+
+[7m81[0m                 <input type="number" [(ngModel)]="selectedQuarter.samples['sample' + num].age" title="Age" placeholder="Enter age">
+[7m  [0m [91m                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  [96msrc/app/admin/admin.component.ts[0m:[93m21[0m:[93m16[0m
+    [7m21[0m   templateUrl: './admin.component.html',
+    [7m  [0m [96m               ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    Error occurs in the template of component AdminComponent.
+
+
+Error: [96msrc/app/admin/admin.component.html[0m:[93m87[0m:[93m40[0m - [91merror[0m[90m TS7053: [0mElement implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+  No index signature with a parameter of type 'string' was found on type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+
+[7m87[0m                   <select [(ngModel)]="selectedQuarter.samples['sample' + num].shopifyProduct"
+[7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  [96msrc/app/admin/admin.component.ts[0m:[93m21[0m:[93m16[0m
+    [7m21[0m   templateUrl: './admin.component.html',
+    [7m  [0m [96m               ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    Error occurs in the template of component AdminComponent.
+
+
+Error: [96msrc/app/admin/admin.component.html[0m:[93m87[0m:[93m40[0m - [91merror[0m[90m TS7053: [0mElement implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+  No index signature with a parameter of type 'string' was found on type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+
+[7m87[0m                   <select [(ngModel)]="selectedQuarter.samples['sample' + num].shopifyProduct"
+[7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  [96msrc/app/admin/admin.component.ts[0m:[93m21[0m:[93m16[0m
+    [7m21[0m   templateUrl: './admin.component.html',
+    [7m  [0m [96m               ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    Error occurs in the template of component AdminComponent.
+
+
+Error: [96msrc/app/admin/admin.component.html[0m:[93m98[0m:[93m29[0m - [91merror[0m[90m TS7053: [0mElement implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+  No index signature with a parameter of type 'string' was found on type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+
+[7m98[0m                 <div *ngIf="selectedQuarter.samples['sample' + num].shopifyProduct as product"
+[7m  [0m [91m                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  [96msrc/app/admin/admin.component.ts[0m:[93m21[0m:[93m16[0m
+    [7m21[0m   templateUrl: './admin.component.html',
+    [7m  [0m [96m               ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    Error occurs in the template of component AdminComponent.
+
+
+Error: [96msrc/app/admin/admin.component.html[0m:[93m108[0m:[93m39[0m - [91merror[0m[90m TS7053: [0mElement implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+  No index signature with a parameter of type 'string' was found on type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+
+[7m108[0m                          [(ngModel)]="selectedQuarter.samples['sample' + num].revealed">
+[7m   [0m [91m                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  [96msrc/app/admin/admin.component.ts[0m:[93m21[0m:[93m16[0m
+    [7m21[0m   templateUrl: './admin.component.html',
+    [7m  [0m [96m               ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    Error occurs in the template of component AdminComponent.
+
+
+Error: [96msrc/app/admin/admin.component.html[0m:[93m108[0m:[93m39[0m - [91merror[0m[90m TS7053: [0mElement implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+  No index signature with a parameter of type 'string' was found on type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+
+[7m108[0m                          [(ngModel)]="selectedQuarter.samples['sample' + num].revealed">
+[7m   [0m [91m                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  [96msrc/app/admin/admin.component.ts[0m:[93m21[0m:[93m16[0m
+    [7m21[0m   templateUrl: './admin.component.html',
+    [7m  [0m [96m               ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    Error occurs in the template of component AdminComponent.
+
+
+Error: [96msrc/app/admin/admin.component.ts[0m:[93m86[0m:[93m45[0m - [91merror[0m[90m TS2551: [0mProperty 'getProducts' does not exist on type 'ShopifyService'. Did you mean 'getProduct'?
+
+[7m86[0m     const productsSub = this.shopifyService.getProducts()
+[7m  [0m [91m                                            ~~~~~~~~~~~[0m
+
+  [96msrc/app/services/shopify.service.ts[0m:[93m115[0m:[93m3[0m
+    [7m115[0m   getProduct(handle: string): Observable<ShopifyProduct> {
+    [7m   [0m [96m  ~~~~~~~~~~[0m
+    'getProduct' is declared here.
+
+
+Error: [96msrc/app/admin/admin.component.ts[0m:[93m88[0m:[93m18[0m - [91merror[0m[90m TS7006: [0mParameter 'products' implicitly has an 'any' type.
+
+[7m88[0m       .subscribe(products => {
+[7m  [0m [91m                 ~~~~~~~~[0m
+
+
+Error: [96msrc/app/admin/admin.component.ts[0m:[93m121[0m:[93m22[0m - [91merror[0m[90m TS7053: [0mElement implicitly has an 'any' type because expression of type 'keyof Quarter' can't be used to index type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+  Property 'id' does not exist on type '{ sample1: Sample; sample2: Sample; sample3: Sample; sample4: Sample; }'.
+
+[7m121[0m       const sample = this.selectedQuarter!.samples[`sample${num}` as keyof typeof this.selectedQuarter!.samples];
+[7m   [0m [91m                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+Error: [96msrc/app/admin/admin.component.ts[0m:[93m121[0m:[93m104[0m - [91merror[0m[90m TS1005: [0m']' expected.
+
+[7m121[0m       const sample = this.selectedQuarter!.samples[`sample${num}` as keyof typeof this.selectedQuarter!.samples];
+[7m   [0m [91m                                                                                                       ~[0m
+
+
+Error: [96msrc/app/admin/admin.component.ts[0m:[93m121[0m:[93m112[0m - [91merror[0m[90m TS1005: [0m',' expected.
+
+[7m121[0m       const sample = this.selectedQuarter!.samples[`sample${num}` as keyof typeof this.selectedQuarter!.samples];
+[7m   [0m [91m                                                                                                               ~[0m
+
+
+Error: [96msrc/app/admin/analytics/analytics.component.html[0m:[93m5[0m:[93m13[0m - [91merror[0m[90m NG8002: [0mCan't bind to 'ngModel' since it isn't a known property of 'select'.
+
+[7m5[0m     <select [(ngModel)]="selectedPeriod" (change)="updatePeriod()" aria-label="Select time period" id="periodSelect">
+[7m [0m [91m            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  [96msrc/app/admin/analytics/analytics.component.ts[0m:[93m8[0m:[93m16[0m
+    [7m8[0m   templateUrl: './analytics.component.html',
+    [7m [0m [96m               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    Error occurs in the template of component AnalyticsComponent.
+
+
+Error: [96msrc/app/admin/analytics/analytics.component.html[0m:[93m5[0m:[93m26[0m - [91merror[0m[90m TS2322: [0mType 'Event' is not assignable to type 'string'.
+
+[7m5[0m     <select [(ngModel)]="selectedPeriod" (change)="updatePeriod()" aria-label="Select time period" id="periodSelect">
+[7m [0m [91m                         ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  [96msrc/app/admin/analytics/analytics.component.ts[0m:[93m8[0m:[93m16[0m
+    [7m8[0m   templateUrl: './analytics.component.html',
+    [7m [0m [96m               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    Error occurs in the template of component AnalyticsComponent.
+
+
+Error: [96msrc/app/admin/analytics/analytics.component.ts[0m:[93m2[0m:[93m23[0m - [91merror[0m[90m TS2307: [0mCannot find module 'chart.js' or its corresponding type declarations.
+
+[7m2[0m import { Chart } from 'chart.js';
+[7m [0m [91m                      ~~~~~~~~~~[0m
+
+
+Error: [96msrc/app/admin/quarters/admin-quarters.component.ts[0m:[93m110[0m:[93m51[0m - [91merror[0m[90m TS2551: [0mProperty 'getQuarters' does not exist on type 'FirebaseService'. Did you mean 'getAllQuarters'?
+
+[7m110[0m       const quarters = await this.firebaseService.getQuarters();
+[7m   [0m [91m                                                  ~~~~~~~~~~~[0m
+
+  [96msrc/app/services/firebase.service.ts[0m:[93m14[0m:[93m3[0m
+    [7m14[0m   getAllQuarters(): Observable<Quarter[]> {
+    [7m  [0m [96m  ~~~~~~~~~~~~~~[0m
+    'getAllQuarters' is declared here.
+
+
+Error: [96msrc/app/admin/quarters/admin-quarters.component.ts[0m:[93m111[0m:[93m38[0m - [91merror[0m[90m TS7006: [0mParameter 'a' implicitly has an 'any' type.
+
+[7m111[0m       this.quarters = quarters.sort((a, b) => b.id.localeCompare(a.id));
+[7m   [0m [91m                                     ~[0m
+
+
+Error: [96msrc/app/admin/quarters/admin-quarters.component.ts[0m:[93m111[0m:[93m41[0m - [91merror[0m[90m TS7006: [0mParameter 'b' implicitly has an 'any' type.
+
+[7m111[0m       this.quarters = quarters.sort((a, b) => b.id.localeCompare(a.id));
+[7m   [0m [91m                                        ~[0m
+
+
+Error: [96msrc/app/auth/login/login.component.ts[0m:[93m106[0m:[93m19[0m - [91merror[0m[90m TS2339: [0mProperty 'user' does not exist on type 'never'.
+
+[7m106[0m       if (result?.user?.email) {
+[7m   [0m [91m                  ~~~~[0m
+
+
+Error: [96msrc/app/auth/login/login.component.ts[0m:[93m107[0m:[93m51[0m - [91merror[0m[90m TS2339: [0mProperty 'user' does not exist on type 'never'.
+
+[7m107[0m         localStorage.setItem('playerName', result.user.email);
+[7m   [0m [91m                                                  ~~~~[0m
+
+
+Error: [96msrc/app/auth/shopify-callback/shopify-callback.component.ts[0m:[93m24[0m:[93m27[0m - [91merror[0m[90m TS2339: [0mProperty 'handleCallback' does not exist on type 'ShopifyService'.
+
+[7m24[0m       this.shopifyService.handleCallback(code).subscribe(
+[7m  [0m [91m                          ~~~~~~~~~~~~~~[0m
+
+
+Error: [96msrc/app/auth/shopify-callback/shopify-callback.component.ts[0m:[93m29[0m:[93m9[0m - [91merror[0m[90m TS7006: [0mParameter 'error' implicitly has an 'any' type.
+
+[7m29[0m         error => {
+[7m  [0m [91m        ~~~~~[0m
+
+
+Error: [96msrc/app/resolvers/quarter.resolver.ts[0m:[93m24[0m:[93m31[0m - [91merror[0m[90m TS2339: [0mProperty 'getQuarter' does not exist on type 'GameService'.
+
+[7m24[0m       return this.gameService.getQuarter(quarterId).pipe(
+[7m  [0m [91m                              ~~~~~~~~~~[0m
+
+
+Error: [96msrc/app/resolvers/quarter.resolver.ts[0m:[93m43[0m:[93m29[0m - [91merror[0m[90m TS2339: [0mProperty 'getCurrentQuarter' does not exist on type 'GameService'.
+
+[7m43[0m     return this.gameService.getCurrentQuarter().pipe(
+[7m  [0m [91m                            ~~~~~~~~~~~~~~~~~[0m
+
+
+Error: [96msrc/app/services/analytics.service.ts[0m:[93m4[0m:[93m23[0m - [91merror[0m[90m TS2307: [0mCannot find module 'chart.js' or its corresponding type declarations.
+
+[7m4[0m import { Chart } from 'chart.js';
+[7m [0m [91m                      ~~~~~~~~~~[0m
+
+
+Error: [96msrc/app/services/analytics.service.ts[0m:[93m21[0m:[93m28[0m - [91merror[0m[90m TS2339: [0mProperty 'scores' does not exist on type 'Quarter'.
+
+[7m21[0m     return new Set(quarter.scores?.map(score => score.playerId)).size || 0;
+[7m  [0m [91m                           ~~~~~~[0m
+
+
+Error: [96msrc/app/services/analytics.service.ts[0m:[93m21[0m:[93m40[0m - [91merror[0m[90m TS7006: [0mParameter 'score' implicitly has an 'any' type.
+
+[7m21[0m     return new Set(quarter.scores?.map(score => score.playerId)).size || 0;
+[7m  [0m [91m                                       ~~~~~[0m
+
+
+Error: [96msrc/app/services/analytics.service.ts[0m:[93m25[0m:[93m18[0m - [91merror[0m[90m TS2339: [0mProperty 'scores' does not exist on type 'Quarter'.
+
+[7m25[0m     if (!quarter.scores?.length) return 0;
+[7m  [0m [91m                 ~~~~~~[0m
+
+
+Error: [96msrc/app/services/analytics.service.ts[0m:[93m26[0m:[93m25[0m - [91merror[0m[90m TS2339: [0mProperty 'scores' does not exist on type 'Quarter'.
+
+[7m26[0m     const sum = quarter.scores.reduce((acc, score) => acc + score.score, 0);
+[7m  [0m [91m                        ~~~~~~[0m
+
+
+Error: [96msrc/app/services/analytics.service.ts[0m:[93m26[0m:[93m40[0m - [91merror[0m[90m TS7006: [0mParameter 'acc' implicitly has an 'any' type.
+
+[7m26[0m     const sum = quarter.scores.reduce((acc, score) => acc + score.score, 0);
+[7m  [0m [91m                                       ~~~[0m
+
+
+Error: [96msrc/app/services/analytics.service.ts[0m:[93m26[0m:[93m45[0m - [91merror[0m[90m TS7006: [0mParameter 'score' implicitly has an 'any' type.
+
+[7m26[0m     const sum = quarter.scores.reduce((acc, score) => acc + score.score, 0);
+[7m  [0m [91m                                            ~~~~~[0m
+
+
+Error: [96msrc/app/services/analytics.service.ts[0m:[93m27[0m:[93m26[0m - [91merror[0m[90m TS2339: [0mProperty 'scores' does not exist on type 'Quarter'.
+
+[7m27[0m     return sum / quarter.scores.length;
+[7m  [0m [91m                         ~~~~~~[0m
+
+
+Error: [96msrc/app/services/analytics.service.ts[0m:[93m32[0m:[93m66[0m - [91merror[0m[90m TS2339: [0mProperty 'getQuarterStats' does not exist on type 'FirebaseService'.
+
+[7m32[0m       const quarters = await firstValueFrom(this.firebaseService.getQuarterStats());
+[7m  [0m [91m                                                                 ~~~~~~~~~~~~~~~[0m
+
+
+Error: [96msrc/app/services/analytics.service.ts[0m:[93m33[0m:[93m69[0m - [91merror[0m[90m TS2339: [0mProperty 'getPlayerStats' does not exist on type 'FirebaseService'.
+
+[7m33[0m       const playerStats = await firstValueFrom(this.firebaseService.getPlayerStats());
+[7m  [0m [91m                                                                    ~~~~~~~~~~~~~~[0m
+
+
+Error: [96msrc/app/services/analytics.service.ts[0m:[93m35[0m:[93m51[0m - [91merror[0m[90m TS2345: [0mArgument of type '{}' is not assignable to parameter of type 'Quarter[]'.
+  Type '{}' is missing the following properties from type 'Quarter[]': length, pop, push, concat, and 29 more.
+
+[7m35[0m       const quarterStats = this.mapQuarterToStats(quarters || []);
+[7m  [0m [91m                                                  ~~~~~~~~~~~~~~[0m
+
+
+Error: [96msrc/app/services/analytics.service.ts[0m:[93m40[0m:[93m42[0m - [91merror[0m[90m TS2345: [0mArgument of type '{}' is not assignable to parameter of type 'PlayerStats[]'.
+  Type '{}' is missing the following properties from type 'PlayerStats[]': length, pop, push, concat, and 29 more.
+
+[7m40[0m         devices: this.processDeviceStats(playerStats || []),
+[7m  [0m [91m                                         ~~~~~~~~~~~~~~~~~[0m
+
+
+Error: [96msrc/app/services/analytics.service.ts[0m:[93m41[0m:[93m46[0m - [91merror[0m[90m TS2345: [0mArgument of type '{}' is not assignable to parameter of type 'PlayerStats[]'.
+
+[7m41[0m         locations: this.processLocationStats(playerStats || [])
+[7m  [0m [91m                                             ~~~~~~~~~~~~~~~~~[0m
+
+
+Error: [96msrc/app/services/analytics.service.ts[0m:[93m80[0m:[93m26[0m - [91merror[0m[90m TS2339: [0mProperty 'logEvent' does not exist on type 'FirebaseService'.
+
+[7m80[0m     this.firebaseService.logEvent(eventName, params);
+[7m  [0m [91m                         ~~~~~~~~[0m
+
+
+Error: [96msrc/app/services/offline-queue.service.ts[0m:[93m54[0m:[93m49[0m - [91merror[0m[90m TS2339: [0mProperty 'validateQuarter' does not exist on type 'ValidationService'.
+
+[7m54[0m     const quarterValid = this.validationService.validateQuarter(quarterId);
+[7m  [0m [91m                                                ~~~~~~~~~~~~~~~[0m
+
+
+Error: [96msrc/app/services/offline-queue.service.ts[0m:[93m55[0m:[93m47[0m - [91merror[0m[90m TS2339: [0mProperty 'validateScore' does not exist on type 'ValidationService'.
+
+[7m55[0m     const scoreValid = this.validationService.validateScore(score);
+[7m  [0m [91m                                              ~~~~~~~~~~~~~[0m
+
+
+Error: [96msrc/app/services/offline-queue.service.ts[0m:[93m88[0m:[93m38[0m - [91merror[0m[90m TS2339: [0mProperty 'submitScore' does not exist on type 'FirebaseService'.
+
+[7m88[0m           await this.firebaseService.submitScore(item.quarterId, item.score);
+[7m  [0m [91m                                     ~~~~~~~~~~~[0m
+
+
+Error: [96msrc/app/services/shopify.service.ts[0m:[93m77[0m:[93m37[0m - [91merror[0m[90m TS7006: [0mParameter 'item' implicitly has an 'any' type.
+
+[7m77[0m           items: cartData.items.map(item => ({
+[7m  [0m [91m                                    ~~~~[0m
+
+
+Error: [96msrc/app/shared/game/game.component.ts[0m:[93m102[0m:[93m14[0m - [91merror[0m[90m TS2322: [0mType 'null' is not assignable to type 'number'.
+
+[7m102[0m       'A': { age: null, proof: null, mashbill: '' },
+[7m   [0m [91m             ~~~[0m
+
+  [96msrc/app/shared/models/game.model.ts[0m:[93m2[0m:[93m3[0m
+    [7m2[0m   age: number;
+    [7m [0m [96m  ~~~[0m
+    The expected type comes from property 'age' which is declared here on type 'SampleGuess'
+
+
+Error: [96msrc/app/shared/game/game.component.ts[0m:[93m102[0m:[93m25[0m - [91merror[0m[90m TS2322: [0mType 'null' is not assignable to type 'number'.
+
+[7m102[0m       'A': { age: null, proof: null, mashbill: '' },
+[7m   [0m [91m                        ~~~~~[0m
+
+  [96msrc/app/shared/models/game.model.ts[0m:[93m3[0m:[93m3[0m
+    [7m3[0m   proof: number;
+    [7m [0m [96m  ~~~~~[0m
+    The expected type comes from property 'proof' which is declared here on type 'SampleGuess'
+
+
+Error: [96msrc/app/shared/game/game.component.ts[0m:[93m103[0m:[93m14[0m - [91merror[0m[90m TS2322: [0mType 'null' is not assignable to type 'number'.
+
+[7m103[0m       'B': { age: null, proof: null, mashbill: '' },
+[7m   [0m [91m             ~~~[0m
+
+  [96msrc/app/shared/models/game.model.ts[0m:[93m2[0m:[93m3[0m
+    [7m2[0m   age: number;
+    [7m [0m [96m  ~~~[0m
+    The expected type comes from property 'age' which is declared here on type 'SampleGuess'
+
+
+Error: [96msrc/app/shared/game/game.component.ts[0m:[93m103[0m:[93m25[0m - [91merror[0m[90m TS2322: [0mType 'null' is not assignable to type 'number'.
+
+[7m103[0m       'B': { age: null, proof: null, mashbill: '' },
+[7m   [0m [91m                        ~~~~~[0m
+
+  [96msrc/app/shared/models/game.model.ts[0m:[93m3[0m:[93m3[0m
+    [7m3[0m   proof: number;
+    [7m [0m [96m  ~~~~~[0m
+    The expected type comes from property 'proof' which is declared here on type 'SampleGuess'
+
+
+Error: [96msrc/app/shared/game/game.component.ts[0m:[93m104[0m:[93m14[0m - [91merror[0m[90m TS2322: [0mType 'null' is not assignable to type 'number'.
+
+[7m104[0m       'C': { age: null, proof: null, mashbill: '' },
+[7m   [0m [91m             ~~~[0m
+
+  [96msrc/app/shared/models/game.model.ts[0m:[93m2[0m:[93m3[0m
+    [7m2[0m   age: number;
+    [7m [0m [96m  ~~~[0m
+    The expected type comes from property 'age' which is declared here on type 'SampleGuess'
+
+
+Error: [96msrc/app/shared/game/game.component.ts[0m:[93m104[0m:[93m25[0m - [91merror[0m[90m TS2322: [0mType 'null' is not assignable to type 'number'.
+
+[7m104[0m       'C': { age: null, proof: null, mashbill: '' },
+[7m   [0m [91m                        ~~~~~[0m
+
+  [96msrc/app/shared/models/game.model.ts[0m:[93m3[0m:[93m3[0m
+    [7m3[0m   proof: number;
+    [7m [0m [96m  ~~~~~[0m
+    The expected type comes from property 'proof' which is declared here on type 'SampleGuess'
+
+
+Error: [96msrc/app/shared/game/game.component.ts[0m:[93m105[0m:[93m14[0m - [91merror[0m[90m TS2322: [0mType 'null' is not assignable to type 'number'.
+
+[7m105[0m       'D': { age: null, proof: null, mashbill: '' }
+[7m   [0m [91m             ~~~[0m
+
+  [96msrc/app/shared/models/game.model.ts[0m:[93m2[0m:[93m3[0m
+    [7m2[0m   age: number;
+    [7m [0m [96m  ~~~[0m
+    The expected type comes from property 'age' which is declared here on type 'SampleGuess'
+
+
+Error: [96msrc/app/shared/game/game.component.ts[0m:[93m105[0m:[93m25[0m - [91merror[0m[90m TS2322: [0mType 'null' is not assignable to type 'number'.
+
+[7m105[0m       'D': { age: null, proof: null, mashbill: '' }
+[7m   [0m [91m                        ~~~~~[0m
+
+  [96msrc/app/shared/models/game.model.ts[0m:[93m3[0m:[93m3[0m
+    [7m3[0m   proof: number;
+    [7m [0m [96m  ~~~~~[0m
+    The expected type comes from property 'proof' which is declared here on type 'SampleGuess'
+
+
+Error: [96msrc/app/shared/game/game.component.ts[0m:[93m112[0m:[93m27[0m - [91merror[0m[90m TS2339: [0mProperty 'logEvent' does not exist on type 'DataCollectionService'.
+
+[7m112[0m       this.dataCollection.logEvent('sample_change', {
+[7m   [0m [91m                          ~~~~~~~~[0m
+
+
+Error: [96msrc/app/shared/game/game.component.ts[0m:[93m251[0m:[93m30[0m - [91merror[0m[90m TS2339: [0mProperty 'saveGameProgress' does not exist on type 'GameService'.
+
+[7m251[0m       await this.gameService.saveGameProgress(this.gameState.quarterId, {
+[7m   [0m [91m                             ~~~~~~~~~~~~~~~~[0m
+
+
+Error: [96msrc/app/shared/game/game.component.ts[0m:[93m286[0m:[93m30[0m - [91merror[0m[90m TS2322: [0mType 'null' is not assignable to type 'number'.
+
+[7m286[0m     this.guesses[letter] = { age: null, proof: null, mashbill: '' };
+[7m   [0m [91m                             ~~~[0m
+
+  [96msrc/app/shared/models/game.model.ts[0m:[93m2[0m:[93m3[0m
+    [7m2[0m   age: number;
+    [7m [0m [96m  ~~~[0m
+    The expected type comes from property 'age' which is declared here on type 'SampleGuess'
+
+
+Error: [96msrc/app/shared/game/game.component.ts[0m:[93m286[0m:[93m41[0m - [91merror[0m[90m TS2322: [0mType 'null' is not assignable to type 'number'.
+
+[7m286[0m     this.guesses[letter] = { age: null, proof: null, mashbill: '' };
+[7m   [0m [91m                                        ~~~~~[0m
+
+  [96msrc/app/shared/models/game.model.ts[0m:[93m3[0m:[93m3[0m
+    [7m3[0m   proof: number;
+    [7m [0m [96m  ~~~~~[0m
+    The expected type comes from property 'proof' which is declared here on type 'SampleGuess'
+
+
+Error: [96msrc/app/shared/results/results.component.html[0m:[93m11[0m:[93m24[0m - [91merror[0m[90m TS2345: [0mArgument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+
+[7m11[0m         <iframe [src]="quarter.videoUrl | safeUrl"
+[7m  [0m [91m                       ~~~~~~~~~~~~~~~~[0m
+
+  [96msrc/app/shared/results/results.component.ts[0m:[93m23[0m:[93m16[0m
+    [7m23[0m   templateUrl: './results.component.html',
+    [7m  [0m [96m               ~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    Error occurs in the template of component ResultsComponent.
+
+
+Error: [96msrc/app/shared/results/results.component.ts[0m:[93m64[0m:[93m76[0m - [91merror[0m[90m TS2352: [0mConversion of type '{ age: number; proof: number; mashbill: "Unknown"; }' to type 'Sample' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'id' is missing in type '{ age: number; proof: number; mashbill: "Unknown"; }' but required in type 'Sample'.
+
+[7m 64[0m       const guess = this.playerScore?.guesses?.[letter as SampleLetter] || {
+[7m   [0m [91m                                                                           ~[0m
+[7m 65[0m         age: 0,
+[7m   [0m [91m~~~~~~~~~~~~~~~[0m
+[7m...[0m 
+[7m 67[0m         mashbill: 'Unknown'
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m 68[0m       } as Sample;
+[7m   [0m [91m~~~~~~~~~~~~~~~~~[0m
+
+  [96msrc/app/shared/models/quarter.model.ts[0m:[93m14[0m:[93m3[0m
+    [7m14[0m   id: string;
+    [7m  [0m [96m  ~~[0m
+    'id' is declared here.
+
+
+Error: [96msrc/main.ts[0m:[93m3[0m:[93m38[0m - [91merror[0m[90m TS2307: [0mCannot find module 'chart.js' or its corresponding type declarations.
+
+[7m3[0m import { Chart, registerables } from 'chart.js';
+[7m [0m [91m                                     ~~~~~~~~~~[0m
+
+
+Error: Can't resolve 'src/styles.css' in '/app'
+
+Error: The loader "/app/src/app/admin/admin.component.scss" didn't return a string.
+
+
+
+** Angular Live Development Server is listening on 0.0.0.0:4200, open your browser on http://localhost:4200/ **
+
+
+✖ Failed to compile.

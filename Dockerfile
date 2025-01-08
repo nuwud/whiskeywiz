@@ -9,23 +9,31 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy project configuration files
+# Install Firebase Tools globally
+RUN npm install -g firebase-tools
+
+# Copy package files
 COPY package*.json ./
 COPY nx.json ./
 COPY project.json ./
 COPY tsconfig*.json ./
 
 # Install global dependencies
-RUN npm install -g @angular/cli @nrwl/nx
+RUN npm install -g @nrwl/cli
+RUN npm install -g nx
 
 # Install project dependencies
-RUN npm ci
+RUN npm install
 
-# Copy entire project
+# Copy project files
 COPY . .
 
-# Expose port for Angular development server
+# Install additional dependencies
+RUN npm install chart.js @types/chart.js
+RUN npm install sass
+
+# Expose port
 EXPOSE 4200
 
-# Default command to serve the application
-CMD ["npx", "nx", "serve", "whiskey-wiz"]
+# Start the application
+CMD ["npx", "nx", "serve", "whiskey-wiz", "--host", "0.0.0.0"]
