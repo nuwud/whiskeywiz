@@ -1,65 +1,30 @@
 {
-  "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
-  },
   "hosting": {
-    "predeploy": ["npm run build"],
-    "public": "dist/whiskey-wiz",
-    "headers": [
-      {
-        "source": "/**.@(js|css|html|jsx)",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "no-cache, no-store, must-revalidate"
-          },
-          {
-            "key": "Expires",
-            "value": "-1"
-          },
-          {
-            "key": "Pragma",
-            "value": "no-cache"
-          }
-        ]
-      },
+    "public": "dist/whiskeywiz",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
       {
         "source": "**",
-        "headers": [
-          {
-            "key": "Access-Control-Allow-Origin",
-            "value": "*"
-          }
-        ]
+        "destination": "/index.html"
       }
-    ],
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "rewrites": [
-      { "source": "**", "destination": "/index.html" }
-    ],
-    "cleanUrls": false,
-    "trailingSlash": false
-  },
-  "database": {
-    "rules": "database.rules.json"
-  },
-  "storage": {
-    "rules": "storage.rules"
+    ]
   },
   "emulators": {
-    "firestore": {
-      "port": 8080
-    },
-    "database": {
-      "port": 9000
-    },
     "hosting": {
       "port": 5000
     },
     "ui": {
       "enabled": true
     },
-    "singleProjectMode": true
+    "auth": {
+      "port": 9099
+    },
+    "firestore": {
+      "port": 8080
+    }
   }
 }
