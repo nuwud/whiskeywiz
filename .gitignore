@@ -51,3 +51,10 @@ firebase-debug.*.log*
 # Docker
 .docker/
 docker-compose.override.yml
+
+# Nx
+.nx/cache
+.nx/cache/nxdeps.json
+dist/
+tmp/
+/.nx/cache/*
