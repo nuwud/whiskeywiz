@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-// Placeholder components
+// Placeholder for Angular project
 const Home = () => (
-  <div className="min-h-screen bg-whiskey-dark text-whiskey-gold flex items-center justify-center">
-    <h1 className="text-4xl font-whiskey">WhiskeyWiz</h1>
+  <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+    <h1 className="text-4xl">WhiskeyWiz Angular</h1>
   </div>
 );
 
