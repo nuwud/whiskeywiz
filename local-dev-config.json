@@ -1,0 +1,41 @@
+{
+  "localDevelopment": {
+    "environment": "development",
+    "features": {
+      "adminPanel": true,
+      "guestMode": true,
+      "debugLogging": true
+    },
+    "emulators": {
+      "firestore": true,
+      "authentication": true,
+      "hosting": true
+    },
+    "performance": {
+      "tracingEnabled": true,
+      "slowQueryThreshold": 500
+    },
+    "security": {
+      "strictMode": true,
+      "mockAuthentication": true
+    },
+    "quarterGeneration": {
+      "autoCreateTestQuarters": true,
+      "testQuarterTemplates": [
+        {
+          "id": "dev-2024-q1",
+          "name": "Q1 2024 Development Quarter",
+          "difficulty": "easy"
+        }
+      ]
+    },
+    "logging": {
+      "level": "verbose",
+      "destinations": [
+        "console",
+        "file"
+      ],
+      "fileLocation": "./logs/local-dev.log"
+    }
+  }
+}

@@ -1,77 +1,38 @@
-# WhiskeyWiz Essential Guide for Claude
+# WhiskeyWiz React Essential Guide for Claude
 Version: January 2025
 Last Updated: January 8, 2025
 
 ## STOP AND READ THIS FIRST
-1. This is a whiskey tasting game with EXACTLY 4 samples per quarter
-2. Quarters are ALWAYS named MMYY (e.g., 0324 = March 2024)
-3. Each sample has age, proof, and mashbill guesses
-4. The app embeds in Shopify via web components
-5. NEVER make assumptions - ALWAYS verify first
+1. This is a React port of the WhiskeyWiz Angular application
+2. Core game mechanics remain identical:
+   - 4 samples per quarter (A, B, C, D)
+   - Quarter naming: MMYY format
+   - Same scoring rules and validation
+3. Uses React patterns instead of Angular services
 
-## REQUIRED VERIFICATION WORKFLOW
-ALWAYS follow these steps in order:
-
-```typescript
-// 1. CHECK if files exist
-<function_calls>
-<invoke name="list_directory">
-<parameter name="path">src/app/path/to/check</parameter>
-</invoke>
-
-// 2. READ existing file content
-<function_calls>
-<invoke name="read_file">
-<parameter name="path">src/app/file/to/read</parameter>
-</invoke>
-
-// 3. VERIFY types with analysis tool
-<function_calls>
-<invoke name="repl">
-<parameter name="code">
-// Type verification code
-</parameter>
-</invoke>
+## CORE PROJECT STRUCTURE
+```
+src/
+├── components/           # React components
+│   ├── admin/           # Admin interface
+│   ├── game/            # Game components
+│   ├── common/          # Shared components
+│   └── results/         # Results display
+├── contexts/            # React contexts
+├── hooks/               # Custom hooks
+├── services/           # Core services
+├── models/             # TypeScript types
+└── utils/              # Utility functions
 ```
 
-## CORE PROJECT FACTS - NEVER CHANGE THESE
-1. Project Structure:
-   - Uses Nx workspace (NOT regular Angular CLI)
-   - Uses project.json (NOT angular.json)
-   - Firebase backend (ONLY via FirebaseService)
-
-2. Quarter Structure:
-   - ALWAYS 4 samples: A, B, C, D
-   - ID format: MMYY (e.g., 0324)
-   - Web component format: whiskey-wiz-{MMYY}
-
-3. Core Files That ALWAYS Exist:
-```
-src/app/
-├── shared/models/
-│   ├── quarter.model.ts     # Core interfaces
-│   ├── game.model.ts        # Game state
-│   └── scoring.model.ts     # Scoring rules
-├── services/
-│   ├── firebase.service.ts  # ALL Firebase ops
-│   ├── game.service.ts      # Game logic
-│   └── auth.service.ts      # Authentication
-└── quarters/
-    ├── base-quarter.component.ts
-    └── {MMYY}/             # Quarter components
-```
-
-## CRITICAL INTERFACES - MEMORIZE THESE
+## CRITICAL INTERFACES - IDENTICAL TO ANGULAR
 ```typescript
 interface Quarter {
   id: string;          // MMYY format
   name: string;        // "Q1 2024" format
   active: boolean;
   samples: {
-    sample1: Sample;   // ALWAYS 4 samples
-    sample2: Sample;
-    sample3: Sample;
-    sample4: Sample;
+    [key in 'A' | 'B' | 'C' | 'D']: Sample;
   };
 }
 
@@ -84,59 +45,72 @@ interface Sample {
 
 type MashbillType = 'Bourbon' | 'Rye' | 'Wheat' | 'Single Malt' | 'Specialty';
 
-interface SampleGuess {
-  age: number;
-  proof: number;
-  mashbill: MashbillType;
+interface GameState {
+  currentSample: 'A' | 'B' | 'C' | 'D';
+  guesses: {
+    [key in 'A' | 'B' | 'C' | 'D']?: {
+      age: number;
+      proof: number;
+      mashbill: MashbillType;
+    };
+  };
+  isComplete: boolean;
+  quarterId: string;
+  totalScore?: number;
 }
 ```
 
-## REQUIRED CODE PATTERNS - ALWAYS FOLLOW THESE
+## REQUIRED PATTERNS
 
-### 1. Quarter Components
+### 1. Service Pattern
 ```typescript
-// ALWAYS extend BaseQuarterComponent
-@Component({
-  selector: 'app-quarter-0324',  // MMYY format
-  template: '...'
-})
-export class Q0324Component extends BaseQuarterComponent {
-  constructor(
-    protected firebaseService: FirebaseService,
-    protected gameService: GameService
-  ) {
-    super(firebaseService, gameService);
+// Singleton service pattern
+class ExampleService {
+  private static instance: ExampleService;
+  
+  private constructor() {}
+  
+  static getInstance() {
+    if (!ExampleService.instance) {
+      ExampleService.instance = new ExampleService();
+    }
+    return ExampleService.instance;
   }
 }
+
+export const exampleService = ExampleService.getInstance();
 ```
 
-### 2. Firebase Access
+### 2. Context Pattern
 ```typescript
-// ALWAYS use FirebaseService
-@Injectable()
-export class SomeService {
-  constructor(private firebaseService: FirebaseService) {}
+// Context with Provider pattern
+export const GameContext = createContext<GameContextType | null>(null);
 
-  // CORRECT:
+export const GameProvider: React.FC = ({ children }) => {
+  // State management here
+  return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
+};
+
+export const useGame = () => {
+  const context = useContext(GameContext);
+  if (!context) throw new Error('useGame must be used within GameProvider');
+  return context;
+};
+```
+
+### 3. Firebase Access Pattern
+```typescript
+// Always use service layer
+export const firebaseService = {
   async getQuarter(id: string) {
-    return this.firebaseService.getQuarter(id);
+    const docRef = doc(db, 'quarters', id);
+    const docSnap = await getDoc(docRef);
+    return docSnap.data() as Quarter;
   }
-
-  // WRONG - NEVER DO THIS:
-  // async wrongWay() {
-  //   const db = getFirestore();
-  // }
-}
+};
 ```
 
-### 3. Web Components
-```typescript
-// ALWAYS use MMYY format
-const element = createCustomElement(Q0324Component, { injector });
-customElements.define('whiskey-wiz-0324', element);
-```
-
-## SCORING RULES - NEVER MODIFY
+## SCORING RULES - IDENTICAL TO ANGULAR
 ```typescript
 const SCORING_RULES = {
   age: {
@@ -153,73 +127,33 @@ const SCORING_RULES = {
 };
 ```
 
-## VERIFICATION TOOLS
+## COMMON MISTAKES TO AVOID
+1. DON'T use Angular patterns in React
+2. DON'T modify scoring rules
+3. DON'T use direct Firebase access
+4. DON'T skip context providers
+5. DON'T modify core interfaces
+6. DON'T skip error boundaries
 
-### 1. File System Tools - ALWAYS Use These
-```typescript
-// List directories
-<function_calls>
-<invoke name="list_directory">
-<parameter name="path">path/to/check</parameter>
-</invoke>
+## PRE-IMPLEMENTATION CHECKLIST
+Before making any changes:
 
-// Read files
-<function_calls>
-<invoke name="read_file">
-<parameter name="path">file/to/read</parameter>
-</invoke>
+### 1. Pattern Verification
+- [ ] Uses React patterns (not Angular)
+- [ ] Follows service singleton pattern
+- [ ] Uses context providers appropriately
+- [ ] Implements error boundaries
 
-// Search files
-<function_calls>
-<invoke name="search_files">
-<parameter name="path">src/app</parameter>
-<parameter name="pattern">search-term</parameter>
-</invoke>
-```
+### 2. Type Safety
+- [ ] Core interfaces match Angular
+- [ ] Props are properly typed
+- [ ] Context types are defined
+- [ ] Services follow type patterns
 
-### 2. Analysis Tool - ALWAYS Type Check
-```typescript
-<function_calls>
-<invoke name="repl">
-<parameter name="code">
-// Add type verification code here
-</parameter>
-</invoke>
-```
+### 3. Feature Parity
+- [ ] All Angular features implemented
+- [ ] Same validation rules applied
+- [ ] Same scoring system used
+- [ ] Same offline capabilities
 
-## COMMON CLAUDE MISTAKES TO AVOID
-1. DON'T skip file verification
-2. DON'T use direct Firebase access
-3. DON'T modify scoring rules
-4. DON'T skip BaseQuarterComponent
-5. DON'T use Angular CLI - use Nx
-6. DON'T assume file locations
-7. DON'T experiment with patterns
-
-## WHEN STUCK
-1. Re-read this document
-2. Check file existence and content
-3. Look for exact pattern needed
-4. Ask for pattern clarification
-5. Don't waste time experimenting
-
-## PRE-RESPONSE CHECKLIST
-Before responding to ANY request:
-
-### 1. File Verification
-- [ ] Listed directory contents
-- [ ] Read relevant files
-- [ ] Verified file existence
-
-### 2. Pattern Compliance
-- [ ] Matches quarter naming (MMYY)
-- [ ] Uses FirebaseService
-- [ ] Extends BaseQuarterComponent
-- [ ] Follows web component pattern
-
-### 3. Type Safety
-- [ ] Used analysis tool
-- [ ] Verified interfaces
-- [ ] Checked scoring rules
-
-Remember: Your role is to help maintain and improve this application while preserving its core patterns and rules.
+Remember: The goal is feature parity with the Angular version while using proper React patterns.

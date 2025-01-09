@@ -1,30 +1,16 @@
-# Use official Node.js LTS image with Alpine for smaller size
-FROM node:20.18.1-alpine
+FROM node:20-bullseye 
 
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apk add --no-cache git
-
-# Install global dependencies in a single layer
-RUN npm install -g @nrwl/cli nx firebase-tools
-
-# Copy package files first for better caching
+# Install dependencies
 COPY package*.json ./
-COPY nx.json project.json ./
-COPY tsconfig*.json ./
+RUN npm install
 
-# Install all dependencies in a single layer
-RUN npm ci && \
-    npm install chart.js @types/chart.js sass && \
-    npm cache clean --force
-
-# Copy the rest of the application
+# Copy source code
 COPY . .
 
 # Expose port
-EXPOSE 4200
+EXPOSE 3000
 
-# Start the application
-CMD ["npx", "nx", "serve", "whiskey-wiz", "--host", "0.0.0.0"]
+# Start development server
+CMD ["npm", "start"]

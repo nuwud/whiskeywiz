@@ -1,3 +1,0 @@
-# Node.js configuration
-set PATH=%PATH%;%APPDATA%\npm;%ProgramFiles%\nodejs
-set NODE_PATH=%APPDATA%\npm\node_modules
