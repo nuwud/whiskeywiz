@@ -231,7 +231,7 @@
           },
           {
             "file": ".gitignore",
-            "hash": "17856167268885855234"
+            "hash": "9742752461921536421"
           },
           {
             "file": ".hintrc",
@@ -248,550 +248,6 @@
           {
             "file": ".nx/.reset",
             "hash": "4664556114322093609"
-          },
-          {
-            "file": ".nx/cache/d/server-process.json",
-            "hash": "15606758221433498138"
-          },
-          {
-            "file": ".nx/cache/lockfile.hash",
-            "hash": "1619968348574463954"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json",
-            "hash": "17311015323361843923"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~0259cb7f",
-            "hash": "8493882824963602626"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~0418fcf2",
-            "hash": "16558073848004927673"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~066d3f91",
-            "hash": "2929288583055541235"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~0cbf096e",
-            "hash": "3650134013011632084"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~0d0f2f28",
-            "hash": "15764958019172222109"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~0e8d40cb",
-            "hash": "7451972590846945416"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~114bd749",
-            "hash": "972502557943104327"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~15d332d0",
-            "hash": "16578904667723085045"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~16676884",
-            "hash": "13574903439055927531"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~1af9d869",
-            "hash": "17172036425923446478"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~1bf349ec",
-            "hash": "15235421480575135727"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~1c34e12d",
-            "hash": "1527663732447173048"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~23fced6e",
-            "hash": "15187466825972986759"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~26ae5be8",
-            "hash": "16138496539294361536"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~26eb16a9",
-            "hash": "596972506537683921"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~28ba0e61",
-            "hash": "6444436843754562348"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~299eebce",
-            "hash": "15764958019172222109"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~2c3e33d6",
-            "hash": "7451972590846945416"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~30b282f7",
-            "hash": "12314957241558559528"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~31433490",
-            "hash": "17707702684477389158"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~33511921",
-            "hash": "8493882824963602626"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~373d7ce9",
-            "hash": "12314957241558559528"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~3fe8dd69",
-            "hash": "15235421480575135727"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~3ff7d7fa",
-            "hash": "9205169752218540238"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~400f241d",
-            "hash": "17375585185099596511"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~40a455d0",
-            "hash": "13399521542424979534"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~40cf1e34",
-            "hash": "15187466825972986759"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~4372aa58",
-            "hash": "1527663732447173048"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~4cf5da0b",
-            "hash": "9409511388078972217"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~51a83086",
-            "hash": "16079891640169357810"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~51df3ec5",
-            "hash": "7401004508998409585"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~5293d087",
-            "hash": "7401004508998409585"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~538a0c58",
-            "hash": "16138496539294361536"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~57ff37c4",
-            "hash": "13090757204049402401"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~59358d4b",
-            "hash": "13090757204049402401"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~5a33599c",
-            "hash": "17345754269001146703"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~5ad5ddac",
-            "hash": "8493882824963602626"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~5beb40f1",
-            "hash": "9205169752218540238"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~5ce69a6f",
-            "hash": "596972506537683921"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~5d036491",
-            "hash": "15235421480575135727"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~617248f1",
-            "hash": "2286562053011363791"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~61db2522",
-            "hash": "7401004508998409585"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~62a66930",
-            "hash": "17172036425923446478"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~633fa318",
-            "hash": "17375585185099596511"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~64091d29",
-            "hash": "18165148420905916479"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~669848f5",
-            "hash": "2929288583055541235"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~6dcf625a",
-            "hash": "2929288583055541235"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~6ff9dac9",
-            "hash": "2286562053011363791"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~706babae",
-            "hash": "17345754269001146703"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~71f0d917",
-            "hash": "17707702684477389158"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~733836b3",
-            "hash": "1527663732447173048"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~75be80e5",
-            "hash": "972502557943104327"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~7658fbc6",
-            "hash": "2286562053011363791"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~779d20a6",
-            "hash": "15764958019172222109"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~796994db",
-            "hash": "15187466825972986759"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~7a091582",
-            "hash": "13276368944522221258"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~7c5acdb5",
-            "hash": "9205169752218540238"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~7d711b22",
-            "hash": "2286562053011363791"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~7e1e3c42",
-            "hash": "1527663732447173048"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~811bf2f3",
-            "hash": "16138496539294361536"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~81e9e877",
-            "hash": "17345754269001146703"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~852b18cc",
-            "hash": "13276368944522221258"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~8ee459f6",
-            "hash": "6455832394888887325"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~8ef4f7fb",
-            "hash": "6725340313627346513"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~8efafa9f",
-            "hash": "8493882824963602626"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~90936bac",
-            "hash": "15235421480575135727"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~9404bae3",
-            "hash": "17172036425923446478"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~98457fde",
-            "hash": "18165148420905916479"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~99196169",
-            "hash": "13276368944522221258"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~99310f43",
-            "hash": "9205169752218540238"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~9cec125d",
-            "hash": "596972506537683921"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~9feadb7c",
-            "hash": "6455832394888887325"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~a23703c3",
-            "hash": "7401004508998409585"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~a2393838",
-            "hash": "6725340313627346513"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~a2b27df4",
-            "hash": "7451972590846945416"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~a2e07e53",
-            "hash": "5105151823300569417"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~a3f9273d",
-            "hash": "13574903439055927531"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~a5317983",
-            "hash": "972502557943104327"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~a6684948",
-            "hash": "18165148420905916479"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~a80db346",
-            "hash": "2929288583055541235"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~ac9c2acb",
-            "hash": "16578904667723085045"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~ad5ec5d9",
-            "hash": "16079891640169357810"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~adc8c798",
-            "hash": "6444436843754562348"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~aea1e9d4",
-            "hash": "6455832394888887325"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~af5e5b7a",
-            "hash": "17375585185099596511"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~b089383f",
-            "hash": "3650134013011632084"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~b0c3311b",
-            "hash": "15764958019172222109"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~b0e7dcc0",
-            "hash": "972502557943104327"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~b2025cac",
-            "hash": "17707702684477389158"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~b33ca5c2",
-            "hash": "5105151823300569417"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~b6605d60",
-            "hash": "9409511388078972217"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~baf3cad1",
-            "hash": "16558073848004927673"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~bfd1bdac",
-            "hash": "16079891640169357810"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~c1807106",
-            "hash": "6444436843754562348"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~c4f7fbb1",
-            "hash": "13276368944522221258"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~c7caec06",
-            "hash": "16558073848004927673"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~c9caae63",
-            "hash": "7451972590846945416"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~c9ffdf8e",
-            "hash": "13399521542424979534"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~caa9afd0",
-            "hash": "13574903439055927531"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~cb55bc88",
-            "hash": "17707702684477389158"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~cb647bb3",
-            "hash": "4319562787516156085"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~cf4e883c",
-            "hash": "4319562787516156085"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~d1034538",
-            "hash": "16578904667723085045"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~d130de52",
-            "hash": "6725340313627346513"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~d1540026",
-            "hash": "18165148420905916479"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~d32220b4",
-            "hash": "13399521542424979534"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~d38a14b9",
-            "hash": "3650134013011632084"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~d47bc9a7",
-            "hash": "12314957241558559528"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~d9e6bb6b",
-            "hash": "6444436843754562348"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~da7b9b5e",
-            "hash": "13090757204049402401"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~db6b3562",
-            "hash": "6455832394888887325"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~dd98c45e",
-            "hash": "4319562787516156085"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~e1b3d421",
-            "hash": "16578904667723085045"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~e1d8f08d",
-            "hash": "17375585185099596511"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~e405382b",
-            "hash": "17345754269001146703"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~e8083aad",
-            "hash": "16558073848004927673"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~ecc28adf",
-            "hash": "13090757204049402401"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~edba79bf",
-            "hash": "15187466825972986759"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~ee90684c",
-            "hash": "596972506537683921"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~ef69a961",
-            "hash": "6725340313627346513"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~f0cd8d5d",
-            "hash": "5105151823300569417"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~f2388a38",
-            "hash": "16079891640169357810"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~f5d2a222",
-            "hash": "12314957241558559528"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~f7e57622",
-            "hash": "13574903439055927531"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~f90c9960",
-            "hash": "9409511388078972217"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~f96c47fa",
-            "hash": "4319562787516156085"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~f9b6a4d4",
-            "hash": "13399521542424979534"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~fca4ef0c",
-            "hash": "5105151823300569417"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~fe14b8d1",
-            "hash": "3650134013011632084"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~fe84baa1",
-            "hash": "16138496539294361536"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~ff46050e",
-            "hash": "17172036425923446478"
-          },
-          {
-            "file": ".nx/cache/nxdeps.json~ff50033c",
-            "hash": "9409511388078972217"
-          },
-          {
-            "file": ".nx/cache/terminalOutputs/3b99bde1f81bfe4c63fd5ea8b00065b4028af7db6138cf3bbf4b207db2750c43",
-            "hash": "1157003194514895742"
           },
           {
             "file": ".nx/workspace-data/4002e6b2-b78d-4679-a6b4-a4c4d30bf7d5.db",
@@ -854,47 +310,6 @@
             "hash": "3682370666593866278"
           },
           {
-            "file": "dataconnect-generated/js/default-connector/esm/index.esm.js",
-            "hash": "15426488009961145257",
-            "dependencies": [
-              {
-                "source": "whiskey-wiz",
-                "target": "npm:firebase",
-                "type": "static"
-              }
-            ]
-          },
-          {
-            "file": "dataconnect-generated/js/default-connector/esm/package.json",
-            "hash": "5013508344222362296"
-          },
-          {
-            "file": "dataconnect-generated/js/default-connector/index.cjs.js",
-            "hash": "14562309435798495350",
-            "dependencies": [
-              {
-                "source": "whiskey-wiz",
-                "target": "npm:firebase",
-                "type": "static"
-              }
-            ]
-          },
-          {
-            "file": "dataconnect-generated/js/default-connector/index.d.ts",
-            "hash": "9391115465079865827",
-            "dependencies": [
-              {
-                "source": "whiskey-wiz",
-                "target": "npm:firebase",
-                "type": "static"
-              }
-            ]
-          },
-          {
-            "file": "dataconnect-generated/js/default-connector/package.json",
-            "hash": "13240792292512897330"
-          },
-          {
             "file": "dataconnect/connector/connector.yaml",
             "hash": "3059567803516270286"
           },
@@ -915,10 +330,6 @@
             "hash": "13815237593541347864"
           },
           {
-            "file": "DEPRECATED_angular.json.bak",
-            "hash": "11542476542461142388"
-          },
-          {
             "file": "docker-compose.yml",
             "hash": "17571308210250167320"
           },
@@ -933,6 +344,10 @@
           {
             "file": "docs/architecture/CURRENT.md",
             "hash": "10033389626596965207"
+          },
+          {
+            "file": "docs/architecture/README.md",
+            "hash": "3292776682561882969"
           },
           {
             "file": "docs/archive/AUTH_FIX_JAN2025.md",
@@ -1007,6 +422,10 @@
             "hash": "3347772301291143683"
           },
           {
+            "file": "docs/deployment/README.md",
+            "hash": "13744740391296234037"
+          },
+          {
             "file": "docs/DEVELOPMENT_NOTES.md",
             "hash": "12643104078058750721"
           },
@@ -1041,6 +460,10 @@
           {
             "file": "docs/development/NEXT_STEPS.md",
             "hash": "9461590949881188176"
+          },
+          {
+            "file": "docs/development/README.md",
+            "hash": "4536353286489750234"
           },
           {
             "file": "docs/docker/CLEANUP.md",
@@ -1107,10 +530,6 @@
             "hash": "7922674767798463532"
           },
           {
-            "file": "docs/test.md",
-            "hash": "6805229941473357443"
-          },
-          {
             "file": "docs/TROUBLESHOOTING.md",
             "hash": "3072633654347347647"
           },
@@ -1120,7 +539,24 @@
           },
           {
             "file": "eslint.config.js",
-            "hash": "6016470785965921456"
+            "hash": "6016470785965921456",
+            "dependencies": [
+              {
+                "target": "npm:@eslint/eslintrc",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular-eslint/eslint-plugin",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular-eslint/eslint-plugin-template",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "exact/path/to/file.ext",
@@ -1128,7 +564,29 @@
           },
           {
             "file": "firebase.init.ts",
-            "hash": "7921111814878208558"
+            "hash": "7921111814878208558",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/fire",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:firebase",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "firebase.json",
@@ -1167,8 +625,12 @@
             "hash": "13145529268832447030"
           },
           {
-            "file": "Instructions for Claude_.txt",
-            "hash": "6138192648859668577"
+            "file": "INSTALL_STEPS.txt",
+            "hash": "15740763355979054989"
+          },
+          {
+            "file": "install.js",
+            "hash": "7553724768919307326"
           },
           {
             "file": "jasmine.json",
@@ -1176,11 +638,42 @@
           },
           {
             "file": "karma.conf.js",
-            "hash": "6295722174214814132"
+            "hash": "6295722174214814132",
+            "dependencies": [
+              {
+                "target": "npm:karma-jasmine",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:karma-chrome-launcher",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:karma-jasmine-html-reporter",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:karma-coverage",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular-devkit/build-angular",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "migrations.json",
             "hash": "11808519019151445965"
+          },
+          {
+            "file": "node-setup/setup.sh",
+            "hash": "16183046977214609415"
           },
           {
             "file": "nx.json",
@@ -1195,178 +688,178 @@
             "hash": "17297728964995607338",
             "dependencies": [
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@angular/animations",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@angular/common",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@angular/compiler",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@angular/fire",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@angular/forms",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@angular/platform-browser",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@angular/platform-browser-dynamic",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@firebasegen/default-connector",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:chart.js",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:firebase",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:rxjs",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:tslib",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:zone.js",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@angular-devkit/build-angular",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@angular-eslint/builder",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@angular-eslint/eslint-plugin",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@angular-eslint/eslint-plugin-template",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@angular/cli",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@angular/compiler-cli",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@nrwl/cli",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@nrwl/workspace",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@types/chart.js",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@types/jasmine",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:@types/node",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:eslint",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:jasmine-core",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:karma",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:karma-chrome-launcher",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:karma-coverage",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:karma-jasmine",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:karma-jasmine-html-reporter",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:sass",
+                "source": "whiskey-wiz",
                 "type": "static"
               },
               {
-                "source": "whiskey-wiz",
                 "target": "npm:typescript",
+                "source": "whiskey-wiz",
                 "type": "static"
               }
             ]
@@ -1374,6 +867,14 @@
           {
             "file": "path/to/file",
             "hash": "16812407040018505930"
+          },
+          {
+            "file": "project-setup.bat",
+            "hash": "4850940604928728688"
+          },
+          {
+            "file": "project-setup.sh",
+            "hash": "16161343580560455834"
           },
           {
             "file": "project.json",
@@ -1389,7 +890,7 @@
           },
           {
             "file": "README.md",
-            "hash": "12402502870039640667"
+            "hash": "6049714847207516617"
           },
           {
             "file": "remoteconfig.template.json",
@@ -1401,7 +902,14 @@
           },
           {
             "file": "scripts/concat-elements.js",
-            "hash": "16871772350534857141"
+            "hash": "16871772350534857141",
+            "dependencies": [
+              {
+                "target": "npm:fs-extra",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "scripts/create-version.js",
@@ -1414,6 +922,14 @@
           {
             "file": "scripts/deploy.sh",
             "hash": "4024198860347803027"
+          },
+          {
+            "file": "SETUP_README.md",
+            "hash": "2334906737340342903"
+          },
+          {
+            "file": "setup.bat",
+            "hash": "10831123883040658234"
           },
           {
             "file": "spec/support/jasmine.mjs",
@@ -1433,15 +949,56 @@
           },
           {
             "file": "src/app/admin-nav/admin-nav.component.ts",
-            "hash": "12275547430179304966"
+            "hash": "12275547430179304966",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/admin-nav/admin-nav.module.ts",
-            "hash": "10767746330685598719"
+            "hash": "10767746330685598719",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/common",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/admin/admin-routing.module.ts",
-            "hash": "4791737564970094163"
+            "hash": "4791737564970094163",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/admin/admin.component.css",
@@ -1453,11 +1010,45 @@
           },
           {
             "file": "src/app/admin/admin.component.ts",
-            "hash": "13409275999628845433"
+            "hash": "13409275999628845433",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/admin/admin.module.ts",
-            "hash": "12042002405602613232"
+            "hash": "12042002405602613232",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/common",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/forms",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/admin/analytics/analytics.component.html",
@@ -1469,23 +1060,98 @@
           },
           {
             "file": "src/app/admin/analytics/analytics.component.ts",
-            "hash": "3569885839588437330"
+            "hash": "3569885839588437330",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:chart.js",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/admin/quarters/admin-quarter-edit.component.ts",
-            "hash": "2193263425539068599"
+            "hash": "2193263425539068599",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/admin/quarters/admin-quarters.component.ts",
-            "hash": "13291474122516482742"
+            "hash": "13291474122516482742",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/admin/quarters/DELETED_admin-quarter-edit.component.ts",
-            "hash": "12774178654941704057"
+            "hash": "12774178654941704057",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/forms",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/app-routing.module.ts",
-            "hash": "10351696107147895183"
+            "hash": "10351696107147895183",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/app.component.css",
@@ -1497,23 +1163,103 @@
           },
           {
             "file": "src/app/app.component.ts",
-            "hash": "18181585691143961636"
+            "hash": "18181585691143961636",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/app.module.ts",
-            "hash": "10565466920230232659"
+            "hash": "10565466920230232659",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/platform-browser",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/forms",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/fire",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/auth/auth-button/auth-button.component.ts",
-            "hash": "1622060730777257272"
+            "hash": "1622060730777257272",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/auth/auth.module.ts",
-            "hash": "17496582730082131158"
+            "hash": "17496582730082131158",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/common",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/forms",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/auth/auth.service.ts",
-            "hash": "12150397598201365042"
+            "hash": "12150397598201365042",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/auth/login/login.component.css",
@@ -1525,27 +1271,89 @@
           },
           {
             "file": "src/app/auth/login/login.component.ts",
-            "hash": "7055940036845856381"
+            "hash": "7055940036845856381",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/auth/register/register.component.ts",
-            "hash": "555894809550048079"
+            "hash": "555894809550048079",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/auth/shopify-callback/shopify-callback.component.ts",
-            "hash": "11023611584206404796"
+            "hash": "11023611584206404796",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/config/database.config.ts",
-            "hash": "6616149798038807935"
+            "hash": "6616149798038807935",
+            "dependencies": [
+              {
+                "target": "npm:@angular/fire",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/core/core.module.ts",
-            "hash": "16549769951549845234"
+            "hash": "16549769951549845234",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/fire",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/deployment-tests.ts",
-            "hash": "8719833650843904685"
+            "hash": "8719833650843904685",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/elements/game-bundle.js",
@@ -1553,19 +1361,77 @@
           },
           {
             "file": "src/app/elements/game-elements.ts",
-            "hash": "4505366988130787643"
+            "hash": "4505366988130787643",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/platform-browser",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/guards/auth.guard.ts",
-            "hash": "5121278552599566169"
+            "hash": "5121278552599566169",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/guards/firebase-init.guard.ts",
-            "hash": "17550301512066839048"
+            "hash": "17550301512066839048",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/guards/game.guard.ts",
-            "hash": "13791837513105364803"
+            "hash": "13791837513105364803",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/hello-world.spec.ts",
@@ -1573,7 +1439,19 @@
           },
           {
             "file": "src/app/player/player-routing.module.ts",
-            "hash": "10736462685147323205"
+            "hash": "10736462685147323205",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/player/player.component.css",
@@ -1585,183 +1463,668 @@
           },
           {
             "file": "src/app/player/player.component.ts",
-            "hash": "14438225755210139569"
+            "hash": "14438225755210139569",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/player/player.module.ts",
-            "hash": "26690193619338398"
+            "hash": "26690193619338398",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/common",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/forms",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/0122/0122.component.ts",
-            "hash": "10270163689852439972"
+            "hash": "10270163689852439972",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/0322/0322.component.ts",
-            "hash": "5440428965290507558"
+            "hash": "5440428965290507558",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/0323/0323.component.ts",
-            "hash": "6356603417688477281"
+            "hash": "6356603417688477281",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/0324/0324.component.ts",
-            "hash": "6695308770556330740"
+            "hash": "6695308770556330740",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/0325/0325.component.ts",
-            "hash": "18261003118025866720"
+            "hash": "18261003118025866720",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/0326/0326.component.ts",
-            "hash": "3569305422509138582"
+            "hash": "3569305422509138582",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/0622/0622.component.ts",
-            "hash": "6858724489407069748"
+            "hash": "6858724489407069748",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/0623/0623.component.ts",
-            "hash": "4796144562787848892"
+            "hash": "4796144562787848892",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/0624/0624.component.ts",
-            "hash": "4599117100507384125"
+            "hash": "4599117100507384125",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/0625/0625.component.ts",
-            "hash": "18027972227929127613"
+            "hash": "18027972227929127613",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/0626/0626.component.ts",
-            "hash": "14509943939043596226"
+            "hash": "14509943939043596226",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/0922/0922.component.ts",
-            "hash": "14019499069222627960"
+            "hash": "14019499069222627960",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/0923/0923.component.ts",
-            "hash": "12113068913908056647"
+            "hash": "12113068913908056647",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/0924/0924.component.ts",
-            "hash": "8400213328857334391"
+            "hash": "8400213328857334391",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/forms",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/0925/0925.component.ts",
-            "hash": "13403743496883810047"
+            "hash": "13403743496883810047",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/0926/0926.component.ts",
-            "hash": "15596780930245829487"
+            "hash": "15596780930245829487",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/1222/1222.component.ts",
-            "hash": "17797785153817184396"
+            "hash": "17797785153817184396",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/1223/1223.component.ts",
-            "hash": "4942679447428656115"
+            "hash": "4942679447428656115",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/forms",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/1224/1224.component.ts",
-            "hash": "2671074732692048762"
+            "hash": "2671074732692048762",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/forms",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/1225/1225.component.ts",
-            "hash": "1411662819669924099"
+            "hash": "1411662819669924099",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/forms",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/base-quarter.component.ts",
-            "hash": "9356790980052841704"
+            "hash": "9356790980052841704",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/quarter.component.ts",
-            "hash": "6011249308633649826"
+            "hash": "6011249308633649826",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/quarters-routing.module.ts",
-            "hash": "175757045570872611"
+            "hash": "175757045570872611",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/quarters.component.ts",
-            "hash": "7853565967112369046"
+            "hash": "7853565967112369046",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/quarters/quarters.module.ts",
-            "hash": "18325324993933943321"
+            "hash": "18325324993933943321",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/common",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/forms",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/resolvers/quarter.resolver.ts",
-            "hash": "10001296317444104035"
+            "hash": "10001296317444104035",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/services/analytics.service.ts",
-            "hash": "13424600510687597470"
+            "hash": "13424600510687597470",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:chart.js",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/services/auth.service.ts",
-            "hash": "3094202332876443772"
+            "hash": "3094202332876443772",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/fire",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/services/data-collection.service.ts",
-            "hash": "11539878630195948154"
+            "hash": "11539878630195948154",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/services/firebase.service.spec.ts",
-            "hash": "3544360376428208203"
+            "hash": "3544360376428208203",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/fire",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/services/firebase.service.ts",
-            "hash": "11314124914397659675"
+            "hash": "11314124914397659675",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/fire",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/services/game-state.service.ts",
-            "hash": "5269810054955424351"
+            "hash": "5269810054955424351",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/services/game.service.ts",
-            "hash": "7922116708159311020"
+            "hash": "7922116708159311020",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/services/hermona-font.service.ts",
-            "hash": "3139721982265083934"
+            "hash": "3139721982265083934",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/services/offline-queue.service.ts",
-            "hash": "6536914989161857637"
+            "hash": "6536914989161857637",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/services/quarter-population.service.ts",
-            "hash": "7597382875366452802"
+            "hash": "7597382875366452802",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/fire",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/services/score-sharing.service.ts",
-            "hash": "13387396314427765127"
+            "hash": "13387396314427765127",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/services/score.service.ts",
-            "hash": "10061827060918850112"
+            "hash": "10061827060918850112",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/services/share.service.ts",
-            "hash": "3105831694525322056"
+            "hash": "3105831694525322056",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/services/shopify.service.ts",
-            "hash": "97802573068377527"
+            "hash": "97802573068377527",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/common",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/services/state-manager.service.ts",
-            "hash": "3046953613991000036"
+            "hash": "3046953613991000036",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/services/validation.service.ts",
-            "hash": "546798374330598197"
+            "hash": "546798374330598197",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/services/version.service.ts",
-            "hash": "17043421962161487023"
+            "hash": "17043421962161487023",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/common",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/shared/components/game-banner/game-banner.component.html",
@@ -1773,7 +2136,14 @@
           },
           {
             "file": "src/app/shared/components/game-banner/game-banner.component.ts",
-            "hash": "3832169678774575625"
+            "hash": "3832169678774575625",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/shared/components/score-share-TO-DELETE/score-share.component.html",
@@ -1785,19 +2155,62 @@
           },
           {
             "file": "src/app/shared/components/score-share-TO-DELETE/score-share.component.spec.ts",
-            "hash": "11933103197010376626"
+            "hash": "11933103197010376626",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/shared/components/score-share-TO-DELETE/score-share.component.ts",
-            "hash": "16892227059616185307"
+            "hash": "16892227059616185307",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/shared/components/star-rating/star-rating.component.ts",
-            "hash": "7391762903093131507"
+            "hash": "7391762903093131507",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/shared/error/error.component.ts",
-            "hash": "15798064751180303946"
+            "hash": "15798064751180303946",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/common",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/shared/game/game.component.html",
@@ -1809,11 +2222,45 @@
           },
           {
             "file": "src/app/shared/game/game.component.ts",
-            "hash": "11828780395589555127"
+            "hash": "11828780395589555127",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/shared/game/game.module.ts",
-            "hash": "13271725322613495389"
+            "hash": "13271725322613495389",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/common",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/forms",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/shared/models/analytics.model.ts",
@@ -1845,11 +2292,30 @@
           },
           {
             "file": "src/app/shared/page-not-found/page-not-found.component.ts",
-            "hash": "6519226854798501655"
+            "hash": "6519226854798501655",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/shared/pipes/safe-url.pipe.ts",
-            "hash": "12914307276688256588"
+            "hash": "12914307276688256588",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/platform-browser",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/shared/results/README.md",
@@ -1865,15 +2331,61 @@
           },
           {
             "file": "src/app/shared/results/results.component.ts",
-            "hash": "3401170658215390586"
+            "hash": "3401170658215390586",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:rxjs",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/shared/shared.module.ts",
-            "hash": "2588191331240662451"
+            "hash": "2588191331240662451",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/common",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/forms",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/router",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/platform-browser",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/app/test.spec.ts",
-            "hash": "4007540481404658512"
+            "hash": "4007540481404658512",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/assets/blackbackground.jpg",
@@ -2561,15 +3073,41 @@
           },
           {
             "file": "src/main.ts",
-            "hash": "9384071278185782246"
+            "hash": "9384071278185782246",
+            "dependencies": [
+              {
+                "target": "npm:@angular/platform-browser-dynamic",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:chart.js",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/polyfills.ts",
-            "hash": "11742441740128097217"
+            "hash": "11742441740128097217",
+            "dependencies": [
+              {
+                "target": "npm:zone.js",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/populate-quarters.ts",
-            "hash": "14706169146905844252"
+            "hash": "14706169146905844252",
+            "dependencies": [
+              {
+                "target": "npm:firebase",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/styles.scss",
@@ -2593,11 +3131,40 @@
           },
           {
             "file": "src/test-setup/setup-jest.ts",
-            "hash": "2930397419814380346"
+            "hash": "2930397419814380346",
+            "dependencies": [
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/platform-browser-dynamic",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/test.ts",
-            "hash": "1360713698256017635"
+            "hash": "1360713698256017635",
+            "dependencies": [
+              {
+                "target": "npm:zone.js",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/core",
+                "source": "whiskey-wiz",
+                "type": "static"
+              },
+              {
+                "target": "npm:@angular/platform-browser-dynamic",
+                "source": "whiskey-wiz",
+                "type": "static"
+              }
+            ]
           },
           {
             "file": "src/tsconfig.spec.json",
@@ -2618,10 +3185,6 @@
           {
             "file": "test-access.txt",
             "hash": "17003965135895023332"
-          },
-          {
-            "file": "test.md",
-            "hash": "3251865569360315138"
           },
           {
             "file": "tsconfig.app.json",
@@ -26129,6 +26692,16 @@
       {
         "source": "whiskey-wiz",
         "target": "npm:typescript",
+        "type": "static"
+      },
+      {
+        "source": "whiskey-wiz",
+        "target": "npm:@eslint/eslintrc",
+        "type": "static"
+      },
+      {
+        "source": "whiskey-wiz",
+        "target": "npm:fs-extra",
         "type": "static"
       }
     ]

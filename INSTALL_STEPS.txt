@@ -1,0 +1,22 @@
+WhiskeyWiz Project Setup Steps
+
+1. Global Package Installation
+   - Install @angular/cli globally
+   - Install nx cli globally
+   - Install firebase tools globally
+
+2. Project Dependency Installation
+   - Clean npm cache
+   - Remove existing node_modules
+   - Install project dependencies
+
+3. Verification Steps
+   - Check Node.js version
+   - Check Angular CLI version
+   - Check Nx version
+   - Check Firebase Tools version
+
+Recommended Node.js: 20.9.0
+Angular Version: 17.0.0
+Nx Version: Latest
+Firebase Tools: Latest
