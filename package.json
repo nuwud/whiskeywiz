@@ -7,13 +7,21 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "check": "npm run lint && tsc --noEmit",
+    "check": "npm run lint && tsc --noEmit && ts-node src/scripts/mcp-checks.ts",
     "clean": "rimraf .next out node_modules",
-    "deploy": "npm run build && firebase deploy"
+    "setup": "ts-node src/scripts/setup-environment.ts",
+    "deploy": "ts-node src/scripts/deploy.ts",
+    "mcp:status": "ts-node src/scripts/mcp-checks.ts",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@firebase/genkit": "latest",
     "@firebase/genkit-plugin-mcp": "latest",
+    "@modelcontextprotocol/server-brave-search": "latest",
+    "@modelcontextprotocol/server-firebase": "latest",
+    "@modelcontextprotocol/server-filesystem": "latest",
+    "@modelcontextprotocol/server-github": "latest",
+    "@modelcontextprotocol/server-puppeteer": "latest",
     "firebase": "^10.7.1",
     "next": "14.0.4",
     "react": "^18",
@@ -23,12 +31,24 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
+    "eslint-plugin-react": "^7.33.2",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.0.0",
     "postcss": "^8",
     "rimraf": "^5.0.5",
     "tailwindcss": "^3.3.0",
+    "ts-node": "^10.9.0",
     "typescript": "^5"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   }
 }
