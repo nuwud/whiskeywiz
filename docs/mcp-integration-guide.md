@@ -10,223 +10,347 @@ C:\Users\nuwud\AppData\Roaming\Claude
 ├── mcp-memory/
 │   ├── chroma_db/
 │   └── backups/
-└── mcp-datavis/
+├── mcp-datavis/
+├── mcp-sqlite/
+├── mcp-docker/
+├── mcp-openapi/
+└── memory-mesh/data/
 ```
 
-### Installed MCPs
-- @modelcontextprotocol/server-github
-- @modelcontextprotocol/server-brave-search
-- @modelcontextprotocol/server-filesystem
-- @modelcontextprotocol/server-puppeteer
-- @simonb97/server-win-cli
-- airtable-mcp-server
-
-## MCP Integration Patterns
+## Core MCPs
 
 ### 1. GitHub MCP
-Primary use: Version Control & Project Management
+**Config:**
+```json
+{
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-github"],
+  "env": {
+    "GITHUB_PERSONAL_ACCESS_TOKEN": "[PAT]"
+  }
+}
+```
+Use for version control, project management, and code deployment.
 
+### 2. Firebase MCP
+**Config:**
+```json
+{
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-firebase"],
+  "env": {
+    "FIREBASE_CONFIG_PATH": "[path]/firebase-config.json",
+    "FIREBASE_API_KEY": "[key]",
+    // Additional Firebase config...
+  }
+}
+```
+Handles authentication, database operations, and hosting.
+
+### 3. Filesystem MCP
+**Config:**
+```json
+{
+  "command": "npx",
+  "args": [
+    "-y",
+    "@modelcontextprotocol/server-filesystem",
+    "C:\\Users\\nuwud\\whiskeywiz",
+    // Additional allowed paths...
+  ]
+}
+```
+Manages local file operations and build processes.
+
+## Development Tools
+
+### 1. Puppeteer MCP
+```json
+{
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
+}
+```
+Provides browser automation for testing.
+
+### 2. Windows-CLI MCP
+```json
+{
+  "command": "npx",
+  "args": ["-y", "@simonb97/server-win-cli"]
+}
+```
+Automates system commands and deployments.
+
+### 3. Docker MCP
+```json
+{
+  "command": "uv",
+  "args": [
+    "--directory",
+    "[path]/mcp-docker",
+    "run",
+    "mcp-server-docker"
+  ]
+}
+```
+Manages containerization and deployment.
+
+## Data Management
+
+### 1. SQLite MCP
+```json
+{
+  "command": "uv",
+  "args": [
+    "--directory",
+    "[path]/mcp-sqlite",
+    "run",
+    "mcp-server-sqlite",
+    "--db-path",
+    "[path]/data.db"
+  ]
+}
+```
+Local database operations and caching.
+
+### 2. Airtable MCP
+```json
+{
+  "command": "npx",
+  "args": ["-y", "airtable-mcp-server", "[PAT]"]]
+}
+```
+External data management and collaboration.
+
+### 3. Neo4j Memory MCP
+```json
+{
+  "command": "npx",
+  "args": ["-y", "@neo4j-contrib/mcp-neo4j-memory"],
+  "env": {
+    "NEO4J_URI": "[uri]",
+    "NEO4J_USERNAME": "[username]",
+    "NEO4J_PASSWORD": "[password]"
+  }
+}
+```
+Graph database for complex data relationships.
+
+## Documentation & Knowledge
+
+### 1. Brave Search MCP
+```json
+{
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+  "env": {
+    "BRAVE_API_KEY": "[key]"
+  }
+}
+```
+Web search and research capabilities.
+
+### 2. GDrive MCP
+```json
+{
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-gdrive"]
+}
+```
+Document storage and collaboration.
+
+### 3. Notion MCP
+```json
+{
+  "command": "npx",
+  "args": ["-y", "notion-server"],
+  "env": {
+    "NOTION_API_KEY": "[key]"
+  }
+}
+```
+Knowledge base and documentation.
+
+## Project Management
+
+### 1. Linear MCP
+```json
+{
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-linear"],
+  "env": {
+    "LINEAR_API_KEY": "[key]"
+  }
+}
+```
+Issue tracking and project management.
+
+### 2. Todoist MCP
+```json
+{
+  "command": "npx",
+  "args": ["-y", "@abhiz123/todoist-mcp-server"],
+  "env": {
+    "TODOIST_API_TOKEN": "[token]"
+  }
+}
+```
+Task management and personal organization.
+
+## Memory & Context
+
+### 1. Memory MCP
+```json
+{
+  "command": "uvx",
+  "args": ["--directory", "[path]/mcp-memory-service", "run", "memory"],
+  "env": {
+    "MCP_MEMORY_CHROMA_PATH": "[path]/chroma_db",
+    "MCP_MEMORY_BACKUPS_PATH": "[path]/backups"
+  }
+}
+```
+Project context and knowledge persistence.
+
+### 2. Memory-Mesh MCP
+```json
+{
+  "command": "npx",
+  "args": ["-y", "memory-mesh"],
+  "env": {
+    "MEMORY_MESH_PATH": "[path]/memory-mesh/data"
+  }
+}
+```
+Enhanced memory capabilities with mesh structure.
+
+## Integration Examples
+
+### 1. Development Workflow
 ```typescript
-// Examples:
+// Create feature branch
+await github.create_branch({
+  branch: 'feature/new-feature'
+});
 
-// Feature branch workflow
-const createFeature = async (featureName: string) => {
-  await create_branch({
-    owner: 'nuwud',
-    repo: 'whiskeywiz',
-    branch: `feature/${featureName}`
-  });
-};
+// Update files
+await filesystem.write_file({
+  path: 'src/components/NewFeature.tsx',
+  content: '// Component code'
+});
 
-// Automated PR creation
-const submitFeature = async (featureName: string) => {
-  await create_pull_request({
-    owner: 'nuwud',
-    repo: 'whiskeywiz',
-    title: `Feature: ${featureName}`,
-    head: `feature/${featureName}`,
-    base: 'main'
-  });
-};
+// Test changes
+await puppeteer.navigate({
+  url: 'http://localhost:3000/new-feature'
+});
+
+// Deploy
+await windows_cli.execute({
+  command: 'npm run deploy'
+});
 ```
 
-### 2. Filesystem MCP
-Primary use: Local Development & Build Process
-
+### 2. Documentation Flow
 ```typescript
-// Examples:
+// Search references
+const results = await brave_search.search({
+  query: 'firebase auth best practices'
+});
 
-// Build process helper
-const buildProject = async () => {
-  // Clean dist
-  await create_directory({
-    path: 'C:\\Users\\nuwud\\whiskeywiz\\dist'
-  });
+// Update docs
+await notion.updatePage({
+  pageId: 'auth-docs',
+  content: results.summary
+});
 
-  // Read configurations
-  const configs = await read_multiple_files({
-    paths: [
-      'C:\\Users\\nuwud\\whiskeywiz\\firebase.json',
-      'C:\\Users\\nuwud\\whiskeywiz\\next.config.js'
-    ]
-  });
-};
+// Save to GDrive
+await gdrive.uploadFile({
+  name: 'auth-documentation.md',
+  content: results.markdown
+});
 ```
 
-### 3. Firebase MCP
-Primary use: Backend Services
-
+### 3. Task Management
 ```typescript
-// Examples:
+// Create Linear issue
+await linear.createIssue({
+  title: 'Implement new feature',
+  description: 'Details here'
+});
 
-// Auth workflows
-const handleAuth = async () => {
-  const config = await read_file({
-    path: 'C:\\Users\\nuwud\\AppData\\Roaming\\Claude\\firebase-credentials\\firebase-config.json'
-  });
-};
-```
-
-### 4. Puppeteer MCP
-Primary use: Testing & Validation
-
-```typescript
-// Examples:
-
-// E2E test suite
-const testAuthFlow = async () => {
-  await puppeteer_navigate({
-    url: 'http://localhost:3000/auth/signin'
-  });
-
-  await puppeteer_fill({
-    selector: '#email',
-    value: 'test@example.com'
-  });
-
-  await puppeteer_screenshot({
-    name: 'auth-flow',
-    selector: '#signin-form'
-  });
-};
-```
-
-### 5. Windows-CLI MCP
-Primary use: Build & Deploy Automation
-
-```typescript
-// Examples:
-
-// Deployment script
-const deployToFirebase = async () => {
-  await execute_command({
-    shell: 'cmd',
-    command: 'firebase deploy',
-    workingDir: 'C:\\Users\\nuwud\\whiskeywiz'
-  });
-};
-```
-
-## Testing & Verification
-
-### MCP Test Suite
-```typescript
-const testAllMCPs = async () => {
-  // Test GitHub
-  await testGitHubAccess();
-  
-  // Test Filesystem
-  await testFileOperations();
-  
-  // Test Firebase
-  await testFirebaseConnection();
-  
-  // Test Puppeteer
-  await testBrowserAutomation();
-  
-  // Test CLI
-  await testCommandExecution();
-};
-```
-
-## Backup & Recovery
-
-### Using GDrive MCP
-```typescript
-const backupConfigs = async () => {
-  // Backup firebase configs
-  const configContent = await read_file({
-    path: 'C:\\Users\\nuwud\\AppData\\Roaming\\Claude\\firebase-credentials\\firebase-config.json'
-  });
-
-  // Store in GDrive
-  await gdrive.upload({
-    name: 'firebase-config-backup.json',
-    content: configContent,
-    mimeType: 'application/json'
-  });
-};
+// Add to Todoist
+await todoist.createTask({
+  content: 'Review new feature PR',
+  due_string: 'tomorrow'
+});
 ```
 
 ## Best Practices
 
-1. Version Control:
-   - Use GitHub MCP for all code changes
-   - Create feature branches
-   - Submit PRs for review
+1. Version Control
+- Use GitHub MCP for all code changes
+- Create feature branches
+- Maintain clean commit history
 
-2. Development Workflow:
-   - Use Filesystem MCP for local operations
-   - Keep config files secure
-   - Regular backups with GDrive
+2. Documentation
+- Store in both Notion and GDrive
+- Use Brave Search for research
+- Keep documentation up-to-date
 
-3. Testing:
-   - Use Puppeteer for E2E tests
-   - Regular integration testing
-   - Screenshot comparisons
+3. Testing
+- Puppeteer for E2E tests
+- Firebase for integration tests
+- Regular test automation
 
-4. Deployment:
-   - Use Windows-CLI for automation
-   - Verify configurations
-   - Monitor deployment status
+4. Deployment
+- Docker for containerization
+- Windows-CLI for automation
+- Firebase for hosting
+
+5. Data Management
+- SQLite for local data
+- Neo4j for relationships
+- Airtable for collaboration
 
 ## Troubleshooting
 
-1. MCP Connection Issues:
+### MCP Connection Issues
 ```powershell
-# Verify MCP server status
+# Verify server status
 npx @modelcontextprotocol/server-github --status
 ```
 
-2. Build Problems:
+### Build Problems
 ```powershell
-# Clean installation
-npm cache clean --force
-npm install
+# Clean build
+Remove-Item -Recurse -Force .next
+npm run build
 ```
 
-3. Deployment Failures:
+### Memory Issues
 ```powershell
-# Verify Firebase config
-firebase list
-firebase use whiskeywiz2
+# Clear memory cache
+Remove-Item "$baseDir\mcp-memory\chroma_db" -Recurse -Force
 ```
 
-## Regular Maintenance
+## Maintenance
 
-1. Update MCPs:
+### Regular Updates
 ```powershell
-npm update @modelcontextprotocol/server-github
-npm update @modelcontextprotocol/server-filesystem
+# Update all MCPs
+npm update @modelcontextprotocol/server-*
 ```
 
-2. Backup Configs:
+### Backups
 ```powershell
-# Regular config backups
+# Backup configs
 Copy-Item "$baseDir\firebase-credentials\*" "$baseDir\backups"
 ```
 
-3. Clean Old Builds:
+### Clean Up
 ```powershell
-Remove-Item "$baseDir\..\whiskeywiz\dist" -Recurse -Force
+# Clean old builds
+Remove-Item "dist" -Recurse -Force
+Remove-Item ".next" -Recurse -Force
 ```
