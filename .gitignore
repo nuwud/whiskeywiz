@@ -1,57 +1,28 @@
-# Dependency directories
-node_modules/
-npm-modules/
-jspm_packages/
+# dependencies
+node_modules
+.pnp
+.pnp.js
 
-# Build output directories
-build/
-dist/
+# testing
+coverage
+
+# next.js
+.next/
 out/
 
-# Environment files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# production
+build
 
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Dependency directories
-pnpm-lock.yaml
-package-lock.json
-yarn.lock
-
-# Editor directories and files
-.idea/
-.vscode/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# OS generated files
+# misc
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+*.pem
 
-# Temporary files
-*.tmp
-*.bak
-*.swp
+# debug
+npm-debug.log*
 
-# Specific to React/Firebase project
-.firebase/
-firebase-debug.log
-firestore-debug.log
-ui-debug.log
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
